@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -21,53 +20,52 @@ export function Navigation() {
   return (
     <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-background/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <Terminal className="h-8 w-8 text-accent" />
-              <span className="font-headline text-xl font-bold tracking-tight text-foreground">
+            <Link href="/" className="flex items-center space-x-3 group">
+              <div className="bg-accent/10 p-2 rounded-lg group-hover:bg-accent/20 transition-colors">
+                <Terminal className="h-7 w-7 text-accent" />
+              </div>
+              <span className="font-headline text-2xl font-bold tracking-tighter text-foreground">
                 ESAN TOOLS
               </span>
             </Link>
           </div>
 
-          <div className="hidden md:flex items-center space-x-8">
-            <Link href="/products" className="text-sm font-medium hover:text-accent transition-colors">
+          <div className="hidden md:flex items-center space-x-10">
+            <Link href="/products" className="text-sm font-bold uppercase tracking-widest hover:text-accent transition-colors">
               Marketplace
             </Link>
-            <Link href="/services" className="text-sm font-medium hover:text-accent transition-colors">
-              Web Dev
-            </Link>
-            <Link href="/support" className="text-sm font-medium hover:text-accent transition-colors">
+            <Link href="/support" className="text-sm font-bold uppercase tracking-widest hover:text-accent transition-colors">
               Support
             </Link>
             
-            <div className="flex items-center space-x-4 border-l border-white/10 pl-8">
-              <Button variant="ghost" size="icon" className="relative">
-                <ShoppingCart className="h-5 w-5" />
-                <span className="absolute top-1 right-1 h-2 w-2 bg-accent rounded-full"></span>
+            <div className="flex items-center space-x-5 border-l border-white/10 pl-10">
+              <Button variant="ghost" size="icon" className="relative hover:bg-white/5">
+                <ShoppingCart className="h-6 w-6" />
+                <span className="absolute top-1 right-1 h-2.5 w-2.5 bg-accent rounded-full border-2 border-background"></span>
               </Button>
 
               {isLoggedIn ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="secondary" size="icon" className="rounded-full">
-                      <User className="h-5 w-5" />
+                    <Button variant="secondary" size="icon" className="rounded-full h-10 w-10 border border-white/10">
+                      <User className="h-6 w-6" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
-                    <DropdownMenuItem asChild><Link href="/orders">My Orders</Link></DropdownMenuItem>
-                    <DropdownMenuItem asChild><Link href="/admin/dashboard">Admin Dashboard</Link></DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>Log out</DropdownMenuItem>
+                  <DropdownMenuContent align="end" className="w-60 p-2">
+                    <DropdownMenuLabel className="px-3 py-2 font-headline text-sm uppercase tracking-wider">My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator className="bg-white/5" />
+                    <DropdownMenuItem className="focus:bg-accent focus:text-accent-foreground py-2 px-3 rounded-md cursor-pointer" asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
+                    <DropdownMenuItem className="focus:bg-accent focus:text-accent-foreground py-2 px-3 rounded-md cursor-pointer" asChild><Link href="/orders">My Orders</Link></DropdownMenuItem>
+                    <DropdownMenuItem className="focus:bg-accent focus:text-accent-foreground py-2 px-3 rounded-md cursor-pointer" asChild><Link href="/admin/dashboard">Admin Dashboard</Link></DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-white/5" />
+                    <DropdownMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive py-2 px-3 rounded-md cursor-pointer" onClick={() => setIsLoggedIn(false)}>Log out</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button variant="default" className="bg-primary hover:bg-primary/90" onClick={() => setIsLoggedIn(true)}>
-                  Get Access
+                <Button variant="default" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-6" onClick={() => setIsLoggedIn(true)}>
+                  GET ACCESS
                 </Button>
               )}
             </div>
@@ -75,7 +73,7 @@ export function Navigation() {
 
           <div className="md:hidden">
             <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMenuOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
             </Button>
           </div>
         </div>
@@ -84,13 +82,12 @@ export function Navigation() {
       {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden bg-background border-b border-white/5 animate-in slide-in-from-top duration-300">
-          <div className="px-2 pt-2 pb-3 space-y-1">
-            <Link href="/products" className="block px-3 py-2 text-base font-medium hover:text-accent">Marketplace</Link>
-            <Link href="/services" className="block px-3 py-2 text-base font-medium hover:text-accent">Services</Link>
-            <Link href="/orders" className="block px-3 py-2 text-base font-medium hover:text-accent">My Orders</Link>
-            <div className="pt-4 border-t border-white/5">
-              <Button className="w-full justify-start" variant="ghost">Login</Button>
-              <Button className="w-full mt-2" variant="default">Sign Up</Button>
+          <div className="px-4 pt-4 pb-8 space-y-2">
+            <Link href="/products" className="block px-4 py-3 text-lg font-bold uppercase tracking-widest hover:bg-white/5 rounded-lg" onClick={() => setIsMenuOpen(false)}>Marketplace</Link>
+            <Link href="/support" className="block px-4 py-3 text-lg font-bold uppercase tracking-widest hover:bg-white/5 rounded-lg" onClick={() => setIsMenuOpen(false)}>Support</Link>
+            <div className="pt-6 border-t border-white/5 mt-4 space-y-3">
+              <Button className="w-full h-12 justify-center font-bold" variant="outline" onClick={() => { setIsLoggedIn(true); setIsMenuOpen(false); }}>LOGIN</Button>
+              <Button className="w-full h-12 justify-center font-bold" variant="default" onClick={() => { setIsLoggedIn(true); setIsMenuOpen(false); }}>SIGN UP</Button>
             </div>
           </div>
         </div>
