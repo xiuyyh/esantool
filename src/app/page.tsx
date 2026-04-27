@@ -1,14 +1,17 @@
+
 "use client";
 
 import Link from "next/link";
-import { useState, useCallback } from "react";
-import { Zap, ChevronRight, Terminal, MessageSquare } from "lucide-react";
+import { useState, useCallback, useMemo } from "react";
+import { Zap, ChevronRight, Terminal, MessageSquare, Target, Cpu, TrendingUp, Layers } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [magic, setMagic] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("All");
 
   const triggerMagic = useCallback(() => {
     if (magic) return;
@@ -16,11 +19,19 @@ export default function Home() {
     setTimeout(() => setMagic(false), 1000);
   }, [magic]);
 
+  const categories = [
+    { name: "All", icon: Layers },
+    { name: "Crypto", icon: Target },
+    { name: "Tech", icon: Cpu },
+    { name: "Alpha", icon: Zap },
+    { name: "DeFi", icon: TrendingUp },
+  ];
+
   const products = [
     {
       id: "tg-1",
       title: "Alpha Crypto HQ",
-      category: "Private Group",
+      category: "Crypto",
       price: 24.99,
       description: "Exclusive high-signal crypto discussions and early alpha leaks.",
       imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
@@ -29,7 +40,7 @@ export default function Home() {
     {
       id: "tg-2",
       title: "Whale Alerts Insider",
-      category: "Private Group",
+      category: "Crypto",
       price: 49.00,
       description: "Real-time tracking of large wallet movements with expert analysis.",
       imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
@@ -38,7 +49,7 @@ export default function Home() {
     {
       id: "tg-3",
       title: "DeFi Degen Hub",
-      category: "Private Group",
+      category: "DeFi",
       price: 15.00,
       description: "The primary source for new DeFi projects and yield farming strategies.",
       imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
@@ -47,13 +58,36 @@ export default function Home() {
     {
       id: "tg-4",
       title: "Tech Alpha Network",
-      category: "Private Group",
+      category: "Tech",
       price: 35.00,
       description: "Private discussions on emerging technologies and startup opportunities.",
       imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
       imageHint: "telegram network"
+    },
+    {
+      id: "tg-5",
+      title: "Bitcoin Maxi Club",
+      category: "Crypto",
+      price: 19.99,
+      description: "Hardcore BTC discussions and long-term accumulation strategies.",
+      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
+      imageHint: "telegram network"
+    },
+    {
+      id: "tg-6",
+      title: "Venture Capital Leaks",
+      category: "Alpha",
+      price: 99.00,
+      description: "Insider info on upcoming funding rounds and private sales.",
+      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
+      imageHint: "telegram network"
     }
   ];
+
+  const filteredProducts = useMemo(() => {
+    if (activeCategory === "All") return products;
+    return products.filter(p => p.category === activeCategory);
+  }, [activeCategory]);
 
   const headlineMain = "Buy";
   const headlineAccent = "High quality private TG groups";
@@ -79,17 +113,10 @@ export default function Home() {
               magic && "rotate-[-360deg] scale-150 text-white opacity-40"
             )} 
           />
-          <MessageSquare 
-            className={cn(
-              "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 w-64 opacity-20 transition-transform duration-1000",
-              magic && "scale-[2] opacity-30"
-            )} 
-          />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <h1 className="font-headline text-5xl sm:text-7xl font-bold text-foreground tracking-tight leading-tight flex flex-wrap justify-center gap-x-[0.3em]">
-            {/* "Buy" */}
             <span className="inline-flex">
               {headlineMain.split("").map((char, i) => (
                 <span
@@ -105,7 +132,6 @@ export default function Home() {
               ))}
             </span>
 
-            {/* "High quality private TG groups" */}
             <span className="inline-flex flex-wrap justify-center gap-x-[0.2em] text-accent">
               {headlineAccent.split(" ").map((word, wordIdx) => (
                 <span key={`word-${wordIdx}`} className="inline-flex">
@@ -128,23 +154,51 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* Market Section */}
       <section className="py-16 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-10">
-            <h2 className="font-headline text-2xl font-bold flex items-center">
-              <Zap className="h-6 w-6 mr-2 text-accent fill-accent" />
-              Featured Groups
-            </h2>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+            <div>
+              <h2 className="font-headline text-3xl font-bold flex items-center mb-2">
+                <Zap className="h-8 w-8 mr-3 text-accent fill-accent" />
+                Premium Marketplace
+              </h2>
+              <p className="text-muted-foreground">Select a category to filter high-performance communities.</p>
+            </div>
             <Link href="/products" className="text-accent text-sm font-bold flex items-center hover:opacity-80 transition-opacity">
-              View All <ChevronRight className="h-4 w-4 ml-1" />
+              Explore All <ChevronRight className="h-4 w-4 ml-1" />
             </Link>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {products.map((p) => (
-              <ProductCard key={p.id} {...p} />
+
+          {/* Category Tabs */}
+          <div className="flex flex-wrap gap-3 mb-12">
+            {categories.map((cat) => (
+              <Button
+                key={cat.name}
+                variant={activeCategory === cat.name ? "default" : "outline"}
+                className={cn(
+                  "h-12 px-6 rounded-full border-white/10 font-bold transition-all",
+                  activeCategory === cat.name ? "bg-accent text-black scale-105" : "hover:border-accent/50"
+                )}
+                onClick={() => setActiveCategory(cat.name)}
+              >
+                <cat.icon className={cn("h-4 w-4 mr-2", activeCategory === cat.name ? "text-black" : "text-accent")} />
+                {cat.name}
+              </Button>
             ))}
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[400px]">
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((p) => (
+                <ProductCard key={p.id} {...p} />
+              ))
+            ) : (
+              <div className="col-span-full flex flex-col items-center justify-center py-20 opacity-50">
+                <Terminal className="h-12 w-12 mb-4" />
+                <p>No groups available in this category yet.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
