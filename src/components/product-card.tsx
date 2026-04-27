@@ -53,7 +53,7 @@ export function ProductCard({ id, title, category, price, description, imageUrl,
           </p>
           <div className="flex items-center justify-between">
             <span className="text-sm font-bold font-headline text-accent">
-              ${price.toFixed(2)}
+              ₦{price.toLocaleString()}
             </span>
             <Button size="sm" className="h-7 px-3 text-[10px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
               <ShoppingCart className="h-3 w-3 mr-1" />

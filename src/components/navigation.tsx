@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ShoppingCart, User, Menu, X, Terminal, LogOut, LayoutDashboard } from "lucide-react";
+import { ShoppingCart, User, Menu, X, Terminal, LogOut, LayoutDashboard, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -70,9 +70,15 @@ export function Navigation() {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-white/5" />
                     <DropdownMenuItem className="focus:bg-accent focus:text-accent-foreground py-2 px-3 rounded-md cursor-pointer" asChild>
+                      <Link href="/dashboard">
+                        <UserCircle className="h-4 w-4 mr-2" />
+                        My Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="focus:bg-accent focus:text-accent-foreground py-2 px-3 rounded-md cursor-pointer" asChild>
                       <Link href="/admin/dashboard">
                         <LayoutDashboard className="h-4 w-4 mr-2" />
-                        Admin Dashboard
+                        Admin Panel
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-white/5" />
@@ -111,6 +117,9 @@ export function Navigation() {
         <div className="md:hidden bg-background border-b border-white/5 animate-in slide-in-from-top duration-300">
           <div className="px-4 pt-4 pb-8 space-y-2">
             <Link href="/products" className="block px-4 py-3 text-lg font-bold uppercase tracking-widest hover:bg-white/5 rounded-lg" onClick={() => setIsMenuOpen(false)}>Marketplace</Link>
+            {user && (
+              <Link href="/dashboard" className="block px-4 py-3 text-lg font-bold uppercase tracking-widest hover:bg-white/5 rounded-lg" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
+            )}
             <div className="pt-6 border-t border-white/5 mt-4 space-y-3">
               {user ? (
                 <Button className="w-full h-12 justify-center font-bold text-destructive" variant="ghost" onClick={() => { handleLogout(); setIsMenuOpen(false); }}>LOGOUT</Button>

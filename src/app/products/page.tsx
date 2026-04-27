@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -15,7 +16,7 @@ export default function ProductsPage() {
       id: "tg-1",
       title: "Alpha Crypto HQ",
       category: "Private Group",
-      price: 24.99,
+      price: 15000,
       description: "Exclusive high-signal crypto discussions and early alpha leaks.",
       imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
       imageHint: "telegram network"
@@ -24,7 +25,7 @@ export default function ProductsPage() {
       id: "tg-2",
       title: "Whale Alerts Insider",
       category: "Private Group",
-      price: 49.00,
+      price: 25000,
       description: "Real-time tracking of large wallet movements with expert analysis.",
       imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
       imageHint: "telegram network"
@@ -33,7 +34,7 @@ export default function ProductsPage() {
       id: "tg-3",
       title: "DeFi Degen Hub",
       category: "Private Group",
-      price: 15.00,
+      price: 10000,
       description: "The primary source for new DeFi projects and yield farming strategies.",
       imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
       imageHint: "telegram network"
@@ -42,7 +43,7 @@ export default function ProductsPage() {
       id: "tg-4",
       title: "Tech Alpha Network",
       category: "Private Group",
-      price: 35.00,
+      price: 20000,
       description: "Private discussions on emerging technologies and startup opportunities.",
       imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
       imageHint: "telegram network"
@@ -51,7 +52,7 @@ export default function ProductsPage() {
       id: "tg-5",
       title: "Growth Hackers Circle",
       category: "Private Group",
-      price: 29.99,
+      price: 18000,
       description: "Marketing strategies and growth hacks for SaaS founders.",
       imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
       imageHint: "telegram network"
@@ -60,7 +61,7 @@ export default function ProductsPage() {
       id: "tg-6",
       title: "NFT Alpha Squad",
       category: "Private Group",
-      price: 19.99,
+      price: 12000,
       description: "Upcoming NFT drops, whitelists, and market trends.",
       imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
       imageHint: "telegram network"

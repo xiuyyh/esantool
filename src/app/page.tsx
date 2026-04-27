@@ -32,7 +32,7 @@ export default function Home() {
       id: "tg-1",
       title: "Alpha Crypto HQ",
       category: "Crypto",
-      price: 24.99,
+      price: 15000,
       description: "Exclusive high-signal crypto discussions and early alpha leaks.",
       imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
       imageHint: "telegram network"
@@ -41,7 +41,7 @@ export default function Home() {
       id: "tg-2",
       title: "Whale Alerts Insider",
       category: "Crypto",
-      price: 49.00,
+      price: 25000,
       description: "Real-time tracking of large wallet movements with expert analysis.",
       imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
       imageHint: "telegram network"
@@ -50,7 +50,7 @@ export default function Home() {
       id: "tg-3",
       title: "DeFi Degen Hub",
       category: "DeFi",
-      price: 15.00,
+      price: 10000,
       description: "The primary source for new DeFi projects and yield farming strategies.",
       imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
       imageHint: "telegram network"
@@ -59,7 +59,7 @@ export default function Home() {
       id: "tg-4",
       title: "Tech Alpha Network",
       category: "Tech",
-      price: 35.00,
+      price: 20000,
       description: "Private discussions on emerging technologies and startup opportunities.",
       imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
       imageHint: "telegram network"
@@ -68,7 +68,7 @@ export default function Home() {
       id: "tg-5",
       title: "Bitcoin Maxi Club",
       category: "Crypto",
-      price: 19.99,
+      price: 12000,
       description: "Hardcore BTC discussions and long-term accumulation strategies.",
       imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
       imageHint: "telegram network"
@@ -77,7 +77,7 @@ export default function Home() {
       id: "tg-6",
       title: "Venture Capital Leaks",
       category: "Alpha",
-      price: 99.00,
+      price: 50000,
       description: "Insider info on upcoming funding rounds and private sales.",
       imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
       imageHint: "telegram network"
@@ -162,7 +162,7 @@ export default function Home() {
               <h2 className="font-headline text-3xl font-bold mb-2">
                 Premium Marketplace
               </h2>
-              <p className="text-muted-foreground">Select a category to filter high-performance communities.</p>
+              <p className="text-muted-foreground">Explore high-performance Telegram communities.</p>
             </div>
             <Link href="/products" className="text-accent text-sm font-bold flex items-center hover:opacity-80 transition-opacity">
               Explore All <ChevronRight className="h-4 w-4 ml-1" />
