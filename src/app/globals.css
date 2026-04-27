@@ -1,32 +1,31 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 225 14% 10%;
-    --foreground: 210 40% 98%;
-    --card: 225 14% 12%;
-    --card-foreground: 210 40% 98%;
-    --popover: 225 14% 10%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 235 58% 44%;
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 4%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 217 91% 60%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 235 30% 20%;
+    --secondary: 240 5% 15%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 225 14% 20%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 193 87% 57%;
-    --accent-foreground: 225 14% 10%;
+    --muted: 240 5% 15%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 65 100% 50%;
+    --accent-foreground: 240 10% 4%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 225 14% 20%;
-    --input: 225 14% 20%;
-    --ring: 235 58% 44%;
+    --border: 240 5% 15%;
+    --input: 240 5% 15%;
+    --ring: 217 91% 60%;
     --radius: 0.75rem;
-    --chart-1: 235 58% 44%;
-    --chart-2: 193 87% 57%;
+    --chart-1: 217 91% 60%;
+    --chart-2: 65 100% 50%;
     --chart-3: 200 80% 50%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
@@ -47,12 +46,45 @@
 }
 
 .glass-card {
-  background: rgba(21, 23, 28, 0.7);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(10, 10, 12, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
 }
 
 .gradient-bg {
-  background: radial-gradient(circle at top left, rgba(46, 56, 175, 0.15), transparent),
-              radial-gradient(circle at bottom right, rgba(50, 196, 240, 0.1), transparent);
+  background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 40%),
+              radial-gradient(circle at bottom right, rgba(234, 255, 0, 0.05), transparent 40%),
+              #08080a;
+}
+
+.shiny-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shiny-effect::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(-45deg);
+  transition: all 0.5s;
+  opacity: 0;
+}
+
+.shiny-effect:hover::after {
+  opacity: 1;
+  left: 100%;
+  top: 100%;
 }
