@@ -1,9 +1,10 @@
 
 export const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "stub-key",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "stub-auth-domain",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "stub-project-id",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "stub-storage-bucket",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "stub-sender-id",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "stub-app-id"
+  apiKey: "AIzaSyCskjNKLf0HUH5U2ZU-UcY6f6mGho__U24",
+  authDomain: "ai-video-platform-5a456.firebaseapp.com",
+  projectId: "ai-video-platform-5a456",
+  storageBucket: "ai-video-platform-5a456.firebasestorage.app",
+  messagingSenderId: "328657911625",
+  appId: "1:328657911625:web:c7b27c9ed47a930faf2498",
+  measurementId: "G-0L9Q9NZR5R"
 };
