@@ -7,10 +7,8 @@ import {
   Wallet, 
   Package, 
   History, 
-  TrendingUp, 
-  MessageSquare,
-  ArrowUpRight,
-  ShieldCheck
+  ShieldCheck,
+  PlusCircle
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -56,26 +54,25 @@ export default function UserDashboard() {
             <Wallet className="h-16 w-16" />
           </div>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Account Balance</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider text-accent">Account Balance</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold font-headline text-accent">₦{balance.toLocaleString()}</div>
-            <Button size="sm" className="mt-4 bg-white/5 hover:bg-white/10 text-xs h-8 border border-white/10">
+            <div className="text-4xl font-bold font-headline">₦{balance.toLocaleString()}</div>
+            <Button size="sm" className="mt-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-8">
+              <PlusCircle className="h-4 w-4 mr-2" />
               Add Funds
             </Button>
           </CardContent>
         </Card>
 
-        {/* Active Groups Card */}
+        {/* Memberships Card */}
         <Card className="glass-card border-white/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Active Memberships</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-4xl font-bold font-headline">0</div>
-            <p className="text-xs text-muted-foreground mt-1 flex items-center">
-              Explore the marketplace for new groups
-            </p>
+            <p className="text-xs text-muted-foreground mt-2">Explore the marketplace to join premium groups.</p>
           </CardContent>
         </Card>
 
@@ -87,9 +84,9 @@ export default function UserDashboard() {
           <CardContent>
             <div className="flex items-center gap-2 text-green-500 font-bold">
               <ShieldCheck className="h-5 w-5" />
-              Verified
+              Verified Account
             </div>
-            <p className="text-xs text-muted-foreground mt-2">Your account is secured with 2FA.</p>
+            <p className="text-xs text-muted-foreground mt-2">Your access is secured and encrypted.</p>
           </CardContent>
         </Card>
       </div>
@@ -107,19 +104,27 @@ export default function UserDashboard() {
           </CardContent>
         </Card>
 
-        {/* Recommendations */}
+        {/* Recommended for User */}
         <Card className="glass-card border-white/5">
           <CardHeader>
-            <CardTitle className="font-headline">Recommended for You</CardTitle>
+            <CardTitle className="font-headline">Elite Recommendations</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="p-3 rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group">
+            <div className="p-4 rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group">
               <div className="flex justify-between items-start mb-1">
                 <span className="font-bold text-sm group-hover:text-accent">Venture Leaks Alpha</span>
                 <Badge variant="outline" className="text-[10px] text-accent border-accent/20">Alpha</Badge>
               </div>
               <p className="text-xs text-muted-foreground line-clamp-1">Insider info on private VC deals...</p>
               <div className="mt-2 text-sm font-bold text-accent">₦15,000</div>
+            </div>
+            <div className="p-4 rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group opacity-80">
+              <div className="flex justify-between items-start mb-1">
+                <span className="font-bold text-sm group-hover:text-accent">Whale Alert Pro</span>
+                <Badge variant="outline" className="text-[10px] text-accent border-accent/20">Elite</Badge>
+              </div>
+              <p className="text-xs text-muted-foreground line-clamp-1">Real-time deep wallet tracking...</p>
+              <div className="mt-2 text-sm font-bold text-accent">₦25,000</div>
             </div>
           </CardContent>
         </Card>
