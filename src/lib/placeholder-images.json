@@ -1,3 +1,34 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "telegram-service",
+      "description": "Telegram group and channel management tools",
+      "imageUrl": "https://picsum.photos/seed/esan1/600/400",
+      "imageHint": "telegram network"
+    },
+    {
+      "id": "social-logs",
+      "description": "Social media account logs and data",
+      "imageUrl": "https://picsum.photos/seed/esan2/600/400",
+      "imageHint": "social dashboard"
+    },
+    {
+      "id": "vpn-logs",
+      "description": "High speed VPN access logs",
+      "imageUrl": "https://picsum.photos/seed/esan3/600/400",
+      "imageHint": "vpn security"
+    },
+    {
+      "id": "web-dev",
+      "description": "Professional custom website development",
+      "imageUrl": "https://picsum.photos/seed/esan4/600/400",
+      "imageHint": "coding development"
+    },
+    {
+      "id": "hero-image",
+      "description": "Tech inspired abstract background",
+      "imageUrl": "https://picsum.photos/seed/esan5/1200/800",
+      "imageHint": "digital technology"
+    }
+  ]
 }

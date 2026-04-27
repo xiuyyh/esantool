@@ -21,14 +21,20 @@ export function ProductCard({ id, title, category, price, description, imageUrl,
   return (
     <Card className="overflow-hidden glass-card group hover:border-accent/50 transition-all duration-300">
       <CardHeader className="p-0">
-        <div className="relative aspect-video overflow-hidden">
-          <Image
-            src={imageUrl}
-            alt={title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-            data-ai-hint={imageHint}
-          />
+        <div className="relative aspect-video overflow-hidden bg-muted">
+          {imageUrl ? (
+            <Image
+              src={imageUrl}
+              alt={title}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+              data-ai-hint={imageHint}
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full w-full bg-secondary/20">
+              <span className="text-xs text-muted-foreground">No image available</span>
+            </div>
+          )}
           <div className="absolute top-2 right-2">
             <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm border-white/10">
               {category}
