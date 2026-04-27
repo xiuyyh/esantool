@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Zap, ChevronRight, Terminal } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 
@@ -51,17 +50,9 @@ export default function Home() {
       {/* Hero Section */}
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="font-headline text-5xl sm:text-7xl font-bold text-foreground mb-6 tracking-tight">
+          <h1 className="font-headline text-5xl sm:text-7xl font-bold text-foreground tracking-tight">
             Buy <span className="text-accent">High quality private TG groups</span>
           </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto mb-10 text-lg">
-            Instant access to elite Telegram communities. Vetted, high-signal, and exclusively private.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 px-10 py-6 text-lg font-bold shadow-[0_0_20px_rgba(234,255,0,0.2)]">
-              Browse Groups
-            </Button>
-          </div>
         </div>
       </section>
 
@@ -89,10 +80,12 @@ export default function Home() {
       <footer className="mt-auto py-12 border-t border-white/5 bg-black/40 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-muted-foreground">
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <Terminal className="h-5 w-5 text-accent" />
-            <span className="font-headline font-bold text-sm tracking-widest text-foreground">ESAN TOOLS</span>
+            <div className="bg-accent/10 p-1.5 rounded-md">
+              <Terminal className="h-4 w-4 text-accent" />
+            </div>
+            <span className="font-headline font-bold text-sm tracking-widest text-foreground uppercase">ESAN TOOLS</span>
           </div>
-          <p className="mb-2">Premium digital asset marketplace.</p>
+          <p className="mb-2">Exclusive Telegram private group marketplace.</p>
           © {new Date().getFullYear()} Esan Tools. All rights reserved.
         </div>
       </footer>
