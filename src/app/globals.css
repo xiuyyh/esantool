@@ -88,3 +88,21 @@
   left: 100%;
   top: 100%;
 }
+
+@keyframes fall-in {
+  0% {
+    transform: translateY(-150px) rotate(-15deg);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(10px) rotate(5deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0);
+    opacity: 1;
+  }
+}
+
+.animate-fall-in {
+  animation: fall-in 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
