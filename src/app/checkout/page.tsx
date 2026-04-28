@@ -84,9 +84,9 @@ export default function CheckoutPage() {
 
   if (!user) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-20 text-center">
-        <h2 className="text-2xl font-bold">Login Required</h2>
-        <Button className="mt-6" asChild>
+      <div className="max-w-screen-2xl px-4 py-20 text-center">
+        <h2 className="text-3xl font-bold">Login Required</h2>
+        <Button className="mt-8 px-10 h-12 text-lg font-bold" asChild>
           <Link href="/login">Login to buy groups</Link>
         </Button>
       </div>
@@ -94,51 +94,54 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-16 space-y-12">
-      <div className="flex flex-col md:flex-row justify-between items-end gap-4 border-b border-white/5 pb-8">
+    <div className="max-w-screen-2xl px-4 py-16 space-y-12">
+      <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-white/5 pb-8">
         <div>
-          <h1 className="font-headline text-5xl font-bold tracking-tight">MY CART</h1>
-          <p className="text-muted-foreground mt-2 uppercase tracking-widest text-xs">Review your items before buying.</p>
+          <h1 className="font-headline text-6xl font-bold tracking-tight">MY CART</h1>
+          <p className="text-muted-foreground mt-2 uppercase tracking-widest text-sm">Review your items before buying.</p>
         </div>
-        <Link href="/" className="text-accent text-xs font-bold uppercase tracking-widest flex items-center hover:opacity-80">
-          <ChevronLeft className="h-4 w-4 mr-1" />
+        <Link href="/" className="text-accent text-sm font-bold uppercase tracking-widest flex items-center hover:opacity-80">
+          <ChevronLeft className="h-5 w-5 mr-1" />
           Back to Shop
         </Link>
       </div>
 
       <div className="grid lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-8 space-y-4">
+        <div className="lg:col-span-8 space-y-6">
           {cartItems.length > 0 ? (
             cartItems.map((item) => (
               <Card key={item.id} className="glass-card border-white/5 overflow-hidden">
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="h-16 w-16 rounded-lg overflow-hidden border border-white/10 shrink-0">
+                <CardContent className="p-6 flex items-center justify-between">
+                  <div className="flex items-center gap-6">
+                    <div className="h-24 w-24 rounded-xl overflow-hidden border border-white/10 shrink-0">
                       <img src={item.imageUrls?.[0] || "https://picsum.photos/seed/default/200/200"} className="w-full h-full object-cover" alt="" />
                     </div>
                     <div>
-                      <h3 className="font-headline font-bold text-lg">{item.title}</h3>
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-widest">{item.country}</p>
+                      <h3 className="font-headline font-bold text-2xl mb-1">{item.title}</h3>
+                      <p className="text-xs text-muted-foreground uppercase tracking-widest border border-white/10 px-2 py-0.5 rounded-full w-fit">{item.country}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-6">
-                    <span className="font-headline font-bold text-accent">₦{item.price?.toLocaleString()}</span>
+                  <div className="flex items-center gap-8">
+                    <span className="font-headline font-bold text-3xl text-accent">₦{item.price?.toLocaleString()}</span>
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="text-destructive hover:bg-destructive/10"
+                      className="h-10 w-10 text-destructive hover:bg-destructive/10"
                       onClick={() => handleRemoveFromCart(item.id)}
                     >
-                      <Trash2 className="h-5 w-5" />
+                      <Trash2 className="h-6 w-6" />
                     </Button>
                   </div>
                 </CardContent>
               </Card>
             ))
           ) : (
-            <div className="py-20 text-center border-2 border-dashed border-white/10 rounded-3xl opacity-50">
-              <ShoppingCart className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="uppercase tracking-widest text-xs font-bold">Your cart is empty.</p>
+            <div className="py-24 text-center border-2 border-dashed border-white/10 rounded-3xl opacity-50">
+              <ShoppingCart className="h-16 w-16 mx-auto mb-6 text-muted-foreground" />
+              <p className="uppercase tracking-widest text-sm font-bold">Your cart is empty.</p>
+              <Button asChild variant="outline" className="mt-6">
+                <Link href="/">Go Shopping</Link>
+              </Button>
             </div>
           )}
         </div>
@@ -146,49 +149,49 @@ export default function CheckoutPage() {
         <div className="lg:col-span-4 space-y-6">
           <Card className="glass-card border-accent/20 sticky top-24">
             <CardHeader>
-              <CardTitle className="font-headline text-xl">Checkout</CardTitle>
+              <CardTitle className="font-headline text-2xl">Checkout Summary</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-8">
               <div className="space-y-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Items</span>
-                  <span>{cartItems.length}</span>
+                <div className="flex justify-between text-base">
+                  <span className="text-muted-foreground">Items in Cart</span>
+                  <span className="font-bold">{cartItems.length}</span>
                 </div>
-                <div className="flex justify-between font-bold text-lg border-t border-white/5 pt-4">
+                <div className="flex justify-between font-bold text-3xl border-t border-white/5 pt-6">
                   <span>Total</span>
                   <span className={hasInsufficientFunds ? "text-destructive" : "text-accent"}>₦{totalPrice.toLocaleString()}</span>
                 </div>
               </div>
 
-              <div className={hasInsufficientFunds ? "p-4 rounded-xl bg-destructive/5 border border-destructive/10 space-y-2" : "p-4 rounded-xl bg-accent/5 border border-accent/10 space-y-2"}>
-                <div className="flex justify-between text-[10px] uppercase font-bold text-muted-foreground">
+              <div className={hasInsufficientFunds ? "p-6 rounded-2xl bg-destructive/5 border border-destructive/10 space-y-3" : "p-6 rounded-2xl bg-accent/5 border border-accent/10 space-y-3"}>
+                <div className="flex justify-between text-xs uppercase font-bold text-muted-foreground">
                   <span>My Balance</span>
-                  <Wallet className="h-3 w-3" />
+                  <Wallet className="h-4 w-4" />
                 </div>
-                <div className="text-2xl font-bold font-headline">₦{userBalance.toLocaleString()}</div>
+                <div className="text-3xl font-bold font-headline">₦{userBalance.toLocaleString()}</div>
               </div>
 
               {hasInsufficientFunds && cartItems.length > 0 && (
-                <Alert variant="destructive" className="bg-destructive/5 border-destructive/20 py-2">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription className="text-[10px] uppercase font-bold">
-                    Need ₦{(totalPrice - userBalance).toLocaleString()} more.
+                <Alert variant="destructive" className="bg-destructive/5 border-destructive/20">
+                  <AlertCircle className="h-5 w-5" />
+                  <AlertDescription className="text-xs uppercase font-bold">
+                    Need ₦{(totalPrice - userBalance).toLocaleString()} more to buy.
                   </AlertDescription>
                 </Alert>
               )}
 
               <Button 
-                className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-bold text-lg uppercase tracking-widest"
+                className="w-full h-16 bg-primary hover:bg-primary/90 text-white font-bold text-xl uppercase tracking-widest shadow-xl shadow-primary/20"
                 disabled={isProcessing || cartItems.length === 0 || hasInsufficientFunds}
                 onClick={handleCompletePurchase}
               >
-                {isProcessing ? "BUYING..." : hasInsufficientFunds ? "LOW BALANCE" : "BUY NOW"}
-                {!hasInsufficientFunds && <ShieldCheck className="ml-2 h-5 w-5" />}
+                {isProcessing ? "PROCESSING..." : hasInsufficientFunds ? "INSUFFICIENT FUNDS" : "BUY NOW"}
+                {!hasInsufficientFunds && <ShieldCheck className="ml-2 h-6 w-6" />}
               </Button>
             </CardContent>
             <CardFooter>
-              <p className="text-[10px] text-center w-full text-muted-foreground uppercase tracking-widest">
-                Secure payment.
+              <p className="text-xs text-center w-full text-muted-foreground uppercase tracking-widest opacity-60">
+                Encrypted Transaction
               </p>
             </CardFooter>
           </Card>

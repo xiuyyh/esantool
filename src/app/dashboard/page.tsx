@@ -33,7 +33,7 @@ export default function UserDashboard() {
 
   if (userLoading || profileLoading || groupsLoading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-20 space-y-10">
+      <div className="max-w-screen-2xl px-4 py-20 space-y-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Skeleton className="h-32 w-full rounded-2xl" />
           <Skeleton className="h-32 w-full rounded-2xl" />
@@ -47,7 +47,7 @@ export default function UserDashboard() {
   const purchasedCount = profile?.purchasedGroups?.length || 0;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+    <div className="max-w-screen-2xl px-4 sm:px-6 lg:px-8 py-10 space-y-12">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="glass-card border-white/5 relative overflow-hidden group hover:border-accent/30 transition-all duration-300">
           <CardHeader className="pb-2">
@@ -74,36 +74,36 @@ export default function UserDashboard() {
 
       <section className="space-y-6">
         <div className="flex items-center justify-between border-b border-white/5 pb-4">
-          <h2 className="font-headline text-xl font-bold uppercase tracking-tight flex items-center gap-2">
-            <Key className="h-5 w-5 text-accent" />
+          <h2 className="font-headline text-2xl font-bold uppercase tracking-tight flex items-center gap-2">
+            <Key className="h-6 w-6 text-accent" />
             Purchased Groups
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {purchasedGroups.length > 0 ? (
             purchasedGroups.map((group: any) => (
               <Card key={group.id} className="glass-card border-accent/20 overflow-hidden group">
                 <CardContent className="p-0">
-                  <div className="flex p-4 gap-4">
-                    <div className="h-20 w-20 rounded-xl overflow-hidden border border-white/10 shrink-0">
+                  <div className="flex p-5 gap-5">
+                    <div className="h-24 w-24 rounded-xl overflow-hidden border border-white/10 shrink-0">
                       <img src={group.imageUrls?.[0] || "https://picsum.photos/seed/default/200/200"} className="w-full h-full object-cover" alt="" />
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col justify-center">
-                      <div className="flex justify-between items-start mb-1">
-                        <h3 className="font-headline font-bold text-lg truncate">{group.title}</h3>
-                        <div className="text-[10px] font-bold text-accent uppercase tracking-tighter flex items-center gap-1">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-headline font-bold text-xl truncate">{group.title}</h3>
+                        <div className="text-[10px] font-bold text-accent uppercase tracking-tighter flex items-center gap-1 border border-accent/20 px-2 py-0.5 rounded-full">
                           <Globe className="h-3 w-3" />
                           {group.country}
                         </div>
                       </div>
-                      <div className="mt-2 p-2 rounded-lg bg-accent/5 border border-accent/10 flex items-center justify-between gap-3">
-                        <code className="text-[10px] font-mono text-accent truncate opacity-80">
+                      <div className="mt-2 p-3 rounded-xl bg-accent/5 border border-accent/10 flex items-center justify-between gap-3">
+                        <code className="text-xs font-mono text-accent truncate opacity-80">
                           {group.accessLink}
                         </code>
-                        <Button asChild size="icon" className="h-7 w-7 bg-accent text-accent-foreground hover:bg-accent/90 shrink-0">
+                        <Button asChild size="icon" className="h-8 w-8 bg-accent text-accent-foreground hover:bg-accent/90 shrink-0">
                           <a href={group.accessLink} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-3 w-3" />
+                            <ExternalLink className="h-4 w-4" />
                           </a>
                         </Button>
                       </div>
@@ -113,10 +113,10 @@ export default function UserDashboard() {
               </Card>
             ))
           ) : (
-            <div className="col-span-full py-16 text-center border-2 border-dashed border-white/5 rounded-3xl opacity-40">
-              <Lock className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-xs uppercase tracking-widest font-bold">No groups purchased yet.</p>
-              <Button variant="link" asChild className="mt-2 text-accent">
+            <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-3xl opacity-40">
+              <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <p className="text-sm uppercase tracking-widest font-bold">No groups purchased yet.</p>
+              <Button variant="link" asChild className="mt-4 text-accent text-lg">
                 <Link href="/">Browse Shop</Link>
               </Button>
             </div>
@@ -127,16 +127,16 @@ export default function UserDashboard() {
       {availableGroups.length > 0 && (
         <section className="space-y-6 pt-6">
           <div className="flex items-center justify-between border-b border-white/5 pb-4">
-            <h2 className="font-headline text-xl font-bold uppercase tracking-tight flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-muted-foreground" />
+            <h2 className="font-headline text-2xl font-bold uppercase tracking-tight flex items-center gap-2">
+              <ShieldCheck className="h-6 w-6 text-muted-foreground" />
               New Groups
             </h2>
-            <Link href="/" className="text-[10px] font-bold uppercase tracking-widest text-accent hover:opacity-80">
+            <Link href="/" className="text-xs font-bold uppercase tracking-widest text-accent hover:opacity-80">
               See All
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
             {availableGroups.slice(0, 4).map((group: any) => (
               <ProductCard 
                 key={group.id} 
