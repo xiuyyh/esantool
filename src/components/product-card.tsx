@@ -5,26 +5,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Eye } from "lucide-react";
+import { ShoppingCart, Eye, Globe } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 interface ProductCardProps {
   id: string;
   title: string;
-  category: string;
+  country: string;
   price: number;
   description: string;
   imageUrls: string[];
   imageHint: string;
 }
 
-export function ProductCard({ id, title, category, price, description, imageUrls, imageHint }: ProductCardProps) {
+export function ProductCard({ id, title, country, price, description, imageUrls, imageHint }: ProductCardProps) {
   const displayImage = imageUrls?.[0] || "";
 
   return (
     <Card className="overflow-hidden glass-card group hover:border-accent/40 transition-all duration-200 border-white/5">
       <div className="flex p-3 gap-4 items-center">
-        {/* Compact Image */}
         <Link href={`/products/${id}`} className="relative h-20 w-20 shrink-0 rounded-md overflow-hidden bg-muted border border-white/5">
           {displayImage ? (
             <Image
@@ -41,7 +40,6 @@ export function ProductCard({ id, title, category, price, description, imageUrls
           )}
         </Link>
 
-        {/* Content */}
         <div className="flex-1 min-w-0 flex flex-col justify-center">
           <div className="flex justify-between items-start mb-1">
             <Link href={`/products/${id}`}>
@@ -49,8 +47,9 @@ export function ProductCard({ id, title, category, price, description, imageUrls
                 {title}
               </h3>
             </Link>
-            <Badge variant="outline" className="text-[10px] py-0 px-1.5 border-accent/20 text-accent h-5">
-              {category}
+            <Badge variant="outline" className="text-[10px] py-0 px-1.5 border-accent/20 text-accent h-5 flex items-center gap-1">
+              <Globe className="h-2.5 w-2.5" />
+              {country}
             </Badge>
           </div>
           <p className="text-xs text-muted-foreground line-clamp-1 mb-2">
@@ -67,9 +66,11 @@ export function ProductCard({ id, title, category, price, description, imageUrls
                   VIEW
                 </Link>
               </Button>
-              <Button size="sm" className="h-7 px-3 text-[10px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
-                <ShoppingCart className="h-3 w-3 mr-1" />
-                BUY
+              <Button size="sm" className="h-7 px-3 text-[10px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold" asChild>
+                <Link href={`/products/${id}`}>
+                  <ShoppingCart className="h-3 w-3 mr-1" />
+                  ACQUIRE
+                </Link>
               </Button>
             </div>
           </div>

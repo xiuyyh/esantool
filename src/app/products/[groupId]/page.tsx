@@ -5,13 +5,14 @@ import { use, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ShoppingCart, ShieldCheck, Clock, MessageSquare } from "lucide-react";
+import { ChevronLeft, ShoppingCart, ShieldCheck, Lock, ExternalLink, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { useFirestore, useDoc } from "@/firebase";
-import { doc } from "firebase/firestore";
+import { useFirestore, useDoc, useUser } from "@/firebase";
+import { doc, updateDoc, arrayUnion, increment } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 import {
   Carousel,
   CarouselContent,
@@ -24,170 +25,161 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
   const params = use(props.params);
   const router = useRouter();
   const db = useFirestore();
+  const { user } = useUser();
+  const { toast } = useToast();
+  const [isPurchasing, setIsPurchasing] = useState(false);
   
   const groupRef = db ? doc(db, "groups", params.groupId) : null;
-  const { data: group, loading, error } = useDoc(groupRef);
+  const { data: group, loading } = useDoc(groupRef);
 
-  if (loading) {
-    return (
-      <div className="max-w-5xl mx-auto px-4 py-20 space-y-8">
-        <Skeleton className="h-10 w-40" />
-        <div className="grid md:grid-cols-2 gap-10">
-          <Skeleton className="h-[400px] w-full rounded-2xl" />
-          <div className="space-y-4">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-6 w-1/2" />
-            <Skeleton className="h-32 w-full" />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const userRef = user && db ? doc(db, "users", user.uid) : null;
+  const { data: profile } = useDoc(userRef);
 
-  if (error || !group) {
-    return (
-      <div className="max-w-5xl mx-auto px-4 py-20 text-center">
-        <h2 className="text-2xl font-bold">Group not found</h2>
-        <p className="text-muted-foreground mt-2">The group you're looking for doesn't exist or has been removed.</p>
-        <Button className="mt-6" onClick={() => router.push("/products")}>
-          Back to Marketplace
-        </Button>
-      </div>
-    );
-  }
+  const hasAccess = profile?.purchasedGroups?.includes(params.groupId);
 
-  const images = group.imageUrls || (group.imageUrl ? [group.imageUrl] : []);
+  const handleAcquire = async () => {
+    if (!user || !db || !group || !profile) {
+      router.push("/login");
+      return;
+    }
+
+    if (profile.balance < group.price) {
+      toast({
+        variant: "destructive",
+        title: "Insufficient Funds",
+        description: "Please top up your balance to acquire this access link.",
+      });
+      return;
+    }
+
+    setIsPurchasing(true);
+    try {
+      await updateDoc(userRef!, {
+        balance: increment(-group.price),
+        purchasedGroups: arrayUnion(group.id)
+      });
+      toast({
+        title: "Access Granted",
+        description: "The private link is now visible.",
+      });
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Transaction Failed",
+        description: err.message,
+      });
+    } finally {
+      setIsPurchasing(false);
+    }
+  };
+
+  if (loading) return (
+    <div className="max-w-5xl mx-auto px-4 py-20 space-y-8">
+      <Skeleton className="h-[400px] w-full rounded-2xl" />
+    </div>
+  );
+
+  if (!group) return (
+    <div className="max-w-5xl mx-auto px-4 py-20 text-center">
+      <h2 className="text-2xl font-bold">Intelligence Not Found</h2>
+      <Button className="mt-6" onClick={() => router.push("/products")}>Back</Button>
+    </div>
+  );
+
+  const images = group.imageUrls || [];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      <Link 
-        href="/products" 
-        className="inline-flex items-center text-sm font-bold text-accent hover:opacity-80 transition-opacity uppercase tracking-widest"
-      >
+    <div className="max-w-6xl mx-auto px-4 py-10 space-y-8">
+      <Link href="/products" className="inline-flex items-center text-xs font-bold text-accent uppercase tracking-widest">
         <ChevronLeft className="h-4 w-4 mr-1" />
-        Back to Marketplace
+        Return to Market
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* Preview Image Section */}
         <div className="lg:col-span-7 space-y-6">
           <div className="relative rounded-3xl overflow-hidden border border-white/10 glass-card p-2">
-            {images.length > 0 ? (
-              <Carousel className="w-full">
-                <CarouselContent>
-                  {images.map((url: string, index: number) => (
-                    <CarouselItem key={index}>
-                      <div className="relative aspect-video rounded-2xl overflow-hidden">
-                        <Image
-                          src={url}
-                          alt={`${group.title} preview ${index + 1}`}
-                          fill
-                          className="object-cover"
-                          priority={index === 0}
-                        />
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                {images.length > 1 && (
-                  <>
-                    <CarouselPrevious className="left-4 bg-black/50 border-none hover:bg-black/70" />
-                    <CarouselNext className="right-4 bg-black/50 border-none hover:bg-black/70" />
-                  </>
-                )}
-              </Carousel>
-            ) : (
-              <div className="flex items-center justify-center aspect-video w-full bg-secondary/10">
-                <MessageSquare className="h-20 w-20 text-muted-foreground opacity-20" />
-              </div>
-            )}
-            <div className="absolute top-6 left-6 z-10">
-              <Badge className="bg-accent text-accent-foreground font-bold px-3 py-1 text-xs uppercase">
-                {group.category}
-              </Badge>
-            </div>
+            <Carousel className="w-full">
+              <CarouselContent>
+                {images.map((url: string, index: number) => (
+                  <CarouselItem key={index}>
+                    <div className="relative aspect-video rounded-2xl overflow-hidden">
+                      <Image src={url} alt={`${group.title} preview`} fill className="object-cover" />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              {images.length > 1 && (
+                <>
+                  <CarouselPrevious className="left-4" />
+                  <CarouselNext className="right-4" />
+                </>
+              )}
+            </Carousel>
           </div>
           
           <Card className="glass-card border-white/5">
             <CardContent className="p-8 space-y-6">
-              <h2 className="font-headline text-2xl font-bold uppercase tracking-tight">Intelligence Report</h2>
-              <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                {group.description}
-              </p>
-              
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-6 border-t border-white/5">
-                <div className="space-y-1">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Access Status</p>
-                  <div className="flex items-center text-green-500 text-sm font-bold">
-                    <ShieldCheck className="h-4 w-4 mr-1" />
-                    VERIFIED
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Network</p>
-                  <p className="text-sm font-bold">TELEGRAM</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Delivery</p>
-                  <p className="text-sm font-bold uppercase">Instant</p>
-                </div>
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4 text-accent" />
+                <Badge variant="outline" className="border-accent/20 text-accent uppercase">{group.country}</Badge>
               </div>
+              <h2 className="font-headline text-2xl font-bold uppercase tracking-tight">Intelligence Report</h2>
+              <p className="text-muted-foreground whitespace-pre-wrap">{group.description}</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Action Sidebar */}
         <div className="lg:col-span-5 space-y-6">
           <Card className="glass-card border-accent/20 sticky top-24">
             <CardContent className="p-8 space-y-8">
               <div className="space-y-2">
-                <h1 className="font-headline text-4xl font-bold tracking-tighter leading-none">
-                  {group.title}
-                </h1>
-                <p className="text-muted-foreground text-sm">Official Private Access Key</p>
+                <h1 className="font-headline text-3xl font-bold tracking-tighter">{group.title}</h1>
+                <p className="text-muted-foreground text-xs uppercase tracking-widest">Secure Entry Node</p>
               </div>
 
               <div className="space-y-4">
                 <div className="flex justify-between items-baseline">
-                  <span className="text-muted-foreground text-sm uppercase tracking-widest">Pricing</span>
-                  <span className="text-4xl font-bold font-headline text-accent">
-                    ₦{group.price?.toLocaleString()}
-                  </span>
-                </div>
-                <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                  <div className="h-full bg-accent w-1/3" />
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Pricing</span>
+                  <span className="text-4xl font-bold font-headline text-accent">₦{group.price?.toLocaleString()}</span>
                 </div>
               </div>
 
-              <div className="space-y-4 pt-2">
-                <Button className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg uppercase tracking-widest group">
-                  <ShoppingCart className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-                  Acquire Access
-                </Button>
-                <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest">
-                  Secure checkout via account balance
-                </p>
-              </div>
-
-              <div className="bg-white/5 rounded-2xl p-5 space-y-4 border border-white/5">
-                <div className="flex items-start gap-4">
-                  <div className="bg-accent/10 p-2 rounded-lg">
-                    <Clock className="h-5 w-5 text-accent" />
+              <div className="space-y-4">
+                {hasAccess ? (
+                  <div className="p-5 rounded-2xl bg-green-500/10 border border-green-500/20 space-y-3">
+                    <p className="text-xs font-bold text-green-500 uppercase flex items-center gap-2">
+                      <ShieldCheck className="h-4 w-4" />
+                      Access Authenticated
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <Input 
+                        readOnly 
+                        value={group.accessLink} 
+                        className="bg-black/20 border-white/10 font-mono text-sm"
+                      />
+                      <Button asChild size="icon" className="shrink-0 bg-green-500 hover:bg-green-600">
+                        <a href={group.accessLink} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </Button>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider">Lifetime Entry</h4>
-                    <p className="text-[10px] text-muted-foreground mt-1">Pay once, stay in the loop forever. No recurring fees.</p>
+                ) : (
+                  <div className="space-y-4">
+                    <Button 
+                      onClick={handleAcquire}
+                      disabled={isPurchasing}
+                      className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-bold text-lg uppercase tracking-widest"
+                    >
+                      <ShoppingCart className="mr-2 h-5 w-5" />
+                      {isPurchasing ? "Processing..." : "Acquire Access"}
+                    </Button>
+                    <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground uppercase">
+                      <Lock className="h-3 w-3" />
+                      Link hidden until verification
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="bg-accent/10 p-2 rounded-lg">
-                    <ShieldCheck className="h-5 w-5 text-accent" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider">Buyer Protection</h4>
-                    <p className="text-[10px] text-muted-foreground mt-1">Verified link integrity guaranteed by Esan Tools.</p>
-                  </div>
-                </div>
+                )}
               </div>
             </CardContent>
           </Card>

@@ -11,7 +11,12 @@
         "displayName": { "type": "string", "description": "The user's full name." },
         "photoURL": { "type": "string", "description": "URL to the user's profile picture." },
         "createdAt": { "type": "string", "format": "date-time", "description": "When the user account was created." },
-        "balance": { "type": "number", "description": "The user's current account balance in Naira." }
+        "balance": { "type": "number", "description": "The user's current account balance in Naira." },
+        "purchasedGroups": { 
+          "type": "array", 
+          "items": { "type": "string" },
+          "description": "List of group IDs the user has purchased access to."
+        }
       },
       "required": ["uid", "email"]
     },
@@ -23,7 +28,8 @@
         "title": { "type": "string" },
         "description": { "type": "string" },
         "price": { "type": "number" },
-        "category": { "type": "string" },
+        "country": { "type": "string" },
+        "accessLink": { "type": "string", "description": "The actual private Telegram link." },
         "imageUrls": { 
           "type": "array", 
           "items": { "type": "string" },
@@ -31,11 +37,11 @@
         },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["title", "price", "category"]
+      "required": ["title", "price", "country", "accessLink"]
     },
-    "Category": {
-      "title": "Category",
-      "description": "Marketplace category.",
+    "Country": {
+      "title": "Country",
+      "description": "Region for sorting groups.",
       "type": "object",
       "properties": {
         "name": { "type": "string" }
@@ -55,9 +61,9 @@
       "schema": { "$ref": "#/entities/TelegramGroup" },
       "description": "Marketplace group listings."
     },
-    "/categories/{categoryId}": {
-      "schema": { "$ref": "#/entities/Category" },
-      "description": "Available categories."
+    "/countries/{countryId}": {
+      "schema": { "$ref": "#/entities/Country" },
+      "description": "Supported countries for sorting."
     }
   }
 }

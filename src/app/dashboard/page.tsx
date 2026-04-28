@@ -8,9 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductCard } from "@/components/product-card";
+import { Globe, ShieldCheck } from "lucide-react";
 
 export default function UserDashboard(props: { params: Promise<any> }) {
-  const params = use(props.params);
   const { user, loading: userLoading } = useUser();
   const db = useFirestore();
   
@@ -21,38 +21,47 @@ export default function UserDashboard(props: { params: Promise<any> }) {
 
   if (userLoading || profileLoading || groupsLoading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-10 space-y-8">
-        <Skeleton className="h-40 w-full md:w-1/3" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
-          <Skeleton className="h-32 w-full" />
-          <Skeleton className="h-32 w-full" />
-        </div>
+      <div className="max-w-7xl mx-auto px-4 py-10">
+        <Skeleton className="h-40 w-1/3" />
       </div>
     );
   }
 
   const balance = profile?.balance || 0;
+  const purchasedCount = profile?.purchasedGroups?.length || 0;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="glass-card border-white/5 relative overflow-hidden group hover:border-accent/30 transition-all duration-300">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider text-accent">Account Balance</CardTitle>
+            <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Account Credit</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-4xl font-bold font-headline">₦{balance.toLocaleString()}</div>
-            <Button size="sm" className="mt-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-8 uppercase tracking-tighter">
-              Add Funds
+            <Button size="sm" className="mt-4 bg-primary hover:bg-primary/90 text-white font-bold h-8 uppercase tracking-widest text-[10px]">
+              Recharge Credits
             </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card border-white/5">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Active Access Nodes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-4xl font-bold font-headline">{purchasedCount}</div>
+            <p className="text-[10px] text-muted-foreground mt-4 uppercase tracking-widest">Authenticated Connections</p>
           </CardContent>
         </Card>
       </div>
 
       <div className="space-y-6">
         <div className="flex items-center justify-between border-b border-white/5 pb-4">
-          <h2 className="font-headline text-2xl font-bold uppercase tracking-tight">Marketplace Spotlight</h2>
-          <p className="text-xs text-muted-foreground uppercase tracking-widest hidden sm:block">Recommended Access</p>
+          <h2 className="font-headline text-xl font-bold uppercase tracking-tight flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-accent" />
+            Regional Hotspots
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -62,16 +71,16 @@ export default function UserDashboard(props: { params: Promise<any> }) {
                 key={group.id} 
                 id={group.id}
                 title={group.title}
-                category={group.category}
+                country={group.country}
                 price={group.price}
                 description={group.description}
-                imageUrls={group.imageUrls || [group.imageUrl]}
-                imageHint="telegram network"
+                imageUrls={group.imageUrls || []}
+                imageHint="region intel"
               />
             ))
           ) : (
             <div className="col-span-full py-10 text-center text-muted-foreground">
-              <p>No listings currently available in the spotlight.</p>
+              <p className="text-xs uppercase tracking-widest">No intelligence found in database.</p>
             </div>
           )}
         </div>
