@@ -86,12 +86,12 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
     <Card className="overflow-hidden glass-card group hover:border-accent/40 transition-all duration-300 border-white/5 flex flex-col h-full shadow-lg hover:shadow-accent/5">
       <div className="p-4 flex flex-col h-full space-y-4">
         <div className="flex gap-4 items-center">
-          <Link href={`/products/${id}`} className="relative h-20 w-20 shrink-0 rounded-xl overflow-hidden bg-muted border border-white/10 shadow-inner">
+          <Link href={`/products/${id}`} className="relative h-20 w-20 shrink-0 rounded-xl overflow-hidden bg-muted/20 border border-white/10 shadow-inner">
             <Image
               src={displayImage}
               alt={title}
               fill
-              className="object-cover group-hover:scale-110 transition-transform duration-700"
+              className="object-contain transition-transform duration-700 group-hover:scale-105"
               data-ai-hint={imageHint}
             />
           </Link>

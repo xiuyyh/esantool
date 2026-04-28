@@ -102,8 +102,14 @@ export default function GroupDetailsPage({ params: paramsPromise }: { params: Pr
               <CarouselContent>
                 {images.map((url: string, index: number) => (
                   <CarouselItem key={index}>
-                    <div className="relative aspect-video rounded-2xl overflow-hidden">
-                      <Image src={url} alt={`${group.title} preview`} fill className="object-cover" />
+                    <div className="relative aspect-video rounded-2xl overflow-hidden bg-black/40">
+                      <Image 
+                        src={url} 
+                        alt={`${group.title} preview`} 
+                        fill 
+                        className="object-contain" 
+                        priority={index === 0}
+                      />
                     </div>
                   </CarouselItem>
                 ))}

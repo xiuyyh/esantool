@@ -247,8 +247,8 @@ export default function AdminDashboard() {
                     <Label>Pictures</Label>
                     <div className="grid grid-cols-4 gap-4">
                       {imageUrls.map((url, idx) => (
-                        <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-white/10 group">
-                          <img src={url} alt={`Preview ${idx + 1}`} className="w-full h-full object-cover" />
+                        <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-white/10 bg-black/20 group">
+                          <img src={url} alt={`Preview ${idx + 1}`} className="w-full h-full object-contain" />
                           <Button 
                             type="button" 
                             variant="destructive" 
