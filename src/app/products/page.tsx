@@ -8,6 +8,13 @@ import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
 import { useFirestore, useCollection } from "@/firebase";
 import { collection } from "firebase/firestore";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,7 +44,7 @@ export default function ProductsPage() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input 
                 placeholder="Search intel..." 
-                className="pl-12 h-12 glass-card border-white/10"
+                className="pl-12 h-12 glass-card border-white/10 focus:border-accent/30"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -45,27 +52,28 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          <Button 
-            variant={!selectedCountry ? "default" : "outline"} 
-            size="sm"
-            onClick={() => setSelectedCountry(null)}
-            className="text-[10px] uppercase font-bold"
-          >
-            All Regions
-          </Button>
-          {countries.map((c: any) => (
-            <Button 
-              key={c.id}
-              variant={selectedCountry === c.name ? "default" : "outline"} 
-              size="sm"
-              onClick={() => setSelectedCountry(c.name)}
-              className="text-[10px] uppercase font-bold gap-1"
+        <div className="flex items-center gap-4">
+          <div className="w-full sm:w-64">
+            <Select 
+              value={selectedCountry || "all"} 
+              onValueChange={(val) => setSelectedCountry(val === "all" ? null : val)}
             >
-              <Globe className="h-3 w-3" />
-              {c.name}
-            </Button>
-          ))}
+              <SelectTrigger className="glass-card border-white/10 h-11">
+                <div className="flex items-center gap-2">
+                  <Globe className="h-4 w-4 text-accent" />
+                  <SelectValue placeholder="Select Region" />
+                </div>
+              </SelectTrigger>
+              <SelectContent className="glass-card border-white/10">
+                <SelectItem value="all" className="text-xs uppercase font-bold">All Regions</SelectItem>
+                {countries.map((c: any) => (
+                  <SelectItem key={c.id} value={c.name} className="text-xs uppercase font-bold">
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {loading ? (
@@ -73,7 +81,7 @@ export default function ProductsPage() {
             <p className="animate-pulse font-headline uppercase tracking-widest text-accent">Decoding Marketplace Assets...</p>
           </div>
         ) : filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
             {filteredProducts.map((p: any) => (
               <ProductCard 
                 key={p.id} 
@@ -89,7 +97,7 @@ export default function ProductsPage() {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-32 glass-card rounded-3xl border-dashed border-2 border-white/10 text-center">
-            <h3 className="text-2xl font-bold">Region Silent</h3>
+            <h3 className="text-2xl font-bold font-headline uppercase tracking-tight">Region Silent</h3>
             <p className="text-muted-foreground mt-2">No active nodes found in this region.</p>
           </div>
         )}

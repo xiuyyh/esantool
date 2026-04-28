@@ -8,6 +8,13 @@ import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
 import { useFirestore, useCollection } from "@/firebase";
 import { collection } from "firebase/firestore";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -69,27 +76,28 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <Button 
-              variant={!selectedCountry ? "default" : "outline"} 
-              size="sm"
-              onClick={() => setSelectedCountry(null)}
-              className="text-[10px] uppercase font-bold px-4 h-9"
-            >
-              All Regions
-            </Button>
-            {countries.map((c: any) => (
-              <Button 
-                key={c.id}
-                variant={selectedCountry === c.name ? "default" : "outline"} 
-                size="sm"
-                onClick={() => setSelectedCountry(c.name)}
-                className="text-[10px] uppercase font-bold gap-1.5 px-4 h-9"
+          <div className="flex items-center gap-4">
+            <div className="w-full sm:w-64">
+              <Select 
+                value={selectedCountry || "all"} 
+                onValueChange={(val) => setSelectedCountry(val === "all" ? null : val)}
               >
-                <Globe className="h-3 w-3" />
-                {c.name}
-              </Button>
-            ))}
+                <SelectTrigger className="glass-card border-white/10 h-11">
+                  <div className="flex items-center gap-2">
+                    <Globe className="h-4 w-4 text-accent" />
+                    <SelectValue placeholder="Select Region" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="glass-card border-white/10">
+                  <SelectItem value="all" className="text-xs uppercase font-bold">All Regions</SelectItem>
+                  {countries.map((c: any) => (
+                    <SelectItem key={c.id} value={c.name} className="text-xs uppercase font-bold">
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {loading ? (
