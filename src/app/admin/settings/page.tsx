@@ -18,6 +18,9 @@ export default function AdminSettingsPage() {
   const router = useRouter();
   const { toast } = useToast();
 
+  const userRef = useMemoFirebase(() => user && db ? doc(db, "users", user.uid) : null, [db, user?.uid]);
+  const { data: profile, loading: profileLoading } = useDoc(userRef);
+
   const settingsRef = useMemoFirebase(() => db ? doc(db, "settings", "admin") : null, [db]);
   const { data: settings, loading: settingsLoading } = useDoc(settingsRef);
 
@@ -28,6 +31,13 @@ export default function AdminSettingsPage() {
   useEffect(() => {
     if (!authLoading && !user) router.push("/admin/login");
   }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (!profileLoading && profile && !profile.isAdmin) {
+      toast({ variant: "destructive", title: "Access Denied", description: "Administrator privileges required." });
+      router.push("/");
+    }
+  }, [profile, profileLoading, router, toast]);
 
   useEffect(() => {
     if (settings) {
@@ -55,7 +65,15 @@ export default function AdminSettingsPage() {
     }
   };
 
-  if (authLoading || settingsLoading) return null;
+  if (authLoading || settingsLoading || profileLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user || !profile?.isAdmin) return null;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12 space-y-10">

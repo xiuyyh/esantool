@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -41,6 +42,7 @@ export default function SignupPage() {
         email: user.email,
         displayName: name,
         balance: 0,
+        isAdmin: false,
         purchasedGroups: [],
         cart: [],
         createdAt: new Date().toISOString()

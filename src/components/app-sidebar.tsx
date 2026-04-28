@@ -79,26 +79,28 @@ export function AppSidebar() {
       ],
     });
 
-    menuGroups.push({
-      label: "Admin",
-      items: [
-        {
-          title: "Groups Management",
-          url: "/admin/dashboard",
-          icon: Key,
-        },
-        {
-          title: "Deposit Requests",
-          url: "/admin/transactions",
-          icon: CreditCard,
-        },
-        {
-          title: "System Settings",
-          url: "/admin/settings",
-          icon: Settings,
-        },
-      ],
-    });
+    if (profile?.isAdmin) {
+      menuGroups.push({
+        label: "Admin",
+        items: [
+          {
+            title: "Groups Management",
+            url: "/admin/dashboard",
+            icon: Key,
+          },
+          {
+            title: "Deposit Requests",
+            url: "/admin/transactions",
+            icon: CreditCard,
+          },
+          {
+            title: "System Settings",
+            url: "/admin/settings",
+            icon: Settings,
+          },
+        ],
+      });
+    }
   }
 
   return (
@@ -156,7 +158,9 @@ export function AppSidebar() {
               </div>
               <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
                 <p className="text-xs font-bold truncate">{user.displayName || user.email}</p>
-                <p className="text-[10px] text-muted-foreground truncate uppercase tracking-tighter">User</p>
+                <p className="text-[10px] text-muted-foreground truncate uppercase tracking-tighter">
+                  {profile?.isAdmin ? "Administrator" : "User"}
+                </p>
               </div>
             </div>
             <SidebarMenu>

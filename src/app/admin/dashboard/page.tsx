@@ -9,10 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useFirestore, useCollection, useUser, useMemoFirebase } from "@/firebase";
+import { useFirestore, useCollection, useUser, useDoc, useMemoFirebase } from "@/firebase";
 import { collection, addDoc, deleteDoc, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, X, Trash2, Edit3, Globe, Lock } from "lucide-react";
+import { Upload, X, Trash2, Edit3, Globe, Lock, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +38,9 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
+  const userRef = useMemoFirebase(() => user && db ? doc(db, "users", user.uid) : null, [db, user?.uid]);
+  const { data: profile, loading: profileLoading } = useDoc(userRef);
+
   const countriesQuery = useMemoFirebase(() => db ? collection(db, "countries") : null, [db]);
   const { data: countries } = useCollection(countriesQuery);
   
@@ -62,6 +65,13 @@ export default function AdminDashboard() {
       router.push("/admin/login");
     }
   }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (!profileLoading && profile && !profile.isAdmin) {
+      toast({ variant: "destructive", title: "Access Denied", description: "Administrator privileges required." });
+      router.push("/");
+    }
+  }, [profile, profileLoading, router, toast]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -152,8 +162,15 @@ export default function AdminDashboard() {
     setEditingGroup(null);
   };
 
-  if (authLoading) return null;
-  if (!user) return null;
+  if (authLoading || profileLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user || !profile?.isAdmin) return null;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10 space-y-12">

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -8,15 +9,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuth, useUser } from "@/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useAuth, useUser, useFirestore } from "@/firebase";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 
 export default function AdminSignupPage() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const auth = useAuth();
+  const db = useFirestore();
   const { user, loading: authLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
@@ -29,10 +33,28 @@ export default function AdminSignupPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!auth) return;
+    if (!auth || !db) return;
     setLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const newUser = userCredential.user;
+
+      await updateProfile(newUser, {
+        displayName: name || "Admin",
+      });
+
+      // Initialize Admin Profile in Firestore
+      await setDoc(doc(db, "users", newUser.uid), {
+        uid: newUser.uid,
+        email: newUser.email,
+        displayName: name || "Admin",
+        balance: 0,
+        isAdmin: true,
+        purchasedGroups: [],
+        cart: [],
+        createdAt: new Date().toISOString()
+      });
+
       router.push("/admin/dashboard");
     } catch (error: any) {
       toast({
@@ -62,6 +84,18 @@ export default function AdminSignupPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignup} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Display Name</Label>
+              <Input 
+                id="name" 
+                type="text" 
+                placeholder="Admin Name"
+                className="h-12 bg-white/5 border-white/10" 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Work Email</Label>
               <Input 

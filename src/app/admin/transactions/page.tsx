@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
+import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase } from "@/firebase";
 import { collection, query, orderBy, doc, updateDoc, increment, getDoc } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -20,9 +20,19 @@ export default function AdminTransactionsPage() {
   const { toast } = useToast();
   const [processingId, setProcessingId] = useState<string | null>(null);
 
+  const userRef = useMemoFirebase(() => user && db ? doc(db, "users", user.uid) : null, [db, user?.uid]);
+  const { data: profile, loading: profileLoading } = useDoc(userRef);
+
   useEffect(() => {
     if (!authLoading && !user) router.push("/admin/login");
   }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (!profileLoading && profile && !profile.isAdmin) {
+      toast({ variant: "destructive", title: "Access Denied", description: "Administrator privileges required." });
+      router.push("/");
+    }
+  }, [profile, profileLoading, router, toast]);
 
   const transactionsQuery = useMemoFirebase(() => {
     if (!db) return null;
@@ -92,7 +102,15 @@ export default function AdminTransactionsPage() {
     }
   };
 
-  if (authLoading) return null;
+  if (authLoading || profileLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user || !profile?.isAdmin) return null;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12 space-y-10">

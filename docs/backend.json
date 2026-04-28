@@ -12,6 +12,7 @@
         "photoURL": { "type": "string", "description": "URL to the user's profile picture." },
         "createdAt": { "type": "string", "format": "date-time", "description": "When the user account was created." },
         "balance": { "type": "number", "description": "The user's current account balance in Naira." },
+        "isAdmin": { "type": "boolean", "description": "Whether the user has administrative privileges." },
         "purchasedGroups": { 
           "type": "array", 
           "items": { "type": "string" },
