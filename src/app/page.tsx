@@ -1,18 +1,22 @@
+
 "use client";
 
 import Link from "next/link";
 import { useState, useCallback, useMemo, use, useEffect } from "react";
-import { Zap, ChevronRight, Terminal, MessageSquare, Target, Cpu, TrendingUp, Layers } from "lucide-react";
+import { Zap, ChevronRight, Terminal, MessageSquare, Layers } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useFirestore, useCollection } from "@/firebase";
+import { collection } from "firebase/firestore";
 
 export default function Home(props: { params: Promise<any> }) {
   const params = use(props.params);
   const [magic, setMagic] = useState(false);
-  const [activeCategory, setActiveCategory] = useState("All");
   const [year, setYear] = useState<number | null>(null);
+  
+  const db = useFirestore();
+  const { data: products, loading } = useCollection(db ? collection(db, "groups") : null);
 
   useEffect(() => {
     setYear(new Date().getFullYear());
@@ -23,76 +27,6 @@ export default function Home(props: { params: Promise<any> }) {
     setMagic(true);
     setTimeout(() => setMagic(false), 1000);
   }, [magic]);
-
-  const categories = [
-    { name: "All", icon: Layers },
-    { name: "Crypto", icon: Target },
-    { name: "Tech", icon: Cpu },
-    { name: "Alpha", icon: Zap },
-    { name: "DeFi", icon: TrendingUp },
-  ];
-
-  const products = [
-    {
-      id: "tg-1",
-      title: "Alpha Crypto HQ",
-      category: "Crypto",
-      price: 15000,
-      description: "Exclusive high-signal crypto discussions and early alpha leaks.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
-      imageHint: "telegram network"
-    },
-    {
-      id: "tg-2",
-      title: "Whale Alerts Insider",
-      category: "Crypto",
-      price: 25000,
-      description: "Real-time tracking of large wallet movements with expert analysis.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
-      imageHint: "telegram network"
-    },
-    {
-      id: "tg-3",
-      title: "DeFi Degen Hub",
-      category: "DeFi",
-      price: 10000,
-      description: "The primary source for new DeFi projects and yield farming strategies.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
-      imageHint: "telegram network"
-    },
-    {
-      id: "tg-4",
-      title: "Tech Alpha Network",
-      category: "Tech",
-      price: 20000,
-      description: "Private discussions on emerging technologies and startup opportunities.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
-      imageHint: "telegram network"
-    },
-    {
-      id: "tg-5",
-      title: "Bitcoin Maxi Club",
-      category: "Crypto",
-      price: 12000,
-      description: "Hardcore BTC discussions and long-term accumulation strategies.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
-      imageHint: "telegram network"
-    },
-    {
-      id: "tg-6",
-      title: "Venture Capital Leaks",
-      category: "Alpha",
-      price: 50000,
-      description: "Insider info on upcoming funding rounds and private sales.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
-      imageHint: "telegram network"
-    }
-  ];
-
-  const filteredProducts = useMemo(() => {
-    if (activeCategory === "All") return products;
-    return products.filter(p => p.category === activeCategory);
-  }, [activeCategory]);
 
   const headlineMain = "Buy";
   const headlineAccent = "High quality private TG groups";
@@ -173,34 +107,29 @@ export default function Home(props: { params: Promise<any> }) {
               Explore All <ChevronRight className="h-4 w-4 ml-1" />
             </Link>
           </div>
-
-          {/* Category Tabs */}
-          <div className="flex flex-wrap gap-3 mb-12">
-            {categories.map((cat) => (
-              <Button
-                key={cat.name}
-                variant={activeCategory === cat.name ? "default" : "outline"}
-                className={cn(
-                  "h-12 px-6 rounded-full border-white/10 font-bold transition-all",
-                  activeCategory === cat.name ? "bg-accent text-black scale-105" : "hover:border-accent/50"
-                )}
-                onClick={() => setActiveCategory(cat.name)}
-              >
-                <cat.icon className={cn("h-4 w-4 mr-2", activeCategory === cat.name ? "text-black" : "text-accent")} />
-                {cat.name}
-              </Button>
-            ))}
-          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[400px]">
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((p) => (
-                <ProductCard key={p.id} {...p} />
+            {loading ? (
+              <div className="col-span-full flex items-center justify-center py-20">
+                <p className="animate-pulse font-headline uppercase tracking-widest text-accent">Loading Marketplace...</p>
+              </div>
+            ) : products.length > 0 ? (
+              products.slice(0, 6).map((p: any) => (
+                <ProductCard 
+                  key={p.id} 
+                  id={p.id}
+                  title={p.title}
+                  category={p.category}
+                  price={p.price}
+                  description={p.description}
+                  imageUrl={p.imageUrl}
+                  imageHint="telegram network"
+                />
               ))
             ) : (
               <div className="col-span-full flex flex-col items-center justify-center py-20 opacity-50">
                 <Terminal className="h-12 w-12 mb-4" />
-                <p>No groups available in this category yet.</p>
+                <p>No groups available yet. Add them from the admin panel.</p>
               </div>
             )}
           </div>

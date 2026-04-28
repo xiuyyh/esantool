@@ -1,13 +1,13 @@
+
 "use client";
 
 import { use } from "react";
-import { useUser, useDoc, useFirestore } from "@/firebase";
-import { doc } from "firebase/firestore";
+import { useUser, useDoc, useFirestore, useCollection } from "@/firebase";
+import { doc, collection } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductCard } from "@/components/product-card";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 export default function UserDashboard(props: { params: Promise<any> }) {
   const params = use(props.params);
@@ -16,65 +16,10 @@ export default function UserDashboard(props: { params: Promise<any> }) {
   
   const userRef = user && db ? doc(db, "users", user.uid) : null;
   const { data: profile, loading: profileLoading } = useDoc(userRef);
+  
+  const { data: dashboardGroups, loading: groupsLoading } = useCollection(db ? collection(db, "groups") : null);
 
-  const dashboardGroups = [
-    {
-      id: "tg-1",
-      title: "Alpha Crypto HQ",
-      category: "Crypto",
-      price: 15000,
-      description: "Exclusive high-signal crypto discussions and early alpha leaks.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
-      imageHint: "telegram network"
-    },
-    {
-      id: "tg-2",
-      title: "Whale Alerts Insider",
-      category: "Crypto",
-      price: 25000,
-      description: "Real-time tracking of large wallet movements with expert analysis.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
-      imageHint: "telegram network"
-    },
-    {
-      id: "tg-4",
-      title: "Tech Alpha Network",
-      category: "Tech",
-      price: 20000,
-      description: "Private discussions on emerging technologies and startup opportunities.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
-      imageHint: "telegram network"
-    },
-    {
-      id: "tg-6",
-      title: "Venture Capital Leaks",
-      category: "Alpha",
-      price: 50000,
-      description: "Insider info on upcoming funding rounds and private sales.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
-      imageHint: "telegram network"
-    },
-    {
-      id: "tg-7",
-      title: "Privacy & OpSec Elite",
-      category: "Security",
-      price: 18000,
-      description: "Master the art of digital anonymity and advanced security protocols.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'vpn-logs')?.imageUrl || "",
-      imageHint: "vpn security"
-    },
-    {
-      id: "tg-8",
-      title: "Fintech Alpha Hub",
-      category: "Tech",
-      price: 22000,
-      description: "Disruptive fintech trends and payment gateway vulnerabilities.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'web-dev')?.imageUrl || "",
-      imageHint: "coding development"
-    }
-  ];
-
-  if (userLoading || profileLoading) {
+  if (userLoading || profileLoading || groupsLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-10 space-y-8">
         <Skeleton className="h-40 w-full md:w-1/3" />
@@ -111,17 +56,24 @@ export default function UserDashboard(props: { params: Promise<any> }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {dashboardGroups.map((group) => (
-            <ProductCard key={group.id} {...group} />
-          ))}
-        </div>
-        
-        <div className="flex flex-wrap gap-2 pt-4">
-          {["Crypto", "Tech", "Alpha", "Security"].map((tag) => (
-            <Button key={tag} variant="outline" className="border-white/5 bg-white/5 hover:bg-white/10 text-[10px] h-7 px-3 rounded-full uppercase font-bold tracking-widest">
-              {tag}
-            </Button>
-          ))}
+          {dashboardGroups.length > 0 ? (
+            dashboardGroups.map((group: any) => (
+              <ProductCard 
+                key={group.id} 
+                id={group.id}
+                title={group.title}
+                category={group.category}
+                price={group.price}
+                description={group.description}
+                imageUrl={group.imageUrl}
+                imageHint="telegram network"
+              />
+            ))
+          ) : (
+            <div className="col-span-full py-10 text-center text-muted-foreground">
+              <p>No listings currently available in the spotlight.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

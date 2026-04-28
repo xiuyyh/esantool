@@ -2,73 +2,19 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Filter, SlidersHorizontal, Terminal } from "lucide-react";
+import { Search, SlidersHorizontal, Terminal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { useFirestore, useCollection } from "@/firebase";
+import { collection } from "firebase/firestore";
 
 export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const db = useFirestore();
+  const { data: allProducts, loading } = useCollection(db ? collection(db, "groups") : null);
 
-  const allProducts = [
-    {
-      id: "tg-1",
-      title: "Alpha Crypto HQ",
-      category: "Private Group",
-      price: 15000,
-      description: "Exclusive high-signal crypto discussions and early alpha leaks.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
-      imageHint: "telegram network"
-    },
-    {
-      id: "tg-2",
-      title: "Whale Alerts Insider",
-      category: "Private Group",
-      price: 25000,
-      description: "Real-time tracking of large wallet movements with expert analysis.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
-      imageHint: "telegram network"
-    },
-    {
-      id: "tg-3",
-      title: "DeFi Degen Hub",
-      category: "Private Group",
-      price: 10000,
-      description: "The primary source for new DeFi projects and yield farming strategies.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
-      imageHint: "telegram network"
-    },
-    {
-      id: "tg-4",
-      title: "Tech Alpha Network",
-      category: "Private Group",
-      price: 20000,
-      description: "Private discussions on emerging technologies and startup opportunities.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
-      imageHint: "telegram network"
-    },
-    {
-      id: "tg-5",
-      title: "Growth Hackers Circle",
-      category: "Private Group",
-      price: 18000,
-      description: "Marketing strategies and growth hacks for SaaS founders.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
-      imageHint: "telegram network"
-    },
-    {
-      id: "tg-6",
-      title: "NFT Alpha Squad",
-      category: "Private Group",
-      price: 12000,
-      description: "Upcoming NFT drops, whitelists, and market trends.",
-      imageUrl: PlaceHolderImages.find(img => img.id === 'telegram-service')?.imageUrl || "",
-      imageHint: "telegram network"
-    }
-  ];
-
-  const filteredProducts = allProducts.filter(p => {
+  const filteredProducts = allProducts.filter((p: any) => {
     return p.title.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
@@ -100,17 +46,30 @@ export default function ProductsPage() {
         </div>
 
         {/* Results */}
-        {filteredProducts.length > 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center py-32">
+            <p className="animate-pulse font-headline uppercase tracking-widest text-accent">Loading Marketplace Assets...</p>
+          </div>
+        ) : filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {filteredProducts.map((p) => (
-              <ProductCard key={p.id} {...p} />
+            {filteredProducts.map((p: any) => (
+              <ProductCard 
+                key={p.id} 
+                id={p.id}
+                title={p.title}
+                category={p.category}
+                price={p.price}
+                description={p.description}
+                imageUrl={p.imageUrl}
+                imageHint="telegram network"
+              />
             ))}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-32 glass-card rounded-3xl border-dashed border-2 border-white/10">
             <Terminal className="h-16 w-16 text-muted-foreground mb-6 opacity-20" />
             <h3 className="text-2xl font-bold">No groups found</h3>
-            <p className="text-muted-foreground mt-2">Try searching for a different keyword.</p>
+            <p className="text-muted-foreground mt-2">Try searching for a different keyword or check back later.</p>
             <Button 
               variant="link" 
               className="mt-6 text-accent text-lg"
