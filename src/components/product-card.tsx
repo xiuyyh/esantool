@@ -9,7 +9,7 @@ import { ShoppingCart, Eye, Globe, Check } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
 import { useUser, useFirestore, useDoc } from "@/firebase";
-import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { doc, setDoc, arrayUnion } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
@@ -61,9 +61,11 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
 
     setIsAdding(true);
     try {
-      await updateDoc(userRef!, {
+      // Use setDoc with merge: true to ensure the user profile exists
+      await setDoc(userRef!, {
         cart: arrayUnion(id)
-      });
+      }, { merge: true });
+
       toast({
         title: "Added to Cart",
         description: `${title} has been staged for checkout.`,

@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useFirestore, useDoc, useUser } from "@/firebase";
-import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { doc, setDoc, arrayUnion } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -40,7 +40,7 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
   const isInCart = profile?.cart?.includes(params.groupId);
 
   const handleAddToCart = async () => {
-    if (!user || !db || !group || !profile) {
+    if (!user || !db || !group) {
       router.push("/login");
       return;
     }
@@ -52,9 +52,11 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
 
     setIsAdding(true);
     try {
-      await updateDoc(userRef!, {
+      // Use setDoc with merge: true to ensure the user profile exists
+      await setDoc(userRef!, {
         cart: arrayUnion(params.groupId)
-      });
+      }, { merge: true });
+
       toast({
         title: "Success",
         description: "Listing added to cart.",
