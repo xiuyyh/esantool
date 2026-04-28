@@ -4,7 +4,6 @@
 import { useState, useEffect } from "react";
 import { Search, Globe, Terminal } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
 import { useFirestore, useCollection } from "@/firebase";
 import { collection } from "firebase/firestore";
@@ -36,12 +35,12 @@ export default function Home() {
   });
 
   const headlineMain = "Shop";
-  const headlineAccent = "Premium Private Groups";
+  const headlineAccent = "Private Groups";
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen w-full min-w-0 overflow-x-hidden">
       {/* Ticker Section */}
-      <section className="py-2.5 bg-accent/5 border-b border-white/5 overflow-hidden whitespace-nowrap relative">
+      <section className="py-2.5 bg-accent/5 border-b border-white/5 overflow-hidden whitespace-nowrap relative w-full">
         <div className="flex animate-marquee items-center gap-12 w-max">
           {[...Array(10)].map((_, i) => (
             <div key={i} className="flex items-center gap-4">
@@ -57,18 +56,18 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="max-w-screen-2xl px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
+      <div className="max-w-screen-2xl px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full min-w-0">
         <div className="flex flex-col space-y-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
             <div className="space-y-2">
-              <h1 className="font-headline text-5xl font-bold tracking-tight">Marketplace</h1>
-              <p className="text-muted-foreground text-lg">Browse available private groups by region.</p>
+              <h1 className="font-headline text-4xl sm:text-5xl font-bold tracking-tight">Shop</h1>
+              <p className="text-muted-foreground text-base sm:text-lg">Browse groups by region.</p>
             </div>
             
             <div className="relative w-full sm:w-80 lg:w-96">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input 
-                placeholder="Search groups..." 
+                placeholder="Search..." 
                 className="pl-12 h-12 glass-card border-white/10 focus:border-accent/30"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -103,7 +102,7 @@ export default function Home() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-32 space-y-4">
               <div className="h-10 w-10 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
-              <p className="font-headline uppercase tracking-widest text-xs text-accent font-bold">Loading Marketplace...</p>
+              <p className="font-headline uppercase tracking-widest text-xs text-accent font-bold">Loading...</p>
             </div>
           ) : filteredProducts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
@@ -123,8 +122,8 @@ export default function Home() {
           ) : (
             <div className="flex flex-col items-center justify-center py-24 glass-card rounded-3xl border-dashed border-2 border-white/10 text-center px-6">
               <Search className="h-12 w-12 text-muted-foreground mb-4 opacity-20" />
-              <h3 className="text-2xl font-bold font-headline uppercase tracking-tight">No Groups Found</h3>
-              <p className="text-muted-foreground mt-2 text-base">Try a different search or region.</p>
+              <h3 className="text-2xl font-bold font-headline uppercase tracking-tight">No Groups</h3>
+              <p className="text-muted-foreground mt-2 text-base">Try a different search.</p>
             </div>
           )}
         </div>
@@ -138,8 +137,8 @@ export default function Home() {
             </div>
             <span className="font-headline font-bold text-lg tracking-tighter text-foreground">ESAN TOOLS</span>
           </div>
-          <p className="mb-2 opacity-60">Premium Private Group Marketplace</p>
-          <p>© {year || "..."} Esan Tools. All rights reserved.</p>
+          <p className="mb-2 opacity-60">Private Group Marketplace</p>
+          <p>© {year || "..."} Esan Tools.</p>
         </div>
       </footer>
     </div>
