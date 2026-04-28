@@ -27,17 +27,17 @@ export default function Home(props: { params: Promise<any> }) {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Moving Ad Section (Ticker) */}
-      <section className="py-6 bg-accent/5 border-b border-white/5 overflow-hidden whitespace-nowrap relative">
+      <section className="py-2.5 bg-accent/5 border-b border-white/5 overflow-hidden whitespace-nowrap relative">
         <div className="flex animate-marquee items-center gap-12 w-max">
           {[...Array(10)].map((_, i) => (
             <div key={i} className="flex items-center gap-4">
-              <span className="font-headline text-lg font-bold uppercase tracking-tight text-foreground/80">
+              <span className="font-headline text-sm font-bold uppercase tracking-tight text-foreground/80">
                 {headlineMain}
               </span>
-              <span className="font-headline text-lg font-bold uppercase tracking-tight text-accent">
+              <span className="font-headline text-sm font-bold uppercase tracking-tight text-accent">
                 {headlineAccent}
               </span>
-              <Terminal className="h-4 w-4 text-accent/40" />
+              <Terminal className="h-3.5 w-3.5 text-accent/40" />
             </div>
           ))}
         </div>
