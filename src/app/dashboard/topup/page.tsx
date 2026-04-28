@@ -38,7 +38,8 @@ export default function TopUpPage() {
   };
 
   const handleInitializePayment = () => {
-    if (!amount || Number(amount) < 100) {
+    const numAmount = Number(amount);
+    if (!amount || isNaN(numAmount) || numAmount < 100) {
       toast({ variant: "destructive", title: "Invalid Amount", description: "Minimum top-up is ₦100." });
       return;
     }
@@ -50,11 +51,12 @@ export default function TopUpPage() {
     setLoading(true);
 
     try {
+      const numAmount = Number(amount);
       const txData = {
         uid: user.uid,
         userEmail: user.email,
         userName: user.displayName || "Anonymous",
-        amount: Number(amount),
+        amount: numAmount,
         status: "pending",
         type: "credit",
         createdAt: serverTimestamp(),
@@ -62,8 +64,7 @@ export default function TopUpPage() {
 
       await addDoc(collection(db, "transactions"), txData);
       
-      // Trigger Telegram Notification (Fire and forget)
-      notifyTelegram(`🚨 *New Top-up Request*\n\nUser: ${txData.userName}\nEmail: ${txData.userEmail}\nAmount: ₦${txData.amount.toLocaleString()}\nStatus: PENDING`);
+      await notifyTelegram(`🚨 *New Top-up Request*\n\n*User:* ${txData.userName}\n*Email:* ${txData.userEmail}\n*Amount:* ₦${txData.amount.toLocaleString()}\n*Status:* PENDING`);
 
       setStep('pending');
     } catch (err: any) {

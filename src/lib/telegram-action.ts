@@ -9,45 +9,62 @@ import { firebaseConfig } from "@/firebase/config";
  * Server action to notify admin via Telegram.
  * It fetches the bot credentials from Firestore first.
  */
-export async function notifyTelegram(message: string, txId?: string) {
+export async function notifyTelegram(message: string) {
   try {
-    // We need to initialize a server-side instance of Firebase to read settings
     const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
     const db = getFirestore(app);
     
     const settingsRef = doc(db, "settings", "admin");
     const settingsSnap = await getDoc(settingsRef);
     
-    if (!settingsSnap.exists()) return;
+    if (!settingsSnap.exists()) {
+      return;
+    }
     
-    const { telegramBotToken, telegramChannelId } = settingsSnap.data();
+    const data = settingsSnap.data();
+    const telegramBotToken = data?.telegramBotToken;
+    const telegramChannelId = data?.telegramChannelId;
     
-    if (!telegramBotToken || !telegramChannelId) return;
+    if (!telegramBotToken || !telegramChannelId) {
+      return;
+    }
 
-    const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+    const cleanToken = telegramBotToken.trim().startsWith('bot') 
+      ? telegramBotToken.trim().substring(3) 
+      : telegramBotToken.trim();
+
+    const url = `https://api.telegram.org/bot${cleanToken}/sendMessage`;
     
-    // We provide a link back to the transactions page for "fast" processing
-    // Note: True inline approval requires a webhook/bot server to handle callbacks.
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
-    const adminUrl = `${baseUrl}/admin/transactions`;
+    const adminUrl = baseUrl ? `${baseUrl}/admin/transactions` : null;
 
-    await fetch(url, {
+    const body: any = {
+      chat_id: telegramChannelId.trim(),
+      text: message,
+      parse_mode: 'Markdown',
+    };
+
+    if (adminUrl) {
+      body.reply_markup = {
+        inline_keyboard: [
+          [
+            { text: "💳 View in Admin Panel", url: adminUrl }
+          ]
+        ]
+      };
+    }
+
+    const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: telegramChannelId,
-        text: message,
-        parse_mode: 'Markdown',
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: "💳 View in Admin Panel", url: adminUrl }
-            ]
-          ]
-        }
-      })
+      body: JSON.stringify(body)
     });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Telegram API error (${response.status}): ${errorText}`);
+    }
   } catch (err) {
-    console.error("Telegram notification error:", err);
+    console.error("Telegram notification exception:", err);
   }
 }
