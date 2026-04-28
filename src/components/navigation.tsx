@@ -34,7 +34,7 @@ export function Navigation() {
   };
 
   return (
-    <nav className="sticky top-0 w-full z-40 border-b border-white/5 bg-background/80 backdrop-blur-md h-16 flex items-center px-4">
+    <nav className="sticky top-0 w-full z-50 border-b border-white/5 bg-background/80 backdrop-blur-md h-16 flex items-center px-4">
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center gap-4">
           <SidebarTrigger />
@@ -68,7 +68,7 @@ export function Navigation() {
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 p-2 glass-card">
+              <DropdownMenuContent align="end" className="w-56 p-2 glass-card z-[100]">
                 <DropdownMenuLabel className="px-3 py-2 font-headline text-xs uppercase tracking-wider text-muted-foreground">
                   Session Identity
                 </DropdownMenuLabel>

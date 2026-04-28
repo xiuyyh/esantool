@@ -32,12 +32,12 @@ export default function Home() {
   });
 
   const headlineMain = "Shop";
-  const headlineAccent = "Private Groups";
+  const headlineAccent = "Premium Private Groups";
 
   return (
-    <div className="flex flex-col min-h-screen w-full min-w-0 overflow-x-hidden">
-      {/* Ticker Section */}
-      <section className="py-2.5 bg-accent/5 border-b border-white/5 overflow-hidden whitespace-nowrap relative w-full">
+    <div className="flex flex-col flex-1 w-full min-w-0">
+      {/* Ticker Section - Added pointer-events-none to prevent interception on desktop */}
+      <section className="py-2.5 bg-accent/5 border-b border-white/5 overflow-hidden whitespace-nowrap relative w-full pointer-events-none select-none z-10">
         <div className="flex animate-marquee items-center gap-12 w-max">
           {[...Array(10)].map((_, i) => (
             <div key={i} className="flex items-center gap-4">
@@ -53,11 +53,11 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="max-w-screen-2xl px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full min-w-0">
+      <div className="max-w-screen-2xl px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full min-w-0 mx-auto">
         <div className="flex flex-col space-y-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
             <div className="space-y-2">
-              <h1 className="font-headline text-4xl sm:text-5xl font-bold tracking-tight">Shop</h1>
+              <h1 className="font-headline text-4xl sm:text-5xl font-bold tracking-tight">Marketplace</h1>
               <p className="text-muted-foreground text-base sm:text-lg">Browse available private groups by region.</p>
             </div>
           </div>
@@ -89,7 +89,7 @@ export default function Home() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-32 space-y-4">
               <div className="h-10 w-10 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
-              <p className="font-headline uppercase tracking-widest text-xs text-accent font-bold">Loading...</p>
+              <p className="font-headline uppercase tracking-widest text-xs text-accent font-bold">Loading Marketplace Assets...</p>
             </div>
           ) : filteredProducts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
@@ -109,15 +109,15 @@ export default function Home() {
           ) : (
             <div className="flex flex-col items-center justify-center py-24 glass-card rounded-3xl border-dashed border-2 border-white/10 text-center px-6">
               <Globe className="h-12 w-12 text-muted-foreground mb-4 opacity-20" />
-              <h3 className="text-2xl font-bold font-headline uppercase tracking-tight">No Groups</h3>
-              <p className="text-muted-foreground mt-2 text-base">No groups available in this region.</p>
+              <h3 className="text-2xl font-bold font-headline uppercase tracking-tight">Region Silent</h3>
+              <p className="text-muted-foreground mt-2 text-base">No active nodes found in this region.</p>
             </div>
           )}
         </div>
       </div>
 
       <footer className="mt-auto py-12 border-t border-white/5 bg-black/20 backdrop-blur-sm">
-        <div className="max-w-screen-2xl px-4 sm:px-6 lg:px-8 text-center text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
+        <div className="max-w-screen-2xl px-4 sm:px-6 lg:px-8 text-center text-[10px] text-muted-foreground uppercase tracking-[0.2em] mx-auto">
           <div className="flex items-center justify-center space-x-3 mb-6">
             <div className="bg-accent/10 p-2.5 rounded-xl">
               <Terminal className="h-5 w-5 text-accent" />
