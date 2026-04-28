@@ -69,7 +69,7 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
               <Button size="sm" className="h-7 px-3 text-[10px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold" asChild>
                 <Link href={`/products/${id}`}>
                   <ShoppingCart className="h-3 w-3 mr-1" />
-                  ACQUIRE
+                  ADD TO CART
                 </Link>
               </Button>
             </div>

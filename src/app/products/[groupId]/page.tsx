@@ -9,6 +9,7 @@ import { ChevronLeft, ShoppingCart, ShieldCheck, Lock, ExternalLink, Globe } fro
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { useFirestore, useDoc, useUser } from "@/firebase";
 import { doc, updateDoc, arrayUnion, increment } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -37,7 +38,7 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
 
   const hasAccess = profile?.purchasedGroups?.includes(params.groupId);
 
-  const handleAcquire = async () => {
+  const handleAddToCart = async () => {
     if (!user || !db || !group || !profile) {
       router.push("/login");
       return;
@@ -47,7 +48,7 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
       toast({
         variant: "destructive",
         title: "Insufficient Funds",
-        description: "Please top up your balance to acquire this access link.",
+        description: "Please top up your balance to add this access link to your collection.",
       });
       return;
     }
@@ -56,7 +57,7 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
     try {
       await updateDoc(userRef!, {
         balance: increment(-group.price),
-        purchasedGroups: arrayUnion(group.id)
+        purchasedGroups: arrayUnion(params.groupId)
       });
       toast({
         title: "Access Granted",
@@ -167,12 +168,12 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
                 ) : (
                   <div className="space-y-4">
                     <Button 
-                      onClick={handleAcquire}
+                      onClick={handleAddToCart}
                       disabled={isPurchasing}
                       className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-bold text-lg uppercase tracking-widest"
                     >
                       <ShoppingCart className="mr-2 h-5 w-5" />
-                      {isPurchasing ? "Processing..." : "Acquire Access"}
+                      {isPurchasing ? "Processing..." : "ADD TO CART"}
                     </Button>
                     <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground uppercase">
                       <Lock className="h-3 w-3" />
