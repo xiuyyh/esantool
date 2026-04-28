@@ -1,15 +1,6 @@
-
 "use client";
 
 import { useState } from "react";
-import { 
-  Plus, 
-  Package, 
-  Tags, 
-  Terminal,
-  ShieldCheck,
-  LayoutGrid
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,10 +15,8 @@ export default function AdminDashboard() {
   const db = useFirestore();
   const { toast } = useToast();
   
-  // Data for Selects
   const { data: categories } = useCollection(db ? collection(db, "categories") : null);
 
-  // Form States
   const [groupTitle, setGroupTitle] = useState("");
   const [groupPrice, setGroupPrice] = useState("");
   const [groupDesc, setGroupDesc] = useState("");
@@ -49,7 +38,7 @@ export default function AdminDashboard() {
         createdAt: serverTimestamp(),
       });
       
-      toast({ title: "Success", description: "Telegram group added successfully." });
+      toast({ title: "Success", description: "Listing created." });
       setGroupTitle("");
       setGroupPrice("");
       setGroupDesc("");
@@ -77,24 +66,15 @@ export default function AdminDashboard() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
-      <div className="flex items-center space-x-4 border-b border-white/5 pb-8">
-        <div className="bg-primary/20 p-3 rounded-2xl">
-          <ShieldCheck className="h-8 w-8 text-primary" />
-        </div>
-        <div>
-          <h1 className="font-headline text-4xl font-bold tracking-tight">Admin Console</h1>
-          <p className="text-muted-foreground">Manage marketplace assets and categories.</p>
-        </div>
+      <div className="border-b border-white/5 pb-8">
+        <h1 className="font-headline text-4xl font-bold tracking-tight uppercase">Admin Console</h1>
+        <p className="text-muted-foreground mt-2">Manage marketplace assets and system configurations.</p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
-        {/* Add Group Form */}
         <Card className="glass-card border-white/5">
           <CardHeader>
-            <div className="flex items-center gap-2 mb-2">
-              <Package className="h-5 w-5 text-accent" />
-              <CardTitle className="font-headline text-xl">New Group Listing</CardTitle>
-            </div>
+            <CardTitle className="font-headline text-xl">New Group Listing</CardTitle>
             <CardDescription>Launch a new private Telegram group into the market.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -149,22 +129,17 @@ export default function AdminDashboard() {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 font-bold">
-                <Plus className="h-4 w-4 mr-2" />
-                CREATE LISTING
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest">
+                Create Listing
               </Button>
             </form>
           </CardContent>
         </Card>
 
-        {/* Add Category Form */}
         <div className="space-y-8">
           <Card className="glass-card border-white/5">
             <CardHeader>
-              <div className="flex items-center gap-2 mb-2">
-                <Tags className="h-5 w-5 text-accent" />
-                <CardTitle className="font-headline text-xl">Manage Categories</CardTitle>
-              </div>
+              <CardTitle className="font-headline text-xl">Manage Categories</CardTitle>
               <CardDescription>Organize your marketplace by adding new sectors.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -180,9 +155,8 @@ export default function AdminDashboard() {
                     required
                   />
                 </div>
-                <Button type="submit" variant="outline" className="w-full border-white/10 hover:bg-white/5 font-bold">
-                  <Plus className="h-4 w-4 mr-2" />
-                  ADD CATEGORY
+                <Button type="submit" variant="outline" className="w-full border-white/10 hover:bg-white/5 font-bold uppercase tracking-widest">
+                  Add Category
                 </Button>
               </form>
             </CardContent>
@@ -190,14 +164,11 @@ export default function AdminDashboard() {
 
           <Card className="glass-card border-white/5 border-dashed">
             <CardHeader>
-              <div className="flex items-center gap-2">
-                <LayoutGrid className="h-5 w-5 text-muted-foreground" />
-                <CardTitle className="font-headline text-lg">System Status</CardTitle>
-              </div>
+              <CardTitle className="font-headline text-lg">System Status</CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               <p>Database: <span className="text-green-500 font-mono">ONLINE</span></p>
-              <p>Active Listings: <span className="text-foreground font-mono">{categories.length} sections available</span></p>
+              <p>Active Listings: <span className="text-foreground font-mono">{categories.length} sections</span></p>
             </CardContent>
           </Card>
         </div>

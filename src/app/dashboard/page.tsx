@@ -3,14 +3,6 @@
 import { use } from "react";
 import { useUser, useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
-import { 
-  Wallet, 
-  PlusCircle,
-  TrendingUp,
-  Cpu,
-  Target,
-  ShieldAlert
-} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -89,8 +81,6 @@ export default function UserDashboard(props: { params: Promise<any> }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
           <Skeleton className="h-32 w-full" />
           <Skeleton className="h-32 w-full" />
-          <Skeleton className="h-32 w-full" />
-          <Skeleton className="h-32 w-full" />
         </div>
       </div>
     );
@@ -100,32 +90,24 @@ export default function UserDashboard(props: { params: Promise<any> }) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
-      {/* Wallet Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="glass-card border-white/5 relative overflow-hidden group hover:border-accent/30 transition-all duration-300">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Wallet className="h-16 w-16" />
-          </div>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider text-accent">Account Balance</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-4xl font-bold font-headline">₦{balance.toLocaleString()}</div>
-            <Button size="sm" className="mt-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-8">
-              <PlusCircle className="h-4 w-4 mr-2" />
+            <Button size="sm" className="mt-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-8 uppercase tracking-tighter">
               Add Funds
             </Button>
           </CardContent>
         </Card>
       </div>
 
-      {/* Assorted Groups Section */}
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h2 className="font-headline text-2xl font-bold">Marketplace Spotlight</h2>
-          </div>
-          <p className="text-xs text-muted-foreground uppercase tracking-widest hidden sm:block">Recommended for you</p>
+        <div className="flex items-center justify-between border-b border-white/5 pb-4">
+          <h2 className="font-headline text-2xl font-bold uppercase tracking-tight">Marketplace Spotlight</h2>
+          <p className="text-xs text-muted-foreground uppercase tracking-widest hidden sm:block">Recommended Access</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -134,24 +116,12 @@ export default function UserDashboard(props: { params: Promise<any> }) {
           ))}
         </div>
         
-        {/* Quick Links / Empty State Helper */}
-        <div className="flex flex-wrap gap-4 pt-4">
-          <Button variant="outline" className="border-white/5 bg-white/5 hover:bg-white/10 text-xs h-9 rounded-full">
-            <Target className="h-3 w-3 mr-2 text-accent" />
-            Crypto Signals
-          </Button>
-          <Button variant="outline" className="border-white/5 bg-white/5 hover:bg-white/10 text-xs h-9 rounded-full">
-            <Cpu className="h-3 w-3 mr-2 text-accent" />
-            Tech Leaks
-          </Button>
-          <Button variant="outline" className="border-white/5 bg-white/5 hover:bg-white/10 text-xs h-9 rounded-full">
-            <TrendingUp className="h-3 w-3 mr-2 text-accent" />
-            Venture Capital
-          </Button>
-          <Button variant="outline" className="border-white/5 bg-white/5 hover:bg-white/10 text-xs h-9 rounded-full">
-            <ShieldAlert className="h-3 w-3 mr-2 text-accent" />
-            Security Alpha
-          </Button>
+        <div className="flex flex-wrap gap-2 pt-4">
+          {["Crypto", "Tech", "Alpha", "Security"].map((tag) => (
+            <Button key={tag} variant="outline" className="border-white/5 bg-white/5 hover:bg-white/10 text-[10px] h-7 px-3 rounded-full uppercase font-bold tracking-widest">
+              {tag}
+            </Button>
+          ))}
         </div>
       </div>
     </div>
