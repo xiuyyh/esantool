@@ -81,7 +81,7 @@ export default function LoginPage() {
           <CardDescription className="text-muted-foreground">
             Sign in to access regional intelligence nodes.
           </CardDescription>
-        </Header>
+        </CardHeader>
         <CardContent className="space-y-6">
           <form onSubmit={handleEmailLogin} className="space-y-4">
             <div className="space-y-2">
