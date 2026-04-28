@@ -1,6 +1,7 @@
+
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -79,7 +80,7 @@ export default function GroupDetailsPage({ params: paramsPromise }: { params: Pr
   if (!group) return (
     <div className="max-w-5xl mx-auto px-4 py-20 text-center">
       <h2 className="text-2xl font-bold">Group Not Found</h2>
-      <Button className="mt-6" onClick={() => router.push("/products")}>Back</Button>
+      <Button className="mt-6" onClick={() => router.push("/")}>Back</Button>
     </div>
   );
 
@@ -87,7 +88,7 @@ export default function GroupDetailsPage({ params: paramsPromise }: { params: Pr
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10 space-y-8">
-      <Link href="/products" className="inline-flex items-center text-xs font-bold text-accent uppercase tracking-widest">
+      <Link href="/" className="inline-flex items-center text-xs font-bold text-accent uppercase tracking-widest">
         <ChevronLeft className="h-4 w-4 mr-1" />
         Back to Shop
       </Link>

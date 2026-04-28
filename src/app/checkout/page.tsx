@@ -4,13 +4,13 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, Trash2, ArrowRight, ShieldCheck, Wallet, ChevronLeft, AlertCircle } from "lucide-react";
+import { ShoppingCart, Trash2, ShieldCheck, Wallet, ChevronLeft, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useUser, useFirestore, useDoc, useCollection } from "@/firebase";
 import { doc, updateDoc, arrayUnion, arrayRemove, collection, increment } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function CheckoutPage() {
   const { user } = useUser();
@@ -100,7 +100,7 @@ export default function CheckoutPage() {
           <h1 className="font-headline text-5xl font-bold tracking-tight">MY CART</h1>
           <p className="text-muted-foreground mt-2 uppercase tracking-widest text-xs">Review your items before buying.</p>
         </div>
-        <Link href="/products" className="text-accent text-xs font-bold uppercase tracking-widest flex items-center hover:opacity-80">
+        <Link href="/" className="text-accent text-xs font-bold uppercase tracking-widest flex items-center hover:opacity-80">
           <ChevronLeft className="h-4 w-4 mr-1" />
           Back to Shop
         </Link>
@@ -114,7 +114,7 @@ export default function CheckoutPage() {
                 <CardContent className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="h-16 w-16 rounded-lg overflow-hidden border border-white/10 shrink-0">
-                      <img src={item.imageUrls?.[0] || "https://picsum.photos/seed/default/200/200"} className="w-full h-full object-cover" />
+                      <img src={item.imageUrls?.[0] || "https://picsum.photos/seed/default/200/200"} className="w-full h-full object-cover" alt="" />
                     </div>
                     <div>
                       <h3 className="font-headline font-bold text-lg">{item.title}</h3>

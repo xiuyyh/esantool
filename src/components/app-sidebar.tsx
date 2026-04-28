@@ -7,13 +7,10 @@ import { usePathname } from "next/navigation";
 import {
   Terminal,
   LayoutDashboard,
-  ShoppingCart,
   ShieldCheck,
   Globe,
-  Settings,
   LogOut,
   User,
-  Package,
   Key,
 } from "lucide-react";
 
@@ -55,7 +52,7 @@ export function AppSidebar() {
       items: [
         {
           title: "Shop",
-          url: "/products",
+          url: "/",
           icon: Globe,
         },
       ],
@@ -77,7 +74,7 @@ export function AppSidebar() {
       label: "Admin",
       items: [
         {
-          title: "Admin Dashboard",
+          title: "Admin Panel",
           url: "/admin/dashboard",
           icon: ShieldCheck,
         },

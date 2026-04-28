@@ -117,7 +117,7 @@ export default function UserDashboard() {
               <Lock className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
               <p className="text-xs uppercase tracking-widest font-bold">No groups purchased yet.</p>
               <Button variant="link" asChild className="mt-2 text-accent">
-                <Link href="/products">Browse Shop</Link>
+                <Link href="/">Browse Shop</Link>
               </Button>
             </div>
           )}
@@ -131,7 +131,7 @@ export default function UserDashboard() {
               <ShieldCheck className="h-5 w-5 text-muted-foreground" />
               New Groups
             </h2>
-            <Link href="/products" className="text-[10px] font-bold uppercase tracking-widest text-accent hover:opacity-80">
+            <Link href="/" className="text-[10px] font-bold uppercase tracking-widest text-accent hover:opacity-80">
               See All
             </Link>
           </div>
