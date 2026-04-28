@@ -12,6 +12,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useFirestore, useDoc } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export default function GroupDetailsPage(props: { params: Promise<{ groupId: string }> }) {
   const params = use(props.params);
@@ -49,6 +56,8 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
     );
   }
 
+  const images = group.imageUrls || (group.imageUrl ? [group.imageUrl] : []);
+
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       <Link 
@@ -62,21 +71,37 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         {/* Preview Image Section */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/10 glass-card">
-            {group.imageUrl ? (
-              <Image
-                src={group.imageUrl}
-                alt={group.title}
-                fill
-                className="object-cover"
-                priority
-              />
+          <div className="relative rounded-3xl overflow-hidden border border-white/10 glass-card p-2">
+            {images.length > 0 ? (
+              <Carousel className="w-full">
+                <CarouselContent>
+                  {images.map((url: string, index: number) => (
+                    <CarouselItem key={index}>
+                      <div className="relative aspect-video rounded-2xl overflow-hidden">
+                        <Image
+                          src={url}
+                          alt={`${group.title} preview ${index + 1}`}
+                          fill
+                          className="object-cover"
+                          priority={index === 0}
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                {images.length > 1 && (
+                  <>
+                    <CarouselPrevious className="left-4 bg-black/50 border-none hover:bg-black/70" />
+                    <CarouselNext className="right-4 bg-black/50 border-none hover:bg-black/70" />
+                  </>
+                )}
+              </Carousel>
             ) : (
-              <div className="flex items-center justify-center h-full w-full bg-secondary/10">
+              <div className="flex items-center justify-center aspect-video w-full bg-secondary/10">
                 <MessageSquare className="h-20 w-20 text-muted-foreground opacity-20" />
               </div>
             )}
-            <div className="absolute top-4 left-4">
+            <div className="absolute top-6 left-6 z-10">
               <Badge className="bg-accent text-accent-foreground font-bold px-3 py-1 text-xs uppercase">
                 {group.category}
               </Badge>

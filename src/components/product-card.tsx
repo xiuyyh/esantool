@@ -14,19 +14,21 @@ interface ProductCardProps {
   category: string;
   price: number;
   description: string;
-  imageUrl: string;
+  imageUrls: string[];
   imageHint: string;
 }
 
-export function ProductCard({ id, title, category, price, description, imageUrl, imageHint }: ProductCardProps) {
+export function ProductCard({ id, title, category, price, description, imageUrls, imageHint }: ProductCardProps) {
+  const displayImage = imageUrls?.[0] || "";
+
   return (
     <Card className="overflow-hidden glass-card group hover:border-accent/40 transition-all duration-200 border-white/5">
       <div className="flex p-3 gap-4 items-center">
         {/* Compact Image */}
         <Link href={`/products/${id}`} className="relative h-20 w-20 shrink-0 rounded-md overflow-hidden bg-muted border border-white/5">
-          {imageUrl ? (
+          {displayImage ? (
             <Image
-              src={imageUrl}
+              src={displayImage}
               alt={title}
               fill
               className="object-cover group-hover:scale-110 transition-transform duration-500"

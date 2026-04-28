@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -11,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useFirestore, useCollection, useUser } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, X, Image as ImageIcon } from "lucide-react";
+import { Upload, X, Images } from "lucide-react";
 
 export default function AdminDashboard() {
   const db = useFirestore();
@@ -26,7 +27,7 @@ export default function AdminDashboard() {
   const [groupPrice, setGroupPrice] = useState("");
   const [groupDesc, setGroupDesc] = useState("");
   const [groupCat, setGroupCat] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   
   const [catName, setCatName] = useState("");
 
@@ -37,23 +38,27 @@ export default function AdminDashboard() {
   }, [user, authLoading, router]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 800000) { // Limit to ~800KB for Base64 storage in Firestore for this prototype
+    const files = Array.from(e.target.files || []);
+    files.forEach(file => {
+      if (file.size > 800000) {
         toast({
           variant: "destructive",
           title: "File too large",
-          description: "Please upload an image smaller than 800KB for optimal performance.",
+          description: `Image ${file.name} is too large. Limit is 800KB.`,
         });
         return;
       }
 
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImageUrl(reader.result as string);
+        setImageUrls(prev => [...prev, reader.result as string]);
       };
       reader.readAsDataURL(file);
-    }
+    });
+  };
+
+  const removeImage = (index: number) => {
+    setImageUrls(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleAddGroup = async (e: React.FormEvent) => {
@@ -66,16 +71,16 @@ export default function AdminDashboard() {
         price: Number(groupPrice),
         description: groupDesc,
         category: groupCat,
-        imageUrl: imageUrl || "https://picsum.photos/seed/default/600/400",
+        imageUrls: imageUrls.length > 0 ? imageUrls : ["https://picsum.photos/seed/default/600/400"],
         createdAt: serverTimestamp(),
       });
       
-      toast({ title: "Success", description: "Listing created successfully." });
+      toast({ title: "Success", description: "Listing deployed successfully." });
       setGroupTitle("");
       setGroupPrice("");
       setGroupDesc("");
       setGroupCat("");
-      setImageUrl("");
+      setImageUrls([]);
     } catch (error: any) {
       toast({ variant: "destructive", title: "Error", description: error.message });
     }
@@ -119,7 +124,7 @@ export default function AdminDashboard() {
           <Card className="glass-card border-white/5">
             <CardHeader>
               <CardTitle className="font-headline text-xl">New Group Listing</CardTitle>
-              <CardDescription>Configure and deploy a new private access link.</CardDescription>
+              <CardDescription>Configure and deploy a new private access link with multiple previews.</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleAddGroup} className="space-y-6">
@@ -165,35 +170,35 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Preview Image</Label>
-                    <div className="flex flex-col gap-4">
-                      {imageUrl ? (
-                        <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10 group">
-                          <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                    <Label>Preview Images</Label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                      {imageUrls.map((url, idx) => (
+                        <div key={idx} className="relative aspect-video rounded-xl overflow-hidden border border-white/10 group">
+                          <img src={url} alt={`Preview ${idx + 1}`} className="w-full h-full object-cover" />
                           <Button 
                             type="button" 
                             variant="destructive" 
                             size="icon" 
-                            className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => setImageUrl("")}
+                            className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => removeImage(idx)}
                           >
-                            <X className="h-4 w-4" />
+                            <X className="h-3 w-3" />
                           </Button>
                         </div>
-                      ) : (
-                        <div 
-                          className="aspect-video rounded-xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center gap-3 cursor-pointer hover:bg-white/5 transition-colors"
-                          onClick={() => fileInputRef.current?.click()}
-                        >
-                          <Upload className="h-8 w-8 text-muted-foreground" />
-                          <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">Upload Preview Image</p>
-                        </div>
-                      )}
+                      ))}
+                      <div 
+                        className="aspect-video rounded-xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-white/5 transition-colors"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <Upload className="h-6 w-6 text-muted-foreground" />
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">Add More</p>
+                      </div>
                       <input 
                         type="file" 
                         ref={fileInputRef} 
                         className="hidden" 
                         accept="image/*"
+                        multiple
                         onChange={handleFileChange}
                       />
                     </div>

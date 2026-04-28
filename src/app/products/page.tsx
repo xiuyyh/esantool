@@ -60,7 +60,7 @@ export default function ProductsPage() {
                 category={p.category}
                 price={p.price}
                 description={p.description}
-                imageUrl={p.imageUrl}
+                imageUrls={p.imageUrls || [p.imageUrl]}
                 imageHint="telegram network"
               />
             ))}

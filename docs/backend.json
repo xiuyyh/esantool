@@ -24,7 +24,11 @@
         "description": { "type": "string" },
         "price": { "type": "number" },
         "category": { "type": "string" },
-        "imageUrl": { "type": "string" },
+        "imageUrls": { 
+          "type": "array", 
+          "items": { "type": "string" },
+          "description": "Array of Base64 or URL strings for preview images."
+        },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["title", "price", "category"]

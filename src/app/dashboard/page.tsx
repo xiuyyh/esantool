@@ -65,7 +65,7 @@ export default function UserDashboard(props: { params: Promise<any> }) {
                 category={group.category}
                 price={group.price}
                 description={group.description}
-                imageUrl={group.imageUrl}
+                imageUrls={group.imageUrls || [group.imageUrl]}
                 imageHint="telegram network"
               />
             ))
