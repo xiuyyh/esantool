@@ -7,6 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Eye, Globe } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useState } from "react";
+import { useUser, useFirestore, useDoc } from "@/firebase";
+import { doc, updateDoc, arrayUnion, increment } from "firebase/firestore";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 interface ProductCardProps {
   id: string;
@@ -20,6 +25,63 @@ interface ProductCardProps {
 
 export function ProductCard({ id, title, country, price, description, imageUrls, imageHint }: ProductCardProps) {
   const displayImage = imageUrls?.[0] || "";
+  const { user } = useUser();
+  const db = useFirestore();
+  const { toast } = useToast();
+  const router = useRouter();
+  const [isPurchasing, setIsPurchasing] = useState(false);
+
+  const userRef = user && db ? doc(db, "users", user.uid) : null;
+  const { data: profile } = useDoc(userRef);
+
+  const hasAccess = profile?.purchasedGroups?.includes(id);
+
+  const handleQuickPurchase = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!user || !db) {
+      router.push("/login");
+      return;
+    }
+
+    if (hasAccess) {
+      toast({
+        title: "Already Owned",
+        description: "You already have access to this intelligence node.",
+      });
+      return;
+    }
+
+    if (!profile || profile.balance < price) {
+      toast({
+        variant: "destructive",
+        title: "Insufficient Funds",
+        description: "Please top up your balance in the dashboard.",
+      });
+      return;
+    }
+
+    setIsPurchasing(true);
+    try {
+      await updateDoc(userRef!, {
+        balance: increment(-price),
+        purchasedGroups: arrayUnion(id)
+      });
+      toast({
+        title: "Success",
+        description: `${title} access has been added to your collection.`,
+      });
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Transaction Failed",
+        description: err.message,
+      });
+    } finally {
+      setIsPurchasing(false);
+    }
+  };
 
   return (
     <Card className="overflow-hidden glass-card group hover:border-accent/40 transition-all duration-200 border-white/5">
@@ -66,11 +128,14 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
                   VIEW
                 </Link>
               </Button>
-              <Button size="sm" className="h-7 px-3 text-[10px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold" asChild>
-                <Link href={`/products/${id}`}>
-                  <ShoppingCart className="h-3 w-3 mr-1" />
-                  ADD TO CART
-                </Link>
+              <Button 
+                size="sm" 
+                className="h-7 px-3 text-[10px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold"
+                onClick={handleQuickPurchase}
+                disabled={isPurchasing}
+              >
+                <ShoppingCart className="h-3 w-3 mr-1" />
+                {hasAccess ? "OWNED" : (isPurchasing ? "PROCESS..." : "ADD TO CART")}
               </Button>
             </div>
           </div>
