@@ -16,6 +16,11 @@
           "type": "array", 
           "items": { "type": "string" },
           "description": "List of group IDs the user has purchased access to."
+        },
+        "cart": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of group IDs currently in the user's cart."
         }
       },
       "required": ["uid", "email"]

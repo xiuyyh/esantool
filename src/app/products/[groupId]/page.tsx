@@ -5,13 +5,13 @@ import { use, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ShoppingCart, ShieldCheck, Lock, ExternalLink, Globe } from "lucide-react";
+import { ChevronLeft, ShoppingCart, ShieldCheck, Lock, ExternalLink, Globe, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useFirestore, useDoc, useUser } from "@/firebase";
-import { doc, updateDoc, arrayUnion, increment } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -28,7 +28,7 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
   const db = useFirestore();
   const { user } = useUser();
   const { toast } = useToast();
-  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
   
   const groupRef = db ? doc(db, "groups", params.groupId) : null;
   const { data: group, loading } = useDoc(groupRef);
@@ -37,6 +37,7 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
   const { data: profile } = useDoc(userRef);
 
   const hasAccess = profile?.purchasedGroups?.includes(params.groupId);
+  const isInCart = profile?.cart?.includes(params.groupId);
 
   const handleAddToCart = async () => {
     if (!user || !db || !group || !profile) {
@@ -44,33 +45,28 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
       return;
     }
 
-    if (profile.balance < group.price) {
-      toast({
-        variant: "destructive",
-        title: "Insufficient Funds",
-        description: "Please top up your balance to add this access link to your collection.",
-      });
+    if (isInCart) {
+      router.push("/checkout");
       return;
     }
 
-    setIsPurchasing(true);
+    setIsAdding(true);
     try {
       await updateDoc(userRef!, {
-        balance: increment(-group.price),
-        purchasedGroups: arrayUnion(params.groupId)
+        cart: arrayUnion(params.groupId)
       });
       toast({
-        title: "Access Granted",
-        description: "The private link is now visible.",
+        title: "Success",
+        description: "Listing added to cart.",
       });
     } catch (err: any) {
       toast({
         variant: "destructive",
-        title: "Transaction Failed",
-        description: err.message,
+        title: "Error",
+        description: "Could not update cart.",
       });
     } finally {
-      setIsPurchasing(false);
+      setIsAdding(false);
     }
   };
 
@@ -169,11 +165,20 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
                   <div className="space-y-4">
                     <Button 
                       onClick={handleAddToCart}
-                      disabled={isPurchasing}
+                      disabled={isAdding}
                       className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-bold text-lg uppercase tracking-widest"
                     >
-                      <ShoppingCart className="mr-2 h-5 w-5" />
-                      {isPurchasing ? "Processing..." : "ADD TO CART"}
+                      {isInCart ? (
+                        <>
+                          <Check className="mr-2 h-5 w-5" />
+                          GOTO CHECKOUT
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingCart className="mr-2 h-5 w-5" />
+                          {isAdding ? "STAGING..." : "ADD TO CART"}
+                        </>
+                      )}
                     </Button>
                     <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground uppercase">
                       <Lock className="h-3 w-3" />

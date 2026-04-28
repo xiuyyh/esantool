@@ -13,13 +13,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useUser, useAuth } from "@/firebase";
+import { useUser, useAuth, useFirestore, useDoc } from "@/firebase";
 import { signOut } from "firebase/auth";
+import { doc } from "firebase/firestore";
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useUser();
+  const db = useFirestore();
   const auth = useAuth();
+
+  const userRef = user && db ? doc(db, "users", user.uid) : null;
+  const { data: profile } = useDoc(userRef);
+
+  const cartCount = profile?.cart?.length || 0;
 
   const handleLogout = async () => {
     if (auth) {
@@ -48,9 +55,15 @@ export function Navigation() {
             </Link>
             
             <div className="flex items-center space-x-5 border-l border-white/10 pl-10">
-              <Button variant="ghost" size="icon" className="relative hover:bg-white/5">
-                <ShoppingCart className="h-6 w-6" />
-                <span className="absolute top-1 right-1 h-2.5 w-2.5 bg-accent rounded-full border-2 border-background"></span>
+              <Button variant="ghost" size="icon" className="relative hover:bg-white/5" asChild>
+                <Link href="/checkout">
+                  <ShoppingCart className="h-6 w-6" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 h-5 w-5 bg-accent text-accent-foreground text-[10px] font-bold rounded-full border-2 border-background flex items-center justify-center">
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
               </Button>
 
               {user ? (
@@ -117,6 +130,9 @@ export function Navigation() {
         <div className="md:hidden bg-background border-b border-white/5 animate-in slide-in-from-top duration-300">
           <div className="px-4 pt-4 pb-8 space-y-2">
             <Link href="/products" className="block px-4 py-3 text-lg font-bold uppercase tracking-widest hover:bg-white/5 rounded-lg" onClick={() => setIsMenuOpen(false)}>Marketplace</Link>
+            <Link href="/checkout" className="block px-4 py-3 text-lg font-bold uppercase tracking-widest hover:bg-white/5 rounded-lg" onClick={() => setIsMenuOpen(false)}>
+              Cart ({cartCount})
+            </Link>
             {user && (
               <Link href="/dashboard" className="block px-4 py-3 text-lg font-bold uppercase tracking-widest hover:bg-white/5 rounded-lg" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
             )}

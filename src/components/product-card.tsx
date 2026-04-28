@@ -5,11 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Eye, Globe } from "lucide-react";
+import { ShoppingCart, Eye, Globe, Check } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
 import { useUser, useFirestore, useDoc } from "@/firebase";
-import { doc, updateDoc, arrayUnion, increment } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
@@ -29,14 +29,15 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
   const db = useFirestore();
   const { toast } = useToast();
   const router = useRouter();
-  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
 
   const userRef = user && db ? doc(db, "users", user.uid) : null;
   const { data: profile } = useDoc(userRef);
 
   const hasAccess = profile?.purchasedGroups?.includes(id);
+  const isInCart = profile?.cart?.includes(id);
 
-  const handleQuickPurchase = async (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -53,33 +54,28 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
       return;
     }
 
-    if (!profile || profile.balance < price) {
-      toast({
-        variant: "destructive",
-        title: "Insufficient Funds",
-        description: "Please top up your balance in the dashboard.",
-      });
+    if (isInCart) {
+      router.push("/checkout");
       return;
     }
 
-    setIsPurchasing(true);
+    setIsAdding(true);
     try {
       await updateDoc(userRef!, {
-        balance: increment(-price),
-        purchasedGroups: arrayUnion(id)
+        cart: arrayUnion(id)
       });
       toast({
-        title: "Success",
-        description: `${title} access has been added to your collection.`,
+        title: "Added to Cart",
+        description: `${title} has been staged for checkout.`,
       });
     } catch (err: any) {
       toast({
         variant: "destructive",
-        title: "Transaction Failed",
-        description: err.message,
+        title: "Error",
+        description: "Failed to update cart.",
       });
     } finally {
-      setIsPurchasing(false);
+      setIsAdding(false);
     }
   };
 
@@ -131,11 +127,22 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
               <Button 
                 size="sm" 
                 className="h-7 px-3 text-[10px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold"
-                onClick={handleQuickPurchase}
-                disabled={isPurchasing}
+                onClick={handleAddToCart}
+                disabled={isAdding || hasAccess}
               >
-                <ShoppingCart className="h-3 w-3 mr-1" />
-                {hasAccess ? "OWNED" : (isPurchasing ? "PROCESS..." : "ADD TO CART")}
+                {hasAccess ? (
+                  <>
+                    <Check className="h-3 w-3 mr-1" />
+                    OWNED
+                  </>
+                ) : isInCart ? (
+                  "IN CART"
+                ) : (
+                  <>
+                    <ShoppingCart className="h-3 w-3 mr-1" />
+                    {isAdding ? "STAGING..." : "ADD TO CART"}
+                  </>
+                )}
               </Button>
             </div>
           </div>
