@@ -2,8 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Globe, Terminal } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Globe, Terminal } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import { useFirestore, useCollection } from "@/firebase";
 import { collection } from "firebase/firestore";
@@ -16,7 +15,6 @@ import {
 } from "@/components/ui/select";
 
 export default function Home() {
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [year, setYear] = useState<number | null>(null);
   
@@ -29,9 +27,8 @@ export default function Home() {
   }, []);
 
   const filteredProducts = allProducts.filter((p: any) => {
-    const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCountry = !selectedCountry || p.country === selectedCountry;
-    return matchesSearch && matchesCountry;
+    return matchesCountry;
   });
 
   const headlineMain = "Shop";
@@ -61,17 +58,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
             <div className="space-y-2">
               <h1 className="font-headline text-4xl sm:text-5xl font-bold tracking-tight">Shop</h1>
-              <p className="text-muted-foreground text-base sm:text-lg">Browse groups by region.</p>
-            </div>
-            
-            <div className="relative w-full sm:w-80 lg:w-96">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input 
-                placeholder="Search..." 
-                className="pl-12 h-12 glass-card border-white/10 focus:border-accent/30"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+              <p className="text-muted-foreground text-base sm:text-lg">Browse available private groups by region.</p>
             </div>
           </div>
 
@@ -121,9 +108,9 @@ export default function Home() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-24 glass-card rounded-3xl border-dashed border-2 border-white/10 text-center px-6">
-              <Search className="h-12 w-12 text-muted-foreground mb-4 opacity-20" />
+              <Globe className="h-12 w-12 text-muted-foreground mb-4 opacity-20" />
               <h3 className="text-2xl font-bold font-headline uppercase tracking-tight">No Groups</h3>
-              <p className="text-muted-foreground mt-2 text-base">Try a different search.</p>
+              <p className="text-muted-foreground mt-2 text-base">No groups available in this region.</p>
             </div>
           )}
         </div>
@@ -138,7 +125,7 @@ export default function Home() {
             <span className="font-headline font-bold text-lg tracking-tighter text-foreground">ESAN TOOLS</span>
           </div>
           <p className="mb-2 opacity-60">Private Group Marketplace</p>
-          <p>© {year || "..."} Esan Tools.</p>
+          <p>© {year || "..."} Esan Tools. All rights reserved.</p>
         </div>
       </footer>
     </div>
