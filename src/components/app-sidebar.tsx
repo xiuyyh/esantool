@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation";
 import {
   Terminal,
   LayoutDashboard,
-  ShieldCheck,
   Globe,
   LogOut,
   User,
@@ -131,17 +130,19 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => (
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === item.url}
-                    tooltip={item.title}
-                    className="hover:bg-accent/10 hover:text-accent transition-colors"
-                  >
-                    <Link href={item.url}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
+                  <SidebarMenuItem key={item.url}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.url}
+                      tooltip={item.title}
+                      className="hover:bg-accent/10 hover:text-accent transition-colors"
+                    >
+                      <Link href={item.url}>
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>
