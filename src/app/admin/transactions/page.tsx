@@ -32,23 +32,48 @@ export default function AdminTransactionsPage() {
 
   const handleConfirm = async (tx: any) => {
     if (!db) return;
+    if (tx.status !== 'pending') {
+      toast({ title: "Error", description: "This transaction is already processed." });
+      return;
+    }
+    
     setProcessingId(tx.id);
     
     try {
       const userRef = doc(db, "users", tx.uid);
       const txRef = doc(db, "transactions", tx.id);
 
+      // Verify user exists first to prevent orphaned increments
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) {
+        throw new Error("User profile not found.");
+      }
+
+      // Ensure amount is a number for the increment function
+      const amountToAdd = Number(tx.amount);
+      if (isNaN(amountToAdd)) {
+        throw new Error("Invalid transaction amount.");
+      }
+
       // 1. Update Transaction Status
       await updateDoc(txRef, { status: "confirmed" });
 
       // 2. Add Balance to User
       await updateDoc(userRef, {
-        balance: increment(tx.amount)
+        balance: increment(amountToAdd)
       });
 
-      toast({ title: "Success", description: `₦${tx.amount.toLocaleString()} added to ${tx.userName}'s wallet.` });
+      toast({ 
+        title: "Success", 
+        description: `₦${amountToAdd.toLocaleString()} added to ${tx.userName}'s wallet.` 
+      });
     } catch (err: any) {
-      toast({ variant: "destructive", title: "Error", description: "Operation failed." });
+      console.error(err);
+      toast({ 
+        variant: "destructive", 
+        title: "Operation Failed", 
+        description: err.message || "Failed to update balance." 
+      });
     } finally {
       setProcessingId(null);
     }
