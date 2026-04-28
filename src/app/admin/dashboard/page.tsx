@@ -1,18 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useFirestore, useCollection } from "@/firebase";
+import { useFirestore, useCollection, useUser } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 
 export default function AdminDashboard() {
   const db = useFirestore();
+  const { user, loading: authLoading } = useUser();
+  const router = useRouter();
   const { toast } = useToast();
   
   const { data: categories } = useCollection(db ? collection(db, "categories") : null);
@@ -23,6 +26,12 @@ export default function AdminDashboard() {
   const [groupCat, setGroupCat] = useState("");
   
   const [catName, setCatName] = useState("");
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/admin/login");
+    }
+  }, [user, authLoading, router]);
 
   const handleAddGroup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +72,16 @@ export default function AdminDashboard() {
       toast({ variant: "destructive", title: "Error", description: error.message });
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+        <p className="font-headline animate-pulse uppercase tracking-widest text-accent">Verifying Clearance...</p>
+      </div>
+    );
+  }
+
+  if (!user) return null;
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">

@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ShieldCheck, Mail, Lock, ArrowRight } from "lucide-react";
@@ -9,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuth } from "@/firebase";
+import { useAuth, useUser } from "@/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 
@@ -18,8 +17,15 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const auth = useAuth();
+  const { user, loading: authLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push("/admin/dashboard");
+    }
+  }, [user, authLoading, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +44,8 @@ export default function AdminLoginPage() {
       setLoading(false);
     }
   };
+
+  if (authLoading) return null;
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
@@ -92,9 +100,15 @@ export default function AdminLoginPage() {
             </Button>
           </form>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex flex-col space-y-4">
           <p className="text-center w-full text-xs text-muted-foreground">
             Esan Tools Security Protocol v2.0
+          </p>
+          <p className="text-center w-full text-sm text-muted-foreground">
+            Need an admin account?{" "}
+            <Link href="/admin/signup" className="text-primary font-bold hover:underline">
+              Register here
+            </Link>
           </p>
         </CardFooter>
       </Card>

@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ShieldAlert, Mail, Lock, ArrowRight } from "lucide-react";
@@ -9,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuth } from "@/firebase";
+import { useAuth, useUser } from "@/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 
@@ -18,8 +17,15 @@ export default function AdminSignupPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const auth = useAuth();
+  const { user, loading: authLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push("/admin/dashboard");
+    }
+  }, [user, authLoading, router]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +44,8 @@ export default function AdminSignupPage() {
       setLoading(false);
     }
   };
+
+  if (authLoading) return null;
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
