@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useCallback, useMemo, use } from "react";
+import { useState, useCallback, useMemo, use, useEffect } from "react";
 import { Zap, ChevronRight, Terminal, MessageSquare, Target, Cpu, TrendingUp, Layers } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -12,6 +12,11 @@ export default function Home(props: { params: Promise<any> }) {
   const params = use(props.params);
   const [magic, setMagic] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
+  const [year, setYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
 
   const triggerMagic = useCallback(() => {
     if (magic) return;
@@ -211,7 +216,7 @@ export default function Home(props: { params: Promise<any> }) {
             <span className="font-headline font-bold text-sm tracking-widest text-foreground uppercase">ESAN TOOLS</span>
           </div>
           <p className="mb-2">Exclusive Telegram private group marketplace.</p>
-          © {new Date().getFullYear()} Esan Tools. All rights reserved.
+          © {year || "..."} Esan Tools. All rights reserved.
         </div>
       </footer>
     </div>
