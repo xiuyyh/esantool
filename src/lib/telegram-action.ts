@@ -29,23 +29,24 @@ export async function notifyTelegram(message: string) {
       return;
     }
 
+    // Clean the token: remove 'bot' prefix if user added it
     const cleanToken = telegramBotToken.trim().startsWith('bot') 
       ? telegramBotToken.trim().substring(3) 
       : telegramBotToken.trim();
 
     const url = `https://api.telegram.org/bot${cleanToken}/sendMessage`;
     
-    // We try to get the base URL to link back to the admin panel
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://' + process.env.VERCEL_URL || '';
+    // Construct Admin Panel URL
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
     const adminUrl = baseUrl ? `${baseUrl}/admin/transactions` : null;
 
     const body: any = {
       chat_id: telegramChannelId.trim(),
       text: message,
-      parse_mode: 'Markdown',
+      parse_mode: 'HTML',
     };
 
-    // Fast Action Buttons
+    // Add Fast Action Buttons linking to the admin portal
     if (adminUrl) {
       body.reply_markup = {
         inline_keyboard: [

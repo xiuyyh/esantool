@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useUser, useFirestore, useDoc } from "@/firebase";
-import { collection, addDoc, serverTimestamp, doc } from "firebase/firestore";
+import { useUser, useFirestore } from "@/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { notifyTelegram } from "@/lib/telegram-action";
@@ -19,7 +19,6 @@ type Step = 'amount' | 'bank' | 'pending';
 export default function TopUpPage() {
   const { user } = useUser();
   const db = useFirestore();
-  const router = useRouter();
   const { toast } = useToast();
   
   const [step, setStep] = useState<Step>('amount');
@@ -55,16 +54,19 @@ export default function TopUpPage() {
       const txData = {
         uid: user.uid,
         userEmail: user.email,
-        userName: user.displayName || "Anonymous",
+        userName: user.displayName || "Anonymous User",
         amount: numAmount,
         status: "pending",
         type: "credit",
         createdAt: serverTimestamp(),
       };
 
+      // 1. Create transaction record
       await addDoc(collection(db, "transactions"), txData);
       
-      await notifyTelegram(`🚨 *New Top-up Request*\n\n*User:* ${txData.userName}\n*Email:* ${txData.userEmail}\n*Amount:* ₦${txData.amount.toLocaleString()}\n*Status:* PENDING`);
+      // 2. Notify Admin via Telegram with HTML tags
+      const htmlMessage = `🚨 <b>New Top-up Request</b>\n\n<b>User:</b> ${txData.userName}\n<b>Email:</b> ${txData.userEmail}\n<b>Amount:</b> ₦${txData.amount.toLocaleString()}\n<b>Status:</b> PENDING`;
+      await notifyTelegram(htmlMessage);
 
       setStep('pending');
     } catch (err: any) {

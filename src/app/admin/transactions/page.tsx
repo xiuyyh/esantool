@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, ShieldAlert, Loader2, User } from "lucide-react";
+import { Check, X, ShieldAlert, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
@@ -53,22 +53,22 @@ export default function AdminTransactionsPage() {
       const targetUserRef = doc(db, "users", tx.uid);
       const txRef = doc(db, "transactions", tx.id);
 
-      // Verify user exists first to prevent orphaned increments
+      // Verify user exists first
       const userSnap = await getDoc(targetUserRef);
       if (!userSnap.exists()) {
         throw new Error("User profile not found.");
       }
 
-      // Ensure amount is a number for the increment function
+      // Ensure amount is a strictly treated as a number
       const amountToAdd = Number(tx.amount);
       if (isNaN(amountToAdd) || amountToAdd <= 0) {
         throw new Error("Invalid transaction amount.");
       }
 
-      // 1. Update Transaction Status
+      // 1. Update Transaction Status First
       await updateDoc(txRef, { status: "confirmed" });
 
-      // 2. Add Balance to User - Ensuring atomic increment
+      // 2. Add Balance to User atomically
       await updateDoc(targetUserRef, {
         balance: increment(amountToAdd)
       });
