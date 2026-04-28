@@ -14,6 +14,29 @@
         "balance": { "type": "number", "description": "The user's current account balance in Naira." }
       },
       "required": ["uid", "email"]
+    },
+    "TelegramGroup": {
+      "title": "Telegram Group",
+      "description": "A private Telegram group listing.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "category": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "price", "category"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Marketplace category.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" }
+      },
+      "required": ["name"]
     }
   },
   "auth": {
@@ -23,6 +46,14 @@
     "/users/{userId}": {
       "schema": { "$ref": "#/entities/UserProfile" },
       "description": "User profile records."
+    },
+    "/groups/{groupId}": {
+      "schema": { "$ref": "#/entities/TelegramGroup" },
+      "description": "Marketplace group listings."
+    },
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "#/entities/Category" },
+      "description": "Available categories."
     }
   }
 }
