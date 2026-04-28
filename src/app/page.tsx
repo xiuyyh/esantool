@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -12,7 +11,6 @@ import { collection } from "firebase/firestore";
 
 export default function Home(props: { params: Promise<any> }) {
   const params = use(props.params);
-  const [magic, setMagic] = useState(false);
   const [year, setYear] = useState<number | null>(null);
   
   const db = useFirestore();
@@ -22,79 +20,31 @@ export default function Home(props: { params: Promise<any> }) {
     setYear(new Date().getFullYear());
   }, []);
 
-  const triggerMagic = useCallback(() => {
-    if (magic) return;
-    setMagic(true);
-    setTimeout(() => setMagic(false), 1000);
-  }, [magic]);
-
   const headlineMain = "Buy";
   const headlineAccent = "High quality private TG groups";
+  const fullHeadline = `${headlineMain} ${headlineAccent}`;
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
-      <section 
-        className="py-32 relative overflow-hidden cursor-pointer select-none"
-        onClick={triggerMagic}
-      >
-        {/* Decorative Background Icons */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.05]">
-          <MessageSquare 
-            className={cn(
-              "absolute top-10 left-[10%] h-32 w-32 rotate-12 transition-all duration-700",
-              magic && "rotate-[360deg] scale-150 text-accent opacity-40"
-            )} 
-          />
-          <MessageSquare 
-            className={cn(
-              "absolute bottom-10 right-[15%] h-24 w-24 -rotate-12 text-accent transition-all duration-700",
-              magic && "rotate-[-360deg] scale-150 text-white opacity-40"
-            )} 
-          />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <h1 className="font-headline text-5xl sm:text-7xl font-bold text-foreground tracking-tight leading-tight flex flex-wrap justify-center gap-x-[0.3em]">
-            <span className="inline-flex">
-              {headlineMain.split("").map((char, i) => (
-                <span
-                  key={`main-${i}`}
-                  className={cn(
-                    "inline-block animate-fall-in opacity-0 hover:text-accent hover:-translate-y-6 hover:scale-110 transition-all duration-300",
-                    magic && "animate-bounce text-accent"
-                  )}
-                  style={{ animationDelay: `${i * 0.05}s` }}
-                >
-                  {char}
-                </span>
-              ))}
-            </span>
-
-            <span className="inline-flex flex-wrap justify-center gap-x-[0.2em] text-accent">
-              {headlineAccent.split(" ").map((word, wordIdx) => (
-                <span key={`word-${wordIdx}`} className="inline-flex">
-                  {word.split("").map((char, charIdx) => (
-                    <span
-                      key={`char-${wordIdx}-${charIdx}`}
-                      className={cn(
-                        "inline-block animate-fall-in opacity-0 hover:text-white hover:-translate-y-6 hover:rotate-12 hover:scale-110 transition-all duration-300",
-                        magic && "animate-bounce text-white"
-                      )}
-                      style={{ animationDelay: `${(headlineMain.length + wordIdx * 3 + charIdx) * 0.04}s` }}
-                    >
-                      {char}
-                    </span>
-                  ))}
-                </span>
-              ))}
-            </span>
-          </h1>
+      {/* Moving Ad Section (Ticker) */}
+      <section className="py-6 bg-accent/5 border-b border-white/5 overflow-hidden whitespace-nowrap relative">
+        <div className="flex animate-marquee items-center gap-12 w-max">
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="flex items-center gap-4">
+              <span className="font-headline text-lg font-bold uppercase tracking-tight text-foreground/80">
+                {headlineMain}
+              </span>
+              <span className="font-headline text-lg font-bold uppercase tracking-tight text-accent">
+                {headlineAccent}
+              </span>
+              <Terminal className="h-4 w-4 text-accent/40" />
+            </div>
+          ))}
         </div>
       </section>
 
       {/* Market Section */}
-      <section className="py-16 border-t border-white/5">
+      <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
             <div>
@@ -127,9 +77,10 @@ export default function Home(props: { params: Promise<any> }) {
                 />
               ))
             ) : (
-              <div className="col-span-full flex flex-col items-center justify-center py-20 opacity-50">
+              <div className="col-span-full flex flex-col items-center justify-center py-20 opacity-50 text-center border-2 border-dashed border-white/5 rounded-3xl">
                 <Terminal className="h-12 w-12 mb-4" />
-                <p>No groups available yet. Add them from the admin panel.</p>
+                <p className="text-sm uppercase tracking-widest font-bold">No groups available yet.</p>
+                <p className="text-xs text-muted-foreground mt-1">Populate listings from the Command Center.</p>
               </div>
             )}
           </div>
