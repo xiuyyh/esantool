@@ -2,9 +2,10 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Eye } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 interface ProductCardProps {
@@ -22,7 +23,7 @@ export function ProductCard({ id, title, category, price, description, imageUrl,
     <Card className="overflow-hidden glass-card group hover:border-accent/40 transition-all duration-200 border-white/5">
       <div className="flex p-3 gap-4 items-center">
         {/* Compact Image */}
-        <div className="relative h-20 w-20 shrink-0 rounded-md overflow-hidden bg-muted border border-white/5">
+        <Link href={`/products/${id}`} className="relative h-20 w-20 shrink-0 rounded-md overflow-hidden bg-muted border border-white/5">
           {imageUrl ? (
             <Image
               src={imageUrl}
@@ -36,14 +37,16 @@ export function ProductCard({ id, title, category, price, description, imageUrl,
               <span className="text-[10px] text-muted-foreground">No img</span>
             </div>
           )}
-        </div>
+        </Link>
 
         {/* Content */}
         <div className="flex-1 min-w-0 flex flex-col justify-center">
           <div className="flex justify-between items-start mb-1">
-            <h3 className="font-headline text-sm font-bold text-foreground group-hover:text-accent transition-colors truncate pr-2">
-              {title}
-            </h3>
+            <Link href={`/products/${id}`}>
+              <h3 className="font-headline text-sm font-bold text-foreground group-hover:text-accent transition-colors truncate pr-2">
+                {title}
+              </h3>
+            </Link>
             <Badge variant="outline" className="text-[10px] py-0 px-1.5 border-accent/20 text-accent h-5">
               {category}
             </Badge>
@@ -55,10 +58,18 @@ export function ProductCard({ id, title, category, price, description, imageUrl,
             <span className="text-sm font-bold font-headline text-accent">
               ₦{price.toLocaleString()}
             </span>
-            <Button size="sm" className="h-7 px-3 text-[10px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
-              <ShoppingCart className="h-3 w-3 mr-1" />
-              BUY
-            </Button>
+            <div className="flex gap-2">
+              <Button size="sm" variant="ghost" className="h-7 px-2 text-[10px] hover:text-accent" asChild>
+                <Link href={`/products/${id}`}>
+                  <Eye className="h-3 w-3 mr-1" />
+                  VIEW
+                </Link>
+              </Button>
+              <Button size="sm" className="h-7 px-3 text-[10px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
+                <ShoppingCart className="h-3 w-3 mr-1" />
+                BUY
+              </Button>
+            </div>
           </div>
         </div>
       </div>
