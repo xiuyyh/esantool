@@ -21,11 +21,7 @@ export default function UserDashboard() {
   if (userLoading || profileLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-10 space-y-8">
-        <div className="space-y-2">
-          <Skeleton className="h-10 w-64" />
-          <Skeleton className="h-4 w-96" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Skeleton className="h-40 w-full" />
         </div>
       </div>
@@ -36,11 +32,6 @@ export default function UserDashboard() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
-      <div>
-        <h1 className="font-headline text-3xl font-bold">Member Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back, {user?.displayName || "User"}. Manage your account balance here.</p>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Wallet Card */}
         <Card className="glass-card border-white/5 relative overflow-hidden">
