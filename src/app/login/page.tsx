@@ -33,7 +33,7 @@ export default function LoginPage() {
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Access Denied",
+        title: "Login Failed",
         description: error.message,
       });
     } finally {
@@ -47,7 +47,6 @@ export default function LoginPage() {
     try {
       const result = await signInWithPopup(auth, provider);
       
-      // Ensure user profile exists and is initialized
       await setDoc(doc(db, "users", result.user.uid), {
         uid: result.user.uid,
         email: result.user.email,
@@ -63,7 +62,7 @@ export default function LoginPage() {
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Network Interruption",
+        title: "Error",
         description: error.message,
       });
     }
@@ -77,9 +76,9 @@ export default function LoginPage() {
           <div className="mx-auto bg-accent/10 p-3 rounded-xl w-fit mb-2">
             <Terminal className="h-8 w-8 text-accent" />
           </div>
-          <CardTitle className="font-headline text-3xl font-bold">Authentication</CardTitle>
+          <CardTitle className="font-headline text-3xl font-bold">Login</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Sign in to access regional intelligence nodes.
+            Sign in to buy groups.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -96,7 +95,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Security Key</Label>
+              <Label htmlFor="password">Password</Label>
               <Input 
                 id="password" 
                 type="password" 
@@ -111,7 +110,7 @@ export default function LoginPage() {
               className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg"
               disabled={loading}
             >
-              {loading ? "AUTHENTICATING..." : "SIGN IN"}
+              {loading ? "Logging in..." : "LOGIN"}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </form>
@@ -121,7 +120,7 @@ export default function LoginPage() {
               <span className="w-full border-t border-white/5"></span>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">External Provider</span>
+              <span className="bg-background px-2 text-muted-foreground">Or use Google</span>
             </div>
           </div>
 
@@ -130,14 +129,14 @@ export default function LoginPage() {
             className="w-full h-12 border-white/10 hover:bg-white/5 font-bold"
             onClick={handleGoogleLogin}
           >
-            GOOGLE AUTH
+            LOGIN WITH GOOGLE
           </Button>
         </CardContent>
         <CardFooter>
           <p className="text-center w-full text-sm text-muted-foreground">
-            No credentials?{" "}
+            No account?{" "}
             <Link href="/signup" className="text-accent font-bold hover:underline">
-              Create Account
+              Sign up
             </Link>
           </p>
         </CardFooter>

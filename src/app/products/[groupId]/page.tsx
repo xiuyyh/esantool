@@ -52,20 +52,19 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
 
     setIsAdding(true);
     try {
-      // Use setDoc with merge: true to ensure the user profile exists
       await setDoc(userRef!, {
         cart: arrayUnion(params.groupId)
       }, { merge: true });
 
       toast({
-        title: "Success",
-        description: "Listing added to cart.",
+        title: "Added",
+        description: "Group added to your cart.",
       });
     } catch (err: any) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Could not update cart.",
+        description: "Could not add to cart.",
       });
     } finally {
       setIsAdding(false);
@@ -80,7 +79,7 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
 
   if (!group) return (
     <div className="max-w-5xl mx-auto px-4 py-20 text-center">
-      <h2 className="text-2xl font-bold">Intelligence Not Found</h2>
+      <h2 className="text-2xl font-bold">Group Not Found</h2>
       <Button className="mt-6" onClick={() => router.push("/products")}>Back</Button>
     </div>
   );
@@ -91,7 +90,7 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
     <div className="max-w-6xl mx-auto px-4 py-10 space-y-8">
       <Link href="/products" className="inline-flex items-center text-xs font-bold text-accent uppercase tracking-widest">
         <ChevronLeft className="h-4 w-4 mr-1" />
-        Return to Market
+        Back to Shop
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -122,7 +121,7 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
                 <Globe className="h-4 w-4 text-accent" />
                 <Badge variant="outline" className="border-accent/20 text-accent uppercase">{group.country}</Badge>
               </div>
-              <h2 className="font-headline text-2xl font-bold uppercase tracking-tight">Intelligence Report</h2>
+              <h2 className="font-headline text-2xl font-bold uppercase tracking-tight">About this Group</h2>
               <p className="text-muted-foreground whitespace-pre-wrap">{group.description}</p>
             </CardContent>
           </Card>
@@ -133,12 +132,12 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
             <CardContent className="p-8 space-y-8">
               <div className="space-y-2">
                 <h1 className="font-headline text-3xl font-bold tracking-tighter">{group.title}</h1>
-                <p className="text-muted-foreground text-xs uppercase tracking-widest">Secure Entry Node</p>
+                <p className="text-muted-foreground text-xs uppercase tracking-widest">Private Link</p>
               </div>
 
               <div className="space-y-4">
                 <div className="flex justify-between items-baseline">
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Pricing</span>
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Price</span>
                   <span className="text-4xl font-bold font-headline text-accent">₦{group.price?.toLocaleString()}</span>
                 </div>
               </div>
@@ -148,7 +147,7 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
                   <div className="p-5 rounded-2xl bg-green-500/10 border border-green-500/20 space-y-3">
                     <p className="text-xs font-bold text-green-500 uppercase flex items-center gap-2">
                       <ShieldCheck className="h-4 w-4" />
-                      Access Authenticated
+                      Purchased
                     </p>
                     <div className="flex items-center gap-3">
                       <Input 
@@ -173,18 +172,18 @@ export default function GroupDetailsPage(props: { params: Promise<{ groupId: str
                       {isInCart ? (
                         <>
                           <Check className="mr-2 h-5 w-5" />
-                          GOTO CHECKOUT
+                          GO TO CART
                         </>
                       ) : (
                         <>
                           <ShoppingCart className="mr-2 h-5 w-5" />
-                          {isAdding ? "STAGING..." : "ADD TO CART"}
+                          {isAdding ? "ADDING..." : "ADD TO CART"}
                         </>
                       )}
                     </Button>
                     <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground uppercase">
                       <Lock className="h-3 w-3" />
-                      Link hidden until verification
+                      Link shows after purchase
                     </div>
                   </div>
                 )}

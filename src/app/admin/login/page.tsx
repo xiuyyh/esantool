@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -37,7 +38,7 @@ export default function AdminLoginPage() {
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Admin Access Denied",
+        title: "Login Failed",
         description: error.message,
       });
     } finally {
@@ -57,13 +58,13 @@ export default function AdminLoginPage() {
           </div>
           <CardTitle className="font-headline text-3xl font-bold">Admin Login</CardTitle>
           <CardDescription>
-            Authorized access only for platform administrators.
+            Log in to manage the marketplace.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Admin Email</Label>
+              <Label htmlFor="email">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input 
@@ -77,7 +78,7 @@ export default function AdminLoginPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Security Key</Label>
+              <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input 
@@ -95,19 +96,19 @@ export default function AdminLoginPage() {
               className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold"
               disabled={loading}
             >
-              {loading ? "Verifying..." : "ACCESS DASHBOARD"}
+              {loading ? "Logging in..." : "LOGIN"}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <p className="text-center w-full text-xs text-muted-foreground">
-            Esan Tools Security Protocol v2.0
+            Admin Panel v2.0
           </p>
           <p className="text-center w-full text-sm text-muted-foreground">
             Need an admin account?{" "}
             <Link href="/admin/signup" className="text-primary font-bold hover:underline">
-              Register here
+              Sign up
             </Link>
           </p>
         </CardFooter>

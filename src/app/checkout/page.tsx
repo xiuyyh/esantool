@@ -47,12 +47,11 @@ export default function CheckoutPage() {
     if (!userRef || !profile) return;
     if (cartItems.length === 0) return;
 
-    // Strict balance check
     if (hasInsufficientFunds) {
       toast({
         variant: "destructive",
-        title: "Transaction Denied",
-        description: `Insufficient credits. Current balance: ₦${userBalance.toLocaleString()}. Required: ₦${totalPrice.toLocaleString()}.`,
+        title: "Payment Failed",
+        description: `Insufficient funds. Your balance: ₦${userBalance.toLocaleString()}. Price: ₦${totalPrice.toLocaleString()}.`,
       });
       return;
     }
@@ -64,19 +63,19 @@ export default function CheckoutPage() {
       await updateDoc(userRef, {
         balance: increment(-totalPrice),
         purchasedGroups: arrayUnion(...itemIds),
-        cart: [] // Clear cart after successful transaction
+        cart: []
       });
 
       toast({
-        title: "Transaction Successful",
-        description: "Access credentials have been deployed to your dashboard.",
+        title: "Purchase Successful",
+        description: "Your groups are now available in your dashboard.",
       });
       router.push("/dashboard");
     } catch (err: any) {
       toast({
         variant: "destructive",
-        title: "Security Interrupt",
-        description: "The transaction could not be verified. Please try again.",
+        title: "Error",
+        description: "Payment could not be processed. Please try again.",
       });
     } finally {
       setIsProcessing(false);
@@ -86,9 +85,9 @@ export default function CheckoutPage() {
   if (!user) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20 text-center">
-        <h2 className="text-2xl font-bold">Authentication Required</h2>
+        <h2 className="text-2xl font-bold">Login Required</h2>
         <Button className="mt-6" asChild>
-          <Link href="/login">Login to Access Staging</Link>
+          <Link href="/login">Login to buy groups</Link>
         </Button>
       </div>
     );
@@ -98,12 +97,12 @@ export default function CheckoutPage() {
     <div className="max-w-7xl mx-auto px-4 py-16 space-y-12">
       <div className="flex flex-col md:flex-row justify-between items-end gap-4 border-b border-white/5 pb-8">
         <div>
-          <h1 className="font-headline text-5xl font-bold tracking-tight">STAGING AREA</h1>
-          <p className="text-muted-foreground mt-2 uppercase tracking-widest text-xs">Final verification before deployment.</p>
+          <h1 className="font-headline text-5xl font-bold tracking-tight">MY CART</h1>
+          <p className="text-muted-foreground mt-2 uppercase tracking-widest text-xs">Review your items before buying.</p>
         </div>
         <Link href="/products" className="text-accent text-xs font-bold uppercase tracking-widest flex items-center hover:opacity-80">
           <ChevronLeft className="h-4 w-4 mr-1" />
-          Market Overview
+          Back to Shop
         </Link>
       </div>
 
@@ -139,7 +138,7 @@ export default function CheckoutPage() {
           ) : (
             <div className="py-20 text-center border-2 border-dashed border-white/10 rounded-3xl opacity-50">
               <ShoppingCart className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="uppercase tracking-widest text-xs font-bold">Staging is empty.</p>
+              <p className="uppercase tracking-widest text-xs font-bold">Your cart is empty.</p>
             </div>
           )}
         </div>
@@ -147,23 +146,23 @@ export default function CheckoutPage() {
         <div className="lg:col-span-4 space-y-6">
           <Card className="glass-card border-accent/20 sticky top-24">
             <CardHeader>
-              <CardTitle className="font-headline text-xl">Authorization</CardTitle>
+              <CardTitle className="font-headline text-xl">Checkout</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Intelligence Nodes</span>
+                  <span className="text-muted-foreground">Items</span>
                   <span>{cartItems.length}</span>
                 </div>
                 <div className="flex justify-between font-bold text-lg border-t border-white/5 pt-4">
-                  <span>Total Cost</span>
+                  <span>Total</span>
                   <span className={hasInsufficientFunds ? "text-destructive" : "text-accent"}>₦{totalPrice.toLocaleString()}</span>
                 </div>
               </div>
 
               <div className={hasInsufficientFunds ? "p-4 rounded-xl bg-destructive/5 border border-destructive/10 space-y-2" : "p-4 rounded-xl bg-accent/5 border border-accent/10 space-y-2"}>
                 <div className="flex justify-between text-[10px] uppercase font-bold text-muted-foreground">
-                  <span>Credit Balance</span>
+                  <span>My Balance</span>
                   <Wallet className="h-3 w-3" />
                 </div>
                 <div className="text-2xl font-bold font-headline">₦{userBalance.toLocaleString()}</div>
@@ -173,7 +172,7 @@ export default function CheckoutPage() {
                 <Alert variant="destructive" className="bg-destructive/5 border-destructive/20 py-2">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription className="text-[10px] uppercase font-bold">
-                    Balance low: ₦{(totalPrice - userBalance).toLocaleString()} required.
+                    Need ₦{(totalPrice - userBalance).toLocaleString()} more.
                   </AlertDescription>
                 </Alert>
               )}
@@ -183,13 +182,13 @@ export default function CheckoutPage() {
                 disabled={isProcessing || cartItems.length === 0 || hasInsufficientFunds}
                 onClick={handleCompletePurchase}
               >
-                {isProcessing ? "PROCESSING..." : hasInsufficientFunds ? "INSUFFICIENT FUNDS" : "CONFIRM ACQUISITION"}
+                {isProcessing ? "BUYING..." : hasInsufficientFunds ? "LOW BALANCE" : "BUY NOW"}
                 {!hasInsufficientFunds && <ShieldCheck className="ml-2 h-5 w-5" />}
               </Button>
             </CardContent>
             <CardFooter>
               <p className="text-[10px] text-center w-full text-muted-foreground uppercase tracking-widest">
-                Transaction finalized in encrypted vault.
+                Secure payment.
               </p>
             </CardFooter>
           </Card>

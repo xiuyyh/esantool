@@ -54,14 +54,14 @@ export function AppSidebar() {
       label: "General",
       items: [
         {
-          title: "Marketplace",
+          title: "Shop",
           url: "/products",
           icon: Globe,
         },
       ],
     },
     {
-      label: "Intelligence Vault",
+      label: "My Account",
       items: [
         {
           title: "My Dashboard",
@@ -72,10 +72,9 @@ export function AppSidebar() {
     },
   ];
 
-  // Only show Admin group if authenticated
   if (user) {
     menuGroups.push({
-      label: "Command Center",
+      label: "Admin",
       items: [
         {
           title: "Admin Dashboard",
@@ -141,7 +140,7 @@ export function AppSidebar() {
               </div>
               <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
                 <p className="text-xs font-bold truncate">{user.displayName || user.email}</p>
-                <p className="text-[10px] text-muted-foreground truncate uppercase tracking-tighter">Verified Agent</p>
+                <p className="text-[10px] text-muted-foreground truncate uppercase tracking-tighter">User</p>
               </div>
             </div>
             <SidebarMenu>
@@ -162,7 +161,7 @@ export function AppSidebar() {
               <SidebarMenuButton asChild className="bg-primary text-white hover:bg-primary/90 group-data-[collapsible=icon]:justify-center">
                 <Link href="/login">
                   <Key className="h-4 w-4" />
-                  <span className="group-data-[collapsible=icon]:hidden">Authenticate</span>
+                  <span className="group-data-[collapsible=icon]:hidden">Login</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

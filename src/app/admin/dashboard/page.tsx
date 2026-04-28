@@ -96,7 +96,7 @@ export default function AdminDashboard() {
       createdAt: serverTimestamp(),
     });
     
-    toast({ title: "Success", description: "Listing deployed successfully." });
+    toast({ title: "Success", description: "Group added successfully." });
     setGroupTitle("");
     setGroupPrice("");
     setGroupLink("");
@@ -119,10 +119,10 @@ export default function AdminDashboard() {
 
   const handleDeleteGroup = async (id: string) => {
     if (!db) return;
-    if (!confirm("Are you sure you want to delete this listing?")) return;
+    if (!confirm("Are you sure you want to delete this group?")) return;
     
     deleteDoc(doc(db, "groups", id));
-    toast({ title: "Deleted", description: "Listing has been removed." });
+    toast({ title: "Deleted", description: "Group has been removed." });
   };
 
   const openEditDialog = (group: any) => {
@@ -142,7 +142,7 @@ export default function AdminDashboard() {
       country: editingGroup.country,
     });
 
-    toast({ title: "Updated", description: "Listing details saved." });
+    toast({ title: "Updated", description: "Group details saved." });
     setIsEditDialogOpen(false);
     setEditingGroup(null);
   };
@@ -154,17 +154,16 @@ export default function AdminDashboard() {
     <div className="max-w-7xl mx-auto px-4 py-10 space-y-12">
       <div className="border-b border-white/5 pb-8 flex justify-between items-end">
         <div>
-          <h1 className="font-headline text-3xl font-bold uppercase tracking-tight">Admin Command</h1>
-          <p className="text-muted-foreground mt-1">Full control over regional intelligence nodes.</p>
+          <h1 className="font-headline text-3xl font-bold uppercase tracking-tight">Admin Panel</h1>
+          <p className="text-muted-foreground mt-1">Manage all your groups and categories here.</p>
         </div>
       </div>
 
       <div className="grid lg:grid-cols-12 gap-10">
-        {/* Create Listing Section */}
         <div className="lg:col-span-8 space-y-8">
           <Card className="glass-card border-white/5">
             <CardHeader>
-              <CardTitle className="font-headline text-xl">Deploy New Access Point</CardTitle>
+              <CardTitle className="font-headline text-xl">Add New Group</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleAddGroup} className="space-y-6">
@@ -194,12 +193,12 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="link">Private Access Link</Label>
+                    <Label htmlFor="link">Join Link</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input 
                         id="link" 
-                        placeholder="https://t.me/joinchat/..." 
+                        placeholder="https://t.me/join..." 
                         value={groupLink}
                         onChange={(e) => setGroupLink(e.target.value)}
                         className="bg-white/5 pl-10"
@@ -209,7 +208,7 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Target Region (Country)</Label>
+                    <Label>Country</Label>
                     <Select onValueChange={setGroupCountry} value={groupCountry}>
                       <SelectTrigger className="bg-white/5">
                         <SelectValue placeholder="Select Country" />
@@ -223,7 +222,7 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Preview Graphics (Multiple allowed)</Label>
+                    <Label>Pictures</Label>
                     <div className="grid grid-cols-4 gap-4">
                       {imageUrls.map((url, idx) => (
                         <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-white/10 group">
@@ -268,23 +267,22 @@ export default function AdminDashboard() {
                 </div>
 
                 <Button type="submit" className="w-full bg-primary font-bold">
-                  Deploy Listing
+                  Add Group
                 </Button>
               </form>
             </CardContent>
           </Card>
         </div>
 
-        {/* Sidebar Controls */}
         <div className="lg:col-span-4 space-y-8">
           <Card className="glass-card border-white/5">
             <CardHeader>
-              <CardTitle className="font-headline text-lg">Region Management</CardTitle>
+              <CardTitle className="font-headline text-lg">Countries</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleAddCountry} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="countryName">New Region Name</Label>
+                  <Label htmlFor="countryName">New Country Name</Label>
                   <Input 
                     id="countryName" 
                     value={countryName}
@@ -294,12 +292,12 @@ export default function AdminDashboard() {
                   />
                 </div>
                 <Button type="submit" variant="outline" className="w-full">
-                  Add Region
+                  Add Country
                 </Button>
               </form>
 
               <div className="mt-8 space-y-2">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-widest border-b border-white/5 pb-1">Active Regions</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest border-b border-white/5 pb-1">Current Countries</p>
                 <div className="flex flex-wrap gap-2">
                   {countries.map((c: any) => (
                     <div key={c.id} className="text-[10px] font-bold bg-white/5 px-2 py-1 rounded-md border border-white/5 flex items-center gap-1">
@@ -314,15 +312,14 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* CRUD Management Section */}
       <section className="space-y-6">
-        <h2 className="font-headline text-2xl font-bold uppercase tracking-tight">Active Listings</h2>
+        <h2 className="font-headline text-2xl font-bold uppercase tracking-tight">All Groups</h2>
         <Card className="glass-card border-white/5 overflow-hidden">
           <Table>
             <TableHeader className="bg-white/5">
               <TableRow>
-                <TableHead className="font-bold">Group Title</TableHead>
-                <TableHead className="font-bold">Region</TableHead>
+                <TableHead className="font-bold">Name</TableHead>
+                <TableHead className="font-bold">Country</TableHead>
                 <TableHead className="font-bold">Price</TableHead>
                 <TableHead className="font-bold text-right">Actions</TableHead>
               </TableRow>
@@ -357,7 +354,7 @@ export default function AdminDashboard() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center py-10 text-muted-foreground uppercase text-xs tracking-widest">
-                    No active listings found.
+                    No groups found.
                   </TableCell>
                 </TableRow>
               )}
@@ -366,11 +363,10 @@ export default function AdminDashboard() {
         </Card>
       </section>
 
-      {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="glass-card border-white/10 max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="font-headline text-xl">Modify Intelligence Node</DialogTitle>
+            <DialogTitle className="font-headline text-xl">Edit Group</DialogTitle>
           </DialogHeader>
           {editingGroup && (
             <div className="space-y-4 py-4">
@@ -394,7 +390,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Region</Label>
+                <Label>Country</Label>
                 <Select 
                   onValueChange={(val) => setEditingGroup({...editingGroup, country: val})} 
                   value={editingGroup.country}
@@ -410,7 +406,7 @@ export default function AdminDashboard() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Private Link</Label>
+                <Label>Join Link</Label>
                 <Input 
                   value={editingGroup.accessLink}
                   onChange={(e) => setEditingGroup({...editingGroup, accessLink: e.target.value})}
