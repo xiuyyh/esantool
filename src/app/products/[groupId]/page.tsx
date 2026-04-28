@@ -1,4 +1,3 @@
-
 "use client";
 
 import { use, useEffect, useState } from "react";
@@ -22,8 +21,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
-export default function GroupDetailsPage(props: { params: Promise<{ groupId: string }> }) {
-  const params = use(props.params);
+export default function GroupDetailsPage({ params: paramsPromise }: { params: Promise<{ groupId: string }> }) {
+  const params = use(paramsPromise);
   const router = useRouter();
   const db = useFirestore();
   const { user } = useUser();

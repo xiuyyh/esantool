@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useCallback, useMemo, use, useEffect } from "react";
+import { useState, useMemo, use, useEffect } from "react";
 import { Zap, ChevronRight, Terminal, MessageSquare, Layers } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import { cn } from "@/lib/utils";
@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { useFirestore, useCollection } from "@/firebase";
 import { collection } from "firebase/firestore";
 
-export default function Home(props: { params: Promise<any> }) {
-  const params = use(props.params);
+export default function Home({ params: paramsPromise }: { params: Promise<any> }) {
+  const params = use(paramsPromise);
   const [year, setYear] = useState<number | null>(null);
   
   const db = useFirestore();
@@ -49,7 +49,7 @@ export default function Home(props: { params: Promise<any> }) {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
             <div>
               <h2 className="font-headline text-3xl font-bold mb-2">
-                Premium Marketplace
+                Marketplace
               </h2>
               <p className="text-muted-foreground">Explore high-performance Telegram communities.</p>
             </div>
@@ -80,7 +80,7 @@ export default function Home(props: { params: Promise<any> }) {
               <div className="col-span-full flex flex-col items-center justify-center py-20 opacity-50 text-center border-2 border-dashed border-white/5 rounded-3xl">
                 <Terminal className="h-12 w-12 mb-4" />
                 <p className="text-sm uppercase tracking-widest font-bold">No groups available yet.</p>
-                <p className="text-xs text-muted-foreground mt-1">Populate listings from the Command Center.</p>
+                <p className="text-xs text-muted-foreground mt-1">Populate listings from the Admin Panel.</p>
               </div>
             )}
           </div>
