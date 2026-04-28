@@ -41,7 +41,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
-      <Card className="w-full max-w-lg glass-card border-white/10 relative overflow-hidden">
+      <Card className="w-full max-w-2xl glass-card border-white/10 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1.5 bg-accent/40"></div>
         <CardHeader className="space-y-6 text-center pb-8 pt-10">
           <div className="mx-auto bg-accent/10 p-5 rounded-2xl w-fit mb-2 shadow-inner">
