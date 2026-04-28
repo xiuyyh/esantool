@@ -9,9 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuth, useFirestore } from "@/firebase";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { useAuth } from "@/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
@@ -19,7 +18,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const auth = useAuth();
-  const db = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -41,65 +39,42 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    if (!auth || !db) return;
-    const provider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(auth, provider);
-      
-      await setDoc(doc(db, "users", result.user.uid), {
-        uid: result.user.uid,
-        email: result.user.email,
-        displayName: result.user.displayName,
-        photoURL: result.user.photoURL,
-        balance: 0,
-        purchasedGroups: [],
-        cart: [],
-        createdAt: new Date().toISOString()
-      }, { merge: true });
-      
-      router.push("/");
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
-      });
-    }
-  };
-
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
-      <Card className="w-full max-w-md glass-card border-white/10 relative overflow-hidden">
+      <Card className="w-full max-w-lg glass-card border-white/10 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-accent/30"></div>
-        <CardHeader className="space-y-2 text-center">
-          <div className="mx-auto bg-accent/10 p-3 rounded-xl w-fit mb-2">
-            <Terminal className="h-8 w-8 text-accent" />
+        <CardHeader className="space-y-4 text-center pb-8">
+          <div className="mx-auto bg-accent/10 p-4 rounded-xl w-fit mb-2">
+            <Terminal className="h-10 w-10 text-accent" />
           </div>
-          <CardTitle className="font-headline text-3xl font-bold">Login</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            Sign in to buy groups.
-          </CardDescription>
+          <div className="space-y-2">
+            <CardTitle className="font-headline text-4xl font-bold">Login</CardTitle>
+            <CardDescription className="text-muted-foreground text-base">
+              Sign in to buy groups.
+            </CardDescription>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <form onSubmit={handleEmailLogin} className="space-y-4">
+        <CardContent className="space-y-6 px-10">
+          <form onSubmit={handleEmailLogin} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Email</Label>
               <Input 
                 id="email" 
                 type="email" 
-                className="h-12 glass-card border-white/10" 
+                placeholder="you@example.com"
+                className="h-14 glass-card border-white/10 text-lg" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Password</Label>
               <Input 
                 id="password" 
                 type="password" 
-                className="h-12 glass-card border-white/10" 
+                placeholder="••••••••"
+                className="h-14 glass-card border-white/10 text-lg" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -107,36 +82,19 @@ export default function LoginPage() {
             </div>
             <Button 
               type="submit" 
-              className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg"
+              className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xl uppercase tracking-widest mt-4"
               disabled={loading}
             >
               {loading ? "Logging in..." : "LOGIN"}
-              <ArrowRight className="ml-2 h-5 w-5" />
+              <ArrowRight className="ml-2 h-6 w-6" />
             </Button>
           </form>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-white/5"></span>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or use Google</span>
-            </div>
-          </div>
-
-          <Button 
-            variant="outline" 
-            className="w-full h-12 border-white/10 hover:bg-white/5 font-bold"
-            onClick={handleGoogleLogin}
-          >
-            LOGIN WITH GOOGLE
-          </Button>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="pb-10 pt-4 flex flex-col space-y-4">
           <p className="text-center w-full text-sm text-muted-foreground">
             No account?{" "}
             <Link href="/signup" className="text-accent font-bold hover:underline">
-              Sign up
+              Sign up here
             </Link>
           </p>
         </CardFooter>
