@@ -1,4 +1,3 @@
-
 import type {Metadata} from 'next';
 import './globals.css';
 import { Navigation } from '@/components/navigation';
@@ -10,11 +9,13 @@ export const metadata: Metadata = {
   description: 'Digital sophistication for your tech needs',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
+export default async function RootLayout(props: {
   children: React.ReactNode;
-}>) {
+  params: Promise<any>;
+}) {
+  const params = await props.params;
+  const { children } = props;
+
   return (
     <html lang="en" className="dark">
       <head>

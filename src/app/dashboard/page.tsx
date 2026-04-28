@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import { useUser, useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { 
@@ -16,7 +17,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ProductCard } from "@/components/product-card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 
-export default function UserDashboard() {
+export default function UserDashboard(props: { params: Promise<any> }) {
+  const params = use(props.params);
   const { user, loading: userLoading } = useUser();
   const db = useFirestore();
   

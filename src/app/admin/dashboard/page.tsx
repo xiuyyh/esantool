@@ -1,6 +1,6 @@
-
 "use client";
 
+import { use } from "react";
 import { 
   BarChart3, 
   Package, 
@@ -25,19 +25,20 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
-export default function AdminDashboard() {
+export default function AdminDashboard(props: { params: Promise<any> }) {
+  const params = use(props.params);
   const stats = [
-    { title: "Total Revenue", value: "$12,450.80", change: "+12.5%", icon: DollarSign, color: "text-green-500" },
+    { title: "Total Revenue", value: "₦12,450,000", change: "+12.5%", icon: DollarSign, color: "text-green-500" },
     { title: "Active Orders", value: "24", change: "+4", icon: CreditCard, color: "text-accent" },
     { title: "Product Listings", value: "156", change: "+12", icon: Package, color: "text-primary" },
     { title: "New Customers", value: "84", change: "+18%", icon: Users, color: "text-accent" },
   ];
 
   const recentOrders = [
-    { id: "ORD-7281", customer: "alex.j@example.com", product: "VPN Access Log", amount: "$12.50", status: "Delivered", date: "2 mins ago" },
-    { id: "ORD-7280", customer: "sarah_tech@protonmail.com", product: "Custom Landing Page", amount: "$499.00", status: "Processing", date: "15 mins ago" },
-    { id: "ORD-7279", customer: "mike88@gmail.com", product: "Aged Social Log", amount: "$45.00", status: "Delivered", date: "1 hour ago" },
-    { id: "ORD-7278", customer: "dev_team@outlook.com", product: "Telegram HQ Link", amount: "$24.99", status: "Delivered", date: "3 hours ago" },
+    { id: "ORD-7281", customer: "alex.j@example.com", product: "VPN Access Log", amount: "₦12,500", status: "Delivered", date: "2 mins ago" },
+    { id: "ORD-7280", customer: "sarah_tech@protonmail.com", product: "Custom Landing Page", amount: "₦499,000", status: "Processing", date: "15 mins ago" },
+    { id: "ORD-7279", customer: "mike88@gmail.com", product: "Aged Social Log", amount: "₦45,000", status: "Delivered", date: "1 hour ago" },
+    { id: "ORD-7278", customer: "dev_team@outlook.com", product: "Telegram HQ Link", amount: "₦24,990", status: "Delivered", date: "3 hours ago" },
   ];
 
   return (
