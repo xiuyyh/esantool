@@ -4,7 +4,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, Trash2, ShieldCheck, Wallet, ChevronLeft, AlertCircle, PlusCircle } from "lucide-react";
+import { ShoppingCart, Trash2, ShieldCheck, Wallet, ChevronLeft, AlertCircle, PlusCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase } from "@/firebase";
@@ -97,118 +97,116 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-10 lg:py-16 space-y-8 sm:space-y-12">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/5 pb-8">
+    <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-6 lg:py-12 space-y-6 sm:space-y-10">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-white/5 pb-6">
         <div className="space-y-1">
-          <h1 className="font-headline text-4xl sm:text-6xl font-bold tracking-tight">MY CART</h1>
-          <p className="text-muted-foreground uppercase tracking-widest text-[10px] sm:text-sm">Review your items before buying.</p>
+          <h1 className="font-headline text-3xl sm:text-5xl font-bold tracking-tight uppercase">Cart</h1>
+          <p className="text-muted-foreground uppercase tracking-widest text-[10px] sm:text-xs">Secure Procurement Interface</p>
         </div>
-        <Link href="/" className="text-accent text-[10px] sm:text-sm font-bold uppercase tracking-widest flex items-center hover:opacity-80 transition-opacity">
-          <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-1" />
-          Back to Shop
+        <Link href="/" className="text-accent text-xs font-bold uppercase tracking-widest flex items-center hover:opacity-80 transition-opacity">
+          <ChevronLeft className="h-4 w-4 mr-1" />
+          Continue Browsing
         </Link>
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8 sm:gap-10">
-        <div className="lg:col-span-8 space-y-4 sm:space-y-6">
+      <div className="grid lg:grid-cols-12 gap-6 lg:gap-10">
+        <div className="lg:col-span-7 xl:col-span-8 space-y-4">
           {cartItems.length > 0 ? (
             cartItems.map((item) => (
-              <Card key={item.id} className="glass-card border-white/5 overflow-hidden group">
-                <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div className="flex items-center gap-4 sm:gap-6 w-full">
-                    <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-xl overflow-hidden border border-white/10 shrink-0 shadow-lg">
-                      <img src={item.imageUrls?.[0] || DEFAULT_IMAGE} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-headline font-bold text-lg sm:text-2xl mb-1 truncate">{item.title}</h3>
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-widest border border-white/10 px-2 py-0.5 rounded-full w-fit bg-white/5">{item.country}</p>
+              <Card key={item.id} className="glass-card border-white/5 overflow-hidden">
+                <CardContent className="p-3 sm:p-5 flex flex-row items-center gap-4">
+                  <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-lg overflow-hidden border border-white/10 shrink-0">
+                    <img src={item.imageUrls?.[0] || DEFAULT_IMAGE} className="w-full h-full object-cover" alt="" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-headline font-bold text-sm sm:text-xl truncate mb-1">{item.title}</h3>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[9px] text-muted-foreground uppercase font-bold px-2 py-0.5 rounded-full bg-white/5 border border-white/5">{item.country}</span>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 sm:gap-8 pt-2 sm:pt-0 border-t sm:border-t-0 border-white/5">
-                    <span className="font-headline font-bold text-xl sm:text-3xl text-accent">₦{item.price?.toLocaleString()}</span>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="font-headline font-bold text-base sm:text-2xl text-accent">₦{item.price?.toLocaleString()}</span>
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="h-9 w-9 sm:h-10 sm:w-10 text-destructive hover:bg-destructive/10 shrink-0"
+                      className="h-8 w-8 text-destructive hover:bg-destructive/10"
                       onClick={() => handleRemoveFromCart(item.id)}
                     >
-                      <Trash2 className="h-5 w-5 sm:h-6 sm:w-6" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </CardContent>
               </Card>
             ))
           ) : (
-            <div className="py-20 sm:py-32 text-center border-2 border-dashed border-white/10 rounded-3xl opacity-50 flex flex-col items-center px-6">
-              <ShoppingCart className="h-12 w-12 sm:h-16 sm:w-16 mb-4 sm:mb-6 text-muted-foreground opacity-20" />
-              <p className="uppercase tracking-widest text-[10px] sm:text-sm font-bold">Your cart is empty.</p>
-              <Button asChild variant="outline" className="mt-6 font-bold uppercase tracking-widest text-[10px]">
-                <Link href="/">Browse Private Groups</Link>
+            <div className="py-16 text-center border-2 border-dashed border-white/5 rounded-2xl opacity-50 flex flex-col items-center">
+              <ShoppingCart className="h-10 w-10 mb-4 text-muted-foreground opacity-20" />
+              <p className="uppercase tracking-widest text-[10px] font-bold">Registry Empty</p>
+              <Button asChild variant="link" className="mt-2 text-accent text-xs uppercase tracking-widest">
+                <Link href="/">Browse Intelligence</Link>
               </Button>
             </div>
           )}
         </div>
 
-        <div className="lg:col-span-4">
-          <Card className="glass-card border-accent/20 sticky top-20 shadow-2xl">
-            <CardHeader className="pb-4 sm:pb-6">
-              <CardTitle className="font-headline text-xl sm:text-2xl uppercase tracking-tight">Checkout Summary</CardTitle>
+        <div className="lg:col-span-5 xl:col-span-4">
+          <Card className="glass-card border-accent/20 sticky top-20">
+            <CardHeader className="pb-4">
+              <CardTitle className="font-headline text-lg sm:text-xl uppercase tracking-widest">Order Summary</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6 sm:space-y-8">
-              <div className="space-y-4">
-                <div className="flex justify-between text-xs sm:text-base">
-                  <span className="text-muted-foreground uppercase tracking-widest">Items in Cart</span>
+            <CardContent className="space-y-6">
+              <div className="space-y-3">
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground uppercase tracking-widest">Selected Nodes</span>
                   <span className="font-bold">{cartItems.length}</span>
                 </div>
-                <div className="flex justify-between font-bold text-2xl sm:text-4xl border-t border-white/5 pt-6">
-                  <span className="font-headline uppercase tracking-tight text-lg sm:text-xl self-end mb-1">Total</span>
-                  <span className={hasInsufficientFunds && cartItems.length > 0 ? "text-destructive" : "text-accent"}>₦{totalPrice.toLocaleString()}</span>
+                <div className="flex justify-between items-end border-t border-white/5 pt-4">
+                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground">Subtotal</span>
+                  <span className={`font-headline font-bold text-3xl ${hasInsufficientFunds && cartItems.length > 0 ? "text-destructive" : "text-accent"}`}>₦{totalPrice.toLocaleString()}</span>
                 </div>
               </div>
 
-              <div className={hasInsufficientFunds && cartItems.length > 0 ? "p-4 sm:p-6 rounded-2xl bg-destructive/5 border border-destructive/10 space-y-3" : "p-4 sm:p-6 rounded-2xl bg-accent/5 border border-accent/10 space-y-3"}>
-                <div className="flex justify-between text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
-                  <span>My Available Balance</span>
-                  <Wallet className="h-3 w-3 sm:h-4 sm:w-4" />
+              <div className={`p-4 rounded-xl border ${hasInsufficientFunds && cartItems.length > 0 ? "bg-destructive/5 border-destructive/20" : "bg-accent/5 border-accent/20"} space-y-2`}>
+                <div className="flex justify-between items-center text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
+                  <span>Your Wallet</span>
+                  <Wallet className="h-3 w-3" />
                 </div>
-                <div className="text-2xl sm:text-3xl font-bold font-headline">₦{userBalance.toLocaleString()}</div>
+                <div className="text-xl font-bold font-headline">₦{userBalance.toLocaleString()}</div>
               </div>
 
               {hasInsufficientFunds && cartItems.length > 0 && (
-                <Alert variant="destructive" className="bg-destructive/5 border-destructive/20 py-4">
-                  <AlertCircle className="h-5 w-5" />
-                  <AlertTitle className="text-xs uppercase font-bold tracking-widest mb-2">Insufficient Credits</AlertTitle>
-                  <AlertDescription className="text-[10px] sm:text-xs font-medium space-y-4">
-                    <p>You need ₦{(totalPrice - userBalance).toLocaleString()} more to complete this acquisition.</p>
-                    <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-bold h-9 uppercase tracking-widest text-[10px]" size="sm">
-                      <Link href="/dashboard/topup">
-                        <PlusCircle className="mr-2 h-3 w-3" />
-                        Deposit Now
-                      </Link>
-                    </Button>
-                  </AlertDescription>
-                </Alert>
+                <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 space-y-4">
+                  <div className="flex gap-3">
+                    <AlertCircle className="h-5 w-5 text-destructive shrink-0" />
+                    <div className="space-y-1">
+                      <p className="text-xs font-bold text-destructive uppercase tracking-widest">Insufficient Funds</p>
+                      <p className="text-[10px] leading-relaxed opacity-80">You need ₦{(totalPrice - userBalance).toLocaleString()} more to complete this acquisition.</p>
+                    </div>
+                  </div>
+                  <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-bold h-10 uppercase tracking-widest text-[10px]" size="sm">
+                    <Link href="/dashboard/topup">
+                      <PlusCircle className="mr-2 h-3.5 w-3.5" />
+                      Add Credits Now
+                    </Link>
+                  </Button>
+                </div>
               )}
 
               <Button 
-                className="w-full h-14 sm:h-16 bg-primary hover:bg-primary/90 text-white font-bold text-base sm:text-xl uppercase tracking-widest shadow-xl shadow-primary/20 disabled:opacity-30"
+                className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest disabled:opacity-20"
                 disabled={isProcessing || cartItems.length === 0 || hasInsufficientFunds}
                 onClick={handleCompletePurchase}
               >
-                {isProcessing ? "SECURELY PROCESSING..." : hasInsufficientFunds ? "INSUFFICIENT BALANCE" : "AUTHORIZE PURCHASE"}
-                {!hasInsufficientFunds && !isProcessing && cartItems.length > 0 && <ShieldCheck className="ml-2 h-5 w-5 sm:h-6 sm:w-6" />}
+                {isProcessing ? "Authorizing..." : hasInsufficientFunds ? "Insufficient Credits" : "Finalize Acquisition"}
+                {!hasInsufficientFunds && !isProcessing && cartItems.length > 0 && <ShieldCheck className="ml-2 h-5 w-5" />}
               </Button>
             </CardContent>
-            <CardFooter>
-              <div className="w-full text-center space-y-2">
-                <p className="text-[9px] text-muted-foreground uppercase tracking-widest opacity-60">
+            <CardFooter className="pt-0 border-t border-white/5 mt-4">
+              <div className="w-full pt-4 flex flex-col items-center gap-2">
+                <p className="text-[9px] text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                  <ArrowRight className="h-3 w-3 text-accent" />
                   Encrypted Protocol Transaction
                 </p>
-                <div className="flex justify-center gap-4 opacity-30 grayscale contrast-150">
-                   <div className="text-[10px] font-bold">VISA</div>
-                   <div className="text-[10px] font-bold">MASTER</div>
-                   <div className="text-[10px] font-bold">SECURE</div>
-                </div>
               </div>
             </CardFooter>
           </Card>
