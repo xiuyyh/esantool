@@ -52,6 +52,30 @@
         "name": { "type": "string" }
       },
       "required": ["name"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "A record of a credit top-up request.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "userName": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "type": { "type": "string", "enum": ["credit"] }
+      },
+      "required": ["uid", "amount", "status"]
+    },
+    "AdminSettings": {
+      "title": "Admin Settings",
+      "description": "Global configuration for the platform.",
+      "type": "object",
+      "properties": {
+        "telegramBotToken": { "type": "string" },
+        "telegramChannelId": { "type": "string" }
+      }
     }
   },
   "auth": {
@@ -69,6 +93,14 @@
     "/countries/{countryId}": {
       "schema": { "$ref": "#/entities/Country" },
       "description": "Supported countries for sorting."
+    },
+    "/transactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/Transaction" },
+      "description": "Top-up requests."
+    },
+    "/settings/admin": {
+      "schema": { "$ref": "#/entities/AdminSettings" },
+      "description": "Global settings."
     }
   }
 }

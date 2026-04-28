@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductCard } from "@/components/product-card";
-import { Globe, ShieldCheck, Lock, ExternalLink, Key } from "lucide-react";
+import { Globe, ShieldCheck, Lock, ExternalLink, Key, History } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -61,15 +61,23 @@ export default function UserDashboard() {
   return (
     <div className="max-w-screen-2xl px-4 sm:px-6 lg:px-8 py-10 space-y-12">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="glass-card border-white/5 relative overflow-hidden group hover:border-accent/30 transition-all duration-300">
+        <Card className="glass-card border-accent/20 relative overflow-hidden group hover:border-accent/40 transition-all duration-300">
           <CardHeader className="pb-2">
             <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">My Balance</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold font-headline">₦{balance.toLocaleString()}</div>
-            <Button size="sm" className="mt-4 bg-primary hover:bg-primary/90 text-white font-bold h-8 uppercase tracking-widest text-[10px]">
-              Add Credits
-            </Button>
+            <div className="text-4xl font-bold font-headline text-accent">₦{balance.toLocaleString()}</div>
+            <div className="flex gap-2 mt-4">
+              <Button asChild size="sm" className="bg-primary hover:bg-primary/90 text-white font-bold h-8 uppercase tracking-widest text-[10px]">
+                <Link href="/dashboard/topup">Add Credits</Link>
+              </Button>
+              <Button asChild variant="outline" size="sm" className="h-8 uppercase tracking-widest text-[10px] font-bold border-white/10 hover:bg-white/5">
+                <Link href="/dashboard/transactions">
+                  <History className="h-3 w-3 mr-1" />
+                  History
+                </Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
 

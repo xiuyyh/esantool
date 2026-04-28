@@ -12,6 +12,9 @@ import {
   LogOut,
   User,
   Key,
+  History,
+  Settings,
+  CreditCard
 } from "lucide-react";
 
 import {
@@ -68,6 +71,11 @@ export function AppSidebar() {
           url: "/dashboard",
           icon: LayoutDashboard,
         },
+        {
+          title: "Transactions",
+          url: "/dashboard/transactions",
+          icon: History,
+        },
       ],
     });
 
@@ -75,9 +83,19 @@ export function AppSidebar() {
       label: "Admin",
       items: [
         {
-          title: "Admin Panel",
+          title: "Groups Management",
           url: "/admin/dashboard",
-          icon: ShieldCheck,
+          icon: Key,
+        },
+        {
+          title: "Deposit Requests",
+          url: "/admin/transactions",
+          icon: CreditCard,
+        },
+        {
+          title: "System Settings",
+          url: "/admin/settings",
+          icon: Settings,
         },
       ],
     });
