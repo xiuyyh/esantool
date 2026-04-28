@@ -43,8 +43,6 @@ export function AppSidebar() {
   const userRef = user && db ? doc(db, "users", user.uid) : null;
   const { data: profile } = useDoc(userRef);
 
-  const cartCount = profile?.cart?.length || 0;
-
   const handleLogout = async () => {
     if (auth) {
       await signOut(auth);
@@ -69,12 +67,6 @@ export function AppSidebar() {
           title: "My Dashboard",
           url: "/dashboard",
           icon: LayoutDashboard,
-        },
-        {
-          title: "Staging Area",
-          url: "/checkout",
-          icon: ShoppingCart,
-          badge: cartCount > 0 ? cartCount : null,
         },
       ],
     },
@@ -126,11 +118,6 @@ export function AppSidebar() {
                       <Link href={item.url}>
                         <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
-                        {item.badge && (
-                          <span className="ml-auto bg-accent text-accent-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                            {item.badge}
-                          </span>
-                        )}
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
