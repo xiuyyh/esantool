@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useFirestore, useDoc, useUser } from "@/firebase";
+import { useFirestore, useDoc, useUser, useMemoFirebase } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ export default function AdminSettingsPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const settingsRef = db ? doc(db, "settings", "admin") : null;
+  const settingsRef = useMemoFirebase(() => db ? doc(db, "settings", "admin") : null, [db]);
   const { data: settings, loading: settingsLoading } = useDoc(settingsRef);
 
   const [token, setToken] = useState("");

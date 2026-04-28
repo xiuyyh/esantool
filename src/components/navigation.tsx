@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useUser, useAuth, useFirestore, useDoc } from "@/firebase";
+import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { doc } from "firebase/firestore";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -22,7 +22,7 @@ export function Navigation() {
   const db = useFirestore();
   const auth = useAuth();
 
-  const userRef = user && db ? doc(db, "users", user.uid) : null;
+  const userRef = useMemoFirebase(() => user && db ? doc(db, "users", user.uid) : null, [db, user?.uid]);
   const { data: profile } = useDoc(userRef);
 
   const cartCount = profile?.cart?.length || 0;

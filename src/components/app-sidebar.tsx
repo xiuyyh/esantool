@@ -30,7 +30,7 @@ import {
   SidebarGroupContent,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { useUser, useAuth, useFirestore, useDoc } from "@/firebase";
+import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { doc } from "firebase/firestore";
 
@@ -40,7 +40,7 @@ export function AppSidebar() {
   const auth = useAuth();
   const db = useFirestore();
 
-  const userRef = user && db ? doc(db, "users", user.uid) : null;
+  const userRef = useMemoFirebase(() => user && db ? doc(db, "users", user.uid) : null, [db, user?.uid]);
   const { data: profile } = useDoc(userRef);
 
   const handleLogout = async () => {

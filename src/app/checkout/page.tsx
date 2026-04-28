@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { ShoppingCart, Trash2, ShieldCheck, Wallet, ChevronLeft, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { useUser, useFirestore, useDoc, useCollection } from "@/firebase";
+import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase } from "@/firebase";
 import { doc, updateDoc, arrayUnion, arrayRemove, collection, increment } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -21,10 +21,11 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const userRef = user && db ? doc(db, "users", user.uid) : null;
+  const userRef = useMemoFirebase(() => user && db ? doc(db, "users", user.uid) : null, [db, user?.uid]);
   const { data: profile } = useDoc(userRef);
 
-  const { data: allGroups } = useCollection(db ? collection(db, "groups") : null);
+  const groupsQuery = useMemoFirebase(() => db ? collection(db, "groups") : null, [db]);
+  const { data: allGroups } = useCollection(groupsQuery);
 
   const cartItems = useMemo(() => {
     if (!profile?.cart || !allGroups) return [];

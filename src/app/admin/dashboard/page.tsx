@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useFirestore, useCollection, useUser } from "@/firebase";
+import { useFirestore, useCollection, useUser, useMemoFirebase } from "@/firebase";
 import { collection, addDoc, deleteDoc, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, X, Trash2, Edit3, Globe, Lock } from "lucide-react";
@@ -38,8 +38,11 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const { data: countries } = useCollection(db ? collection(db, "countries") : null);
-  const { data: groups } = useCollection(db ? collection(db, "groups") : null);
+  const countriesQuery = useMemoFirebase(() => db ? collection(db, "countries") : null, [db]);
+  const { data: countries } = useCollection(countriesQuery);
+  
+  const groupsQuery = useMemoFirebase(() => db ? collection(db, "groups") : null, [db]);
+  const { data: groups } = useCollection(groupsQuery);
 
   const [groupTitle, setGroupTitle] = useState("");
   const [groupPrice, setGroupPrice] = useState("");

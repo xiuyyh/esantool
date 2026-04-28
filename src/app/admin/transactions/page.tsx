@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useUser, useFirestore, useCollection } from "@/firebase";
+import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection, query, orderBy, doc, updateDoc, increment, getDoc } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -24,8 +24,11 @@ export default function AdminTransactionsPage() {
     if (!authLoading && !user) router.push("/admin/login");
   }, [user, authLoading, router]);
 
-  const q = db ? query(collection(db, "transactions"), orderBy("createdAt", "desc")) : null;
-  const { data: transactions, loading } = useCollection(q);
+  const transactionsQuery = useMemoFirebase(() => {
+    if (!db) return null;
+    return query(collection(db, "transactions"), orderBy("createdAt", "desc"));
+  }, [db]);
+  const { data: transactions, loading } = useCollection(transactionsQuery);
 
   const handleConfirm = async (tx: any) => {
     if (!db) return;

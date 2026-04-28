@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { Globe, Terminal } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
-import { useFirestore, useCollection } from "@/firebase";
+import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection } from "firebase/firestore";
 import {
   Select,
@@ -19,8 +19,11 @@ export default function Home() {
   const [year, setYear] = useState<number | null>(null);
   
   const db = useFirestore();
-  const { data: allProducts, loading } = useCollection(db ? collection(db, "groups") : null);
-  const { data: countries } = useCollection(db ? collection(db, "countries") : null);
+  const groupsQuery = useMemoFirebase(() => db ? collection(db, "groups") : null, [db]);
+  const { data: allProducts, loading } = useCollection(groupsQuery);
+  
+  const countriesQuery = useMemoFirebase(() => db ? collection(db, "countries") : null, [db]);
+  const { data: countries } = useCollection(countriesQuery);
 
   useEffect(() => {
     setYear(new Date().getFullYear());

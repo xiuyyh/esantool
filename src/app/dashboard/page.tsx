@@ -2,7 +2,7 @@
 "use client";
 
 import { useMemo, useEffect } from "react";
-import { useUser, useDoc, useFirestore, useCollection } from "@/firebase";
+import { useUser, useDoc, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { doc, collection } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,10 +19,11 @@ export default function UserDashboard() {
   const db = useFirestore();
   const router = useRouter();
   
-  const userRef = user && db ? doc(db, "users", user.uid) : null;
+  const userRef = useMemoFirebase(() => user && db ? doc(db, "users", user.uid) : null, [db, user?.uid]);
   const { data: profile, loading: profileLoading } = useDoc(userRef);
   
-  const { data: allGroups, loading: groupsLoading } = useCollection(db ? collection(db, "groups") : null);
+  const groupsQuery = useMemoFirebase(() => db ? collection(db, "groups") : null, [db]);
+  const { data: allGroups, loading: groupsLoading } = useCollection(groupsQuery);
 
   useEffect(() => {
     if (!userLoading && !user) {

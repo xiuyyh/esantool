@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Eye, Globe, Check } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
-import { useUser, useFirestore, useDoc } from "@/firebase";
+import { useUser, useFirestore, useDoc, useMemoFirebase } from "@/firebase";
 import { doc, setDoc, arrayUnion } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -33,7 +33,7 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
   const router = useRouter();
   const [isAdding, setIsAdding] = useState(false);
 
-  const userRef = user && db ? doc(db, "users", user.uid) : null;
+  const userRef = useMemoFirebase(() => user && db ? doc(db, "users", user.uid) : null, [db, user?.uid]);
   const { data: profile } = useDoc(userRef);
 
   const hasAccess = profile?.purchasedGroups?.includes(id);

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useFirestore, useDoc, useUser } from "@/firebase";
+import { useFirestore, useDoc, useUser, useMemoFirebase } from "@/firebase";
 import { doc, setDoc, arrayUnion } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
@@ -32,10 +32,10 @@ export default function GroupDetailsPage({ params: paramsPromise }: { params: Pr
   const { toast } = useToast();
   const [isAdding, setIsAdding] = useState(false);
   
-  const groupRef = db ? doc(db, "groups", params.groupId) : null;
+  const groupRef = useMemoFirebase(() => db ? doc(db, "groups", params.groupId) : null, [db, params.groupId]);
   const { data: group, loading } = useDoc(groupRef);
 
-  const userRef = user && db ? doc(db, "users", user.uid) : null;
+  const userRef = useMemoFirebase(() => user && db ? doc(db, "users", user.uid) : null, [db, user?.uid]);
   const { data: profile } = useDoc(userRef);
 
   const hasAccess = profile?.purchasedGroups?.includes(params.groupId);

@@ -6,7 +6,7 @@ import { Search, Globe, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
-import { useFirestore, useCollection } from "@/firebase";
+import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection } from "firebase/firestore";
 import {
   Select,
@@ -21,8 +21,11 @@ export default function ProductsPage() {
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   
   const db = useFirestore();
-  const { data: allProducts, loading } = useCollection(db ? collection(db, "groups") : null);
-  const { data: countries } = useCollection(db ? collection(db, "countries") : null);
+  const groupsQuery = useMemoFirebase(() => db ? collection(db, "groups") : null, [db]);
+  const { data: allProducts, loading } = useCollection(groupsQuery);
+  
+  const countriesQuery = useMemoFirebase(() => db ? collection(db, "countries") : null, [db]);
+  const { data: countries } = useCollection(countriesQuery);
 
   const filteredProducts = allProducts.filter((p: any) => {
     const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -37,18 +40,6 @@ export default function ProductsPage() {
           <div className="space-y-3">
             <h1 className="font-headline text-5xl font-bold tracking-tight">Marketplace</h1>
             <p className="text-muted-foreground text-lg">Acquire entry into elite private regions.</p>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-            <div className="relative w-full sm:w-80 lg:w-96">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input 
-                placeholder="Search intel..." 
-                className="pl-12 h-12 glass-card border-white/10 focus:border-accent/30"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
           </div>
         </div>
 

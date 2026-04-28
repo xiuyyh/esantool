@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useUser, useFirestore, useCollection } from "@/firebase";
+import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection, query, where, orderBy } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -14,13 +14,16 @@ export default function TransactionsPage() {
   const { user } = useUser();
   const db = useFirestore();
 
-  const q = user && db ? query(
-    collection(db, "transactions"),
-    where("uid", "==", user.uid),
-    orderBy("createdAt", "desc")
-  ) : null;
+  const transactionsQuery = useMemoFirebase(() => {
+    if (!user || !db) return null;
+    return query(
+      collection(db, "transactions"),
+      where("uid", "==", user.uid),
+      orderBy("createdAt", "desc")
+    );
+  }, [db, user?.uid]);
 
-  const { data: transactions, loading } = useCollection(q);
+  const { data: transactions, loading } = useCollection(transactionsQuery);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
