@@ -57,7 +57,10 @@ export function AppSidebar() {
         },
       ],
     },
-    {
+  ];
+
+  if (user) {
+    menuGroups.push({
       label: "My Account",
       items: [
         {
@@ -66,10 +69,8 @@ export function AppSidebar() {
           icon: LayoutDashboard,
         },
       ],
-    },
-  ];
+    });
 
-  if (user) {
     menuGroups.push({
       label: "Admin",
       items: [

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { useUser, useDoc, useFirestore, useCollection } from "@/firebase";
 import { doc, collection } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,15 +10,23 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ProductCard } from "@/components/product-card";
 import { Globe, ShieldCheck, Lock, ExternalLink, Key } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function UserDashboard() {
   const { user, loading: userLoading } = useUser();
   const db = useFirestore();
+  const router = useRouter();
   
   const userRef = user && db ? doc(db, "users", user.uid) : null;
   const { data: profile, loading: profileLoading } = useDoc(userRef);
   
   const { data: allGroups, loading: groupsLoading } = useCollection(db ? collection(db, "groups") : null);
+
+  useEffect(() => {
+    if (!userLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, userLoading, router]);
 
   const purchasedGroups = useMemo(() => {
     if (!profile?.purchasedGroups || !allGroups) return [];
@@ -42,6 +50,8 @@ export default function UserDashboard() {
       </div>
     );
   }
+
+  if (!user) return null;
 
   const balance = profile?.balance || 0;
   const purchasedCount = profile?.purchasedGroups?.length || 0;
