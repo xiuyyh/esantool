@@ -14,7 +14,8 @@ import {
   Key,
   History,
   Settings,
-  CreditCard
+  CreditCard,
+  Users
 } from "lucide-react";
 
 import {
@@ -89,6 +90,11 @@ export function AppSidebar() {
             icon: Key,
           },
           {
+            title: "User Management",
+            url: "/admin/users",
+            icon: Users,
+          },
+          {
             title: "Deposit Requests",
             url: "/admin/transactions",
             icon: CreditCard,
@@ -125,19 +131,17 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.url}
-                      tooltip={item.title}
-                      className="hover:bg-accent/10 hover:text-accent transition-colors"
-                    >
-                      <Link href={item.url}>
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.url}
+                    tooltip={item.title}
+                    className="hover:bg-accent/10 hover:text-accent transition-colors"
+                  >
+                    <Link href={item.url}>
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>
