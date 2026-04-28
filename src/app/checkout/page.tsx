@@ -4,12 +4,13 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, Trash2, ArrowRight, ShieldCheck, Wallet, ChevronLeft } from "lucide-react";
+import { ShoppingCart, Trash2, ArrowRight, ShieldCheck, Wallet, ChevronLeft, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useUser, useFirestore, useDoc, useCollection } from "@/firebase";
 import { doc, updateDoc, arrayUnion, arrayRemove, collection, increment } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function CheckoutPage() {
   const { user } = useUser();
@@ -32,6 +33,9 @@ export default function CheckoutPage() {
     return cartItems.reduce((sum, item) => sum + (item.price || 0), 0);
   }, [cartItems]);
 
+  const userBalance = profile?.balance || 0;
+  const hasInsufficientFunds = userBalance < totalPrice;
+
   const handleRemoveFromCart = async (groupId: string) => {
     if (!userRef) return;
     updateDoc(userRef, {
@@ -43,11 +47,12 @@ export default function CheckoutPage() {
     if (!userRef || !profile) return;
     if (cartItems.length === 0) return;
 
-    if (profile.balance < totalPrice) {
+    // Strict balance check
+    if (hasInsufficientFunds) {
       toast({
         variant: "destructive",
-        title: "Insufficient Funds",
-        description: `You need ₦${(totalPrice - profile.balance).toLocaleString()} more to complete this transaction.`,
+        title: "Transaction Denied",
+        description: `Insufficient credits. Current balance: ₦${userBalance.toLocaleString()}. Required: ₦${totalPrice.toLocaleString()}.`,
       });
       return;
     }
@@ -59,19 +64,19 @@ export default function CheckoutPage() {
       await updateDoc(userRef, {
         balance: increment(-totalPrice),
         purchasedGroups: arrayUnion(...itemIds),
-        cart: [] // Clear cart after purchase
+        cart: [] // Clear cart after successful transaction
       });
 
       toast({
         title: "Transaction Successful",
-        description: "Access keys have been decrypted and added to your dashboard.",
+        description: "Access credentials have been deployed to your dashboard.",
       });
       router.push("/dashboard");
     } catch (err: any) {
       toast({
         variant: "destructive",
-        title: "Security Breach",
-        description: "The transaction was intercepted. Please try again.",
+        title: "Security Interrupt",
+        description: "The transaction could not be verified. Please try again.",
       });
     } finally {
       setIsProcessing(false);
@@ -83,7 +88,7 @@ export default function CheckoutPage() {
       <div className="max-w-7xl mx-auto px-4 py-20 text-center">
         <h2 className="text-2xl font-bold">Authentication Required</h2>
         <Button className="mt-6" asChild>
-          <Link href="/login">Login to Access Cart</Link>
+          <Link href="/login">Login to Access Staging</Link>
         </Button>
       </div>
     );
@@ -94,11 +99,11 @@ export default function CheckoutPage() {
       <div className="flex flex-col md:flex-row justify-between items-end gap-4 border-b border-white/5 pb-8">
         <div>
           <h1 className="font-headline text-5xl font-bold tracking-tight">STAGING AREA</h1>
-          <p className="text-muted-foreground mt-2 uppercase tracking-widest text-xs">Verify your intelligence acquisitions before deployment.</p>
+          <p className="text-muted-foreground mt-2 uppercase tracking-widest text-xs">Final verification before deployment.</p>
         </div>
         <Link href="/products" className="text-accent text-xs font-bold uppercase tracking-widest flex items-center hover:opacity-80">
           <ChevronLeft className="h-4 w-4 mr-1" />
-          Keep Browsing
+          Market Overview
         </Link>
       </div>
 
@@ -134,7 +139,7 @@ export default function CheckoutPage() {
           ) : (
             <div className="py-20 text-center border-2 border-dashed border-white/10 rounded-3xl opacity-50">
               <ShoppingCart className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="uppercase tracking-widest text-xs font-bold">Staging area is empty.</p>
+              <p className="uppercase tracking-widest text-xs font-bold">Staging is empty.</p>
             </div>
           )}
         </div>
@@ -142,7 +147,7 @@ export default function CheckoutPage() {
         <div className="lg:col-span-4 space-y-6">
           <Card className="glass-card border-accent/20 sticky top-24">
             <CardHeader>
-              <CardTitle className="font-headline text-xl">Verification</CardTitle>
+              <CardTitle className="font-headline text-xl">Authorization</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
@@ -152,30 +157,39 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between font-bold text-lg border-t border-white/5 pt-4">
                   <span>Total Cost</span>
-                  <span className="text-accent">₦{totalPrice.toLocaleString()}</span>
+                  <span className={hasInsufficientFunds ? "text-destructive" : "text-accent"}>₦{totalPrice.toLocaleString()}</span>
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-accent/5 border border-accent/10 space-y-2">
+              <div className={hasInsufficientFunds ? "p-4 rounded-xl bg-destructive/5 border border-destructive/10 space-y-2" : "p-4 rounded-xl bg-accent/5 border border-accent/10 space-y-2"}>
                 <div className="flex justify-between text-[10px] uppercase font-bold text-muted-foreground">
-                  <span>Available Balance</span>
+                  <span>Credit Balance</span>
                   <Wallet className="h-3 w-3" />
                 </div>
-                <div className="text-2xl font-bold font-headline">₦{profile?.balance?.toLocaleString() || 0}</div>
+                <div className="text-2xl font-bold font-headline">₦{userBalance.toLocaleString()}</div>
               </div>
+
+              {hasInsufficientFunds && cartItems.length > 0 && (
+                <Alert variant="destructive" className="bg-destructive/5 border-destructive/20 py-2">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription className="text-[10px] uppercase font-bold">
+                    Balance low: ₦{(totalPrice - userBalance).toLocaleString()} required.
+                  </AlertDescription>
+                </Alert>
+              )}
 
               <Button 
                 className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-bold text-lg uppercase tracking-widest"
-                disabled={isProcessing || cartItems.length === 0}
+                disabled={isProcessing || cartItems.length === 0 || hasInsufficientFunds}
                 onClick={handleCompletePurchase}
               >
-                {isProcessing ? "DECRYPTING..." : "AUTHORIZE PAYMENT"}
-                <ShieldCheck className="ml-2 h-5 w-5" />
+                {isProcessing ? "PROCESSING..." : hasInsufficientFunds ? "INSUFFICIENT FUNDS" : "CONFIRM ACQUISITION"}
+                {!hasInsufficientFunds && <ShieldCheck className="ml-2 h-5 w-5" />}
               </Button>
             </CardContent>
             <CardFooter>
               <p className="text-[10px] text-center w-full text-muted-foreground uppercase tracking-widest">
-                Verification process creates persistent access links in your dashboard.
+                Transaction finalized in encrypted vault.
               </p>
             </CardFooter>
           </Card>
