@@ -1,11 +1,8 @@
 
 import type {Metadata} from 'next';
 import './globals.css';
-import { Navigation } from '@/components/navigation';
-import { AppSidebar } from '@/components/app-sidebar';
-import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import { AppShell } from '@/components/app-shell';
 
 export const metadata: Metadata = {
   title: 'Esan Tools | Premium Digital Assets',
@@ -16,7 +13,6 @@ export default async function RootLayout(props: {
   children: React.ReactNode;
   params: Promise<any>;
 }) {
-  const params = await props.params;
   const { children } = props;
 
   return (
@@ -28,16 +24,9 @@ export default async function RootLayout(props: {
       </head>
       <body className="font-body antialiased min-h-screen gradient-bg">
         <FirebaseClientProvider>
-          <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-              <Navigation />
-              <main className="flex-1">
-                {children}
-              </main>
-              <Toaster />
-            </SidebarInset>
-          </SidebarProvider>
+          <AppShell>
+            {children}
+          </AppShell>
         </FirebaseClientProvider>
       </body>
     </html>
