@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useUser, useDoc, useFirestore } from "@/firebase";
@@ -6,8 +5,6 @@ import { doc } from "firebase/firestore";
 import { 
   Wallet, 
   PlusCircle,
-  Terminal,
-  Zap,
   TrendingUp,
   Cpu,
   Target,
@@ -124,9 +121,6 @@ export default function UserDashboard() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="bg-accent/10 p-2 rounded-lg">
-              <Zap className="h-5 w-5 text-accent" />
-            </div>
             <h2 className="font-headline text-2xl font-bold">Marketplace Spotlight</h2>
           </div>
           <p className="text-xs text-muted-foreground uppercase tracking-widest hidden sm:block">Recommended for you</p>
