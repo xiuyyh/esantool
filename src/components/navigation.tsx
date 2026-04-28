@@ -93,9 +93,14 @@ export function Navigation() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-4 h-8 text-[10px] tracking-widest" asChild>
-              <Link href="/login">AUTH</Link>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" className="text-[10px] font-bold tracking-widest h-8 hidden sm:inline-flex" asChild>
+                <Link href="/login">LOGIN</Link>
+              </Button>
+              <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-4 h-8 text-[10px] tracking-widest" asChild>
+                <Link href="/signup">SIGN UP</Link>
+              </Button>
+            </div>
           )}
         </div>
       </div>
