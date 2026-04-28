@@ -49,7 +49,7 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
             </Link>
             <Badge variant="outline" className="text-[10px] py-0 px-1.5 border-accent/20 text-accent h-5 flex items-center gap-1">
               <Globe className="h-2.5 w-2.5" />
-              {country}
+              {country || "Global Region"}
             </Badge>
           </div>
           <p className="text-xs text-muted-foreground line-clamp-1 mb-2">

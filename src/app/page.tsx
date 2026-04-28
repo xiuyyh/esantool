@@ -119,7 +119,7 @@ export default function Home(props: { params: Promise<any> }) {
                   key={p.id} 
                   id={p.id}
                   title={p.title}
-                  category={p.category}
+                  country={p.country}
                   price={p.price}
                   description={p.description}
                   imageUrls={p.imageUrls || [p.imageUrl]}
