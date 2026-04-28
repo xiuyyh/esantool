@@ -50,26 +50,26 @@ export default function AdminTransactionsPage() {
     setProcessingId(tx.id);
     
     try {
-      const userRef = doc(db, "users", tx.uid);
+      const targetUserRef = doc(db, "users", tx.uid);
       const txRef = doc(db, "transactions", tx.id);
 
       // Verify user exists first to prevent orphaned increments
-      const userSnap = await getDoc(userRef);
+      const userSnap = await getDoc(targetUserRef);
       if (!userSnap.exists()) {
         throw new Error("User profile not found.");
       }
 
       // Ensure amount is a number for the increment function
       const amountToAdd = Number(tx.amount);
-      if (isNaN(amountToAdd)) {
+      if (isNaN(amountToAdd) || amountToAdd <= 0) {
         throw new Error("Invalid transaction amount.");
       }
 
       // 1. Update Transaction Status
       await updateDoc(txRef, { status: "confirmed" });
 
-      // 2. Add Balance to User
-      await updateDoc(userRef, {
+      // 2. Add Balance to User - Ensuring atomic increment
+      await updateDoc(targetUserRef, {
         balance: increment(amountToAdd)
       });
 

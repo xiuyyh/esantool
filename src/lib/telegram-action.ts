@@ -35,7 +35,8 @@ export async function notifyTelegram(message: string) {
 
     const url = `https://api.telegram.org/bot${cleanToken}/sendMessage`;
     
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+    // We try to get the base URL to link back to the admin panel
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://' + process.env.VERCEL_URL || '';
     const adminUrl = baseUrl ? `${baseUrl}/admin/transactions` : null;
 
     const body: any = {
@@ -44,11 +45,16 @@ export async function notifyTelegram(message: string) {
       parse_mode: 'Markdown',
     };
 
+    // Fast Action Buttons
     if (adminUrl) {
       body.reply_markup = {
         inline_keyboard: [
           [
-            { text: "💳 View in Admin Panel", url: adminUrl }
+            { text: "✅ APPROVE REQUEST", url: adminUrl },
+            { text: "❌ REJECT REQUEST", url: adminUrl }
+          ],
+          [
+            { text: "💳 Open Admin Panel", url: adminUrl }
           ]
         ]
       };
