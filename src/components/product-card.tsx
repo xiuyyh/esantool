@@ -23,8 +23,10 @@ interface ProductCardProps {
   imageHint: string;
 }
 
+const DEFAULT_IMAGE = "https://techstory.in/wp-content/uploads/2021/07/telegram.jpeg";
+
 export function ProductCard({ id, title, country, price, description, imageUrls, imageHint }: ProductCardProps) {
-  const displayImage = imageUrls?.[0] || "";
+  const displayImage = imageUrls?.[0] || DEFAULT_IMAGE;
   const { user } = useUser();
   const db = useFirestore();
   const { toast } = useToast();
@@ -85,19 +87,13 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
       <div className="p-4 flex flex-col h-full space-y-4">
         <div className="flex gap-4 items-center">
           <Link href={`/products/${id}`} className="relative h-20 w-20 shrink-0 rounded-xl overflow-hidden bg-muted border border-white/10 shadow-inner">
-            {displayImage ? (
-              <Image
-                src={displayImage}
-                alt={title}
-                fill
-                className="object-cover group-hover:scale-110 transition-transform duration-700"
-                data-ai-hint={imageHint}
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full w-full bg-secondary/20">
-                <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">No img</span>
-              </div>
-            )}
+            <Image
+              src={displayImage}
+              alt={title}
+              fill
+              className="object-cover group-hover:scale-110 transition-transform duration-700"
+              data-ai-hint={imageHint}
+            />
           </Link>
 
           <div className="flex-1 min-w-0 flex flex-col justify-center">

@@ -29,6 +29,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+const DEFAULT_IMAGE = "https://techstory.in/wp-content/uploads/2021/07/telegram.jpeg";
+
 export default function AdminDashboard() {
   const db = useFirestore();
   const { user, loading: authLoading } = useUser();
@@ -92,7 +94,7 @@ export default function AdminDashboard() {
       accessLink: groupLink,
       description: groupDesc,
       country: groupCountry,
-      imageUrls: imageUrls.length > 0 ? imageUrls : ["https://picsum.photos/seed/default/600/400"],
+      imageUrls: imageUrls.length > 0 ? imageUrls : [DEFAULT_IMAGE],
       createdAt: serverTimestamp(),
     });
     

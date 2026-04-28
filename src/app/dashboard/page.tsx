@@ -12,6 +12,8 @@ import { Globe, ShieldCheck, Lock, ExternalLink, Key } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+const DEFAULT_IMAGE = "https://techstory.in/wp-content/uploads/2021/07/telegram.jpeg";
+
 export default function UserDashboard() {
   const { user, loading: userLoading } = useUser();
   const db = useFirestore();
@@ -97,7 +99,7 @@ export default function UserDashboard() {
                 <CardContent className="p-0">
                   <div className="flex p-5 gap-5">
                     <div className="h-24 w-24 rounded-xl overflow-hidden border border-white/10 shrink-0">
-                      <img src={group.imageUrls?.[0] || "https://picsum.photos/seed/default/200/200"} className="w-full h-full object-cover" alt="" />
+                      <img src={group.imageUrls?.[0] || DEFAULT_IMAGE} className="w-full h-full object-cover" alt="" />
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col justify-center">
                       <div className="flex justify-between items-start mb-2">

@@ -12,6 +12,8 @@ import { doc, updateDoc, arrayUnion, arrayRemove, collection, increment } from "
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
+const DEFAULT_IMAGE = "https://techstory.in/wp-content/uploads/2021/07/telegram.jpeg";
+
 export default function CheckoutPage() {
   const { user } = useUser();
   const db = useFirestore();
@@ -114,7 +116,7 @@ export default function CheckoutPage() {
                 <CardContent className="p-6 flex items-center justify-between">
                   <div className="flex items-center gap-6">
                     <div className="h-24 w-24 rounded-xl overflow-hidden border border-white/10 shrink-0">
-                      <img src={item.imageUrls?.[0] || "https://picsum.photos/seed/default/200/200"} className="w-full h-full object-cover" alt="" />
+                      <img src={item.imageUrls?.[0] || DEFAULT_IMAGE} className="w-full h-full object-cover" alt="" />
                     </div>
                     <div>
                       <h3 className="font-headline font-bold text-2xl mb-1">{item.title}</h3>

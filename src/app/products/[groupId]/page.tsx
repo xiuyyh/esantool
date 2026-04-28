@@ -22,6 +22,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
+const DEFAULT_IMAGE = "https://techstory.in/wp-content/uploads/2021/07/telegram.jpeg";
+
 export default function GroupDetailsPage({ params: paramsPromise }: { params: Promise<{ groupId: string }> }) {
   const params = use(paramsPromise);
   const router = useRouter();
@@ -84,7 +86,7 @@ export default function GroupDetailsPage({ params: paramsPromise }: { params: Pr
     </div>
   );
 
-  const images = group.imageUrls || [];
+  const images = group.imageUrls?.length > 0 ? group.imageUrls : [DEFAULT_IMAGE];
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10 space-y-8">
