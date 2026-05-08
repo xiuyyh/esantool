@@ -4,31 +4,26 @@
 
 @layer base {
   :root {
-    --background: 225 14% 10%;
-    --foreground: 0 0% 98%;
-    --card: 225 14% 12%;
-    --card-foreground: 0 0% 98%;
-    --popover: 225 14% 10%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 235 58% 44%;
+    --background: 230 25% 4%;
+    --foreground: 180 10% 90%;
+    --card: 230 25% 6%;
+    --card-foreground: 180 10% 90%;
+    --popover: 230 25% 5%;
+    --popover-foreground: 180 10% 90%;
+    --primary: 235 70% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 225 14% 15%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 225 14% 15%;
-    --muted-foreground: 225 10% 65%;
-    --accent: 193 87% 57%;
-    --accent-foreground: 225 14% 10%;
+    --secondary: 230 20% 10%;
+    --secondary-foreground: 180 10% 90%;
+    --muted: 230 20% 10%;
+    --muted-foreground: 180 10% 60%;
+    --accent: 180 100% 50%;
+    --accent-foreground: 230 25% 4%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 225 14% 18%;
-    --input: 225 14% 18%;
-    --ring: 193 87% 57%;
-    --radius: 0.75rem;
-    --chart-1: 235 58% 44%;
-    --chart-2: 193 87% 57%;
-    --chart-3: 225 10% 45%;
-    --chart-4: 225 10% 65%;
-    --chart-5: 225 10% 85%;
+    --border: 180 50% 15%;
+    --input: 180 50% 15%;
+    --ring: 180 100% 50%;
+    --radius: 0.5rem;
   }
 }
 
@@ -38,70 +33,63 @@
   }
   body {
     @apply bg-background text-foreground font-body antialiased min-h-screen;
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(0, 242, 255, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 0% 100%, rgba(112, 0, 255, 0.05) 0%, transparent 50%);
   }
 }
 
 .font-headline {
   font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .glass-card {
-  background: rgba(21, 23, 28, 0.8);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(50, 196, 240, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  background: rgba(10, 11, 15, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 242, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
 }
 
-.gradient-bg {
-  background: radial-gradient(circle at top left, rgba(46, 56, 175, 0.15), transparent 40%),
-              radial-gradient(circle at bottom right, rgba(50, 196, 240, 0.05), transparent 40%),
-              #15171C;
-}
-
-.shiny-effect {
+.tech-border {
   position: relative;
-  overflow: hidden;
 }
 
-.shiny-effect::after {
+.tech-border::before {
   content: "";
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    to bottom right,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0) 40%,
-    rgba(50, 196, 240, 0.1) 50%,
-    rgba(255, 255, 255, 0) 60%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  transform: rotate(-45deg);
-  transition: all 0.6s;
-  opacity: 0;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid hsl(var(--accent));
+  border-left: 2px solid hsl(var(--accent));
 }
 
-.shiny-effect:hover::after {
-  opacity: 1;
-  left: 100%;
-  top: 100%;
+.tech-border::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-bottom: 2px solid hsl(var(--accent));
+  border-right: 2px solid hsl(var(--accent));
 }
 
-@keyframes fall-in {
-  0% {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
 }
 
-.animate-fall-in {
-  animation: fall-in 0.5s ease-out forwards;
+.scanline {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, hsl(var(--accent) / 0.2), transparent);
+  position: absolute;
+  animation: scanline 8s linear infinite;
+  z-index: 50;
+  pointer-events: none;
 }
 
 @keyframes marquee {
@@ -110,5 +98,14 @@
 }
 
 .animate-marquee {
-  animation: marquee 30s linear infinite;
+  animation: marquee 40s linear infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; text-shadow: 0 0 10px hsl(var(--accent)); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
 }

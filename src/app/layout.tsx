@@ -4,8 +4,8 @@ import { FirebaseClientProvider } from '@/firebase';
 import { AppShell } from '@/components/app-shell';
 
 export const metadata: Metadata = {
-  title: 'Esan Tools | Premium Digital Assets',
-  description: 'Digital sophistication for your tech needs',
+  title: 'ESAN TOOLS | Neural Network Marketplace',
+  description: 'Encrypted procurement of high-level digital intelligence.',
 };
 
 export default async function RootLayout(props: {
@@ -19,9 +19,10 @@ export default async function RootLayout(props: {
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased min-h-screen gradient-bg">
+      <body className="font-body antialiased min-h-screen overflow-x-hidden">
+        <div className="scanline"></div>
         <FirebaseClientProvider>
           <AppShell>
             {children}
