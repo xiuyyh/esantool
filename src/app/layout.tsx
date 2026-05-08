@@ -4,8 +4,8 @@ import { FirebaseClientProvider } from '@/firebase';
 import { AppShell } from '@/components/app-shell';
 
 export const metadata: Metadata = {
-  title: 'ESAN TOOLS | Neural Network Marketplace',
-  description: 'Encrypted procurement of high-level digital intelligence.',
+  title: 'ESAN TOOLS | Digital Marketplace',
+  description: 'Easy access to private Telegram groups and digital tools.',
 };
 
 export default async function RootLayout(props: {

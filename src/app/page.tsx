@@ -35,20 +35,19 @@ export default function Home() {
 
   return (
     <div className="flex flex-col flex-1 w-full min-w-0">
-      {/* Ticker Section */}
       <section className="py-3 bg-black/40 border-b border-accent/20 overflow-hidden whitespace-nowrap relative w-full pointer-events-none select-none z-10">
         <div className="flex animate-marquee items-center gap-16 w-max">
           {[...Array(10)].map((_, i) => (
             <div key={i} className="flex items-center gap-6">
               <span className="font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-accent/40">
-                Data_Transfer: Active
+                System Status: Online
               </span>
               <span className="font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-accent">
-                Protocol: {i % 2 === 0 ? "Encrypted" : "Open-Node"}
+                Security: {i % 2 === 0 ? "Verified" : "Active"}
               </span>
               <Cpu className="h-3 w-3 text-accent/20" />
               <span className="font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-accent/40">
-                Region: {countries[i % countries.length]?.name || "Global"}
+                Location: {countries[i % countries.length]?.name || "Global"}
               </span>
             </div>
           ))}
@@ -61,18 +60,18 @@ export default function Home() {
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-accent/60 font-mono text-xs tracking-[0.4em] uppercase">
                 <Network className="h-4 w-4" />
-                Network_Access_Point
+                Store Listings
               </div>
               <h1 className="font-headline text-5xl sm:text-7xl font-bold tracking-tighter uppercase text-white">
-                Marketplace<span className="text-accent">_v2</span>
+                Marketplace
               </h1>
               <p className="text-muted-foreground text-sm uppercase font-mono tracking-widest max-w-xl">
-                Authorized procurement interface for private regional communication nodes and intelligence layers.
+                Browse and buy access to private Telegram groups and regional communities.
               </p>
             </div>
             
             <div className="flex flex-col gap-3">
-              <span className="font-mono text-[10px] uppercase text-accent/40 tracking-widest text-right">Filter_By_Region</span>
+              <span className="font-mono text-[10px] uppercase text-accent/40 tracking-widest text-right">Filter By Region</span>
               <Select 
                 value={selectedCountry || "all"} 
                 onValueChange={(val) => setSelectedCountry(val === "all" ? null : val)}
@@ -80,14 +79,14 @@ export default function Home() {
                 <SelectTrigger className="glass-card border-accent/20 h-12 w-full sm:w-64 rounded-none font-mono text-[10px] uppercase tracking-widest text-accent">
                   <div className="flex items-center gap-2">
                     <Globe className="h-3 w-3" />
-                    <SelectValue placeholder="Select_Region" />
+                    <SelectValue placeholder="Select Country" />
                   </div>
                 </SelectTrigger>
                 <SelectContent className="glass-card border-accent/20 rounded-none">
-                  <SelectItem value="all" className="text-[10px] uppercase font-mono font-bold py-3">All_Nodes</SelectItem>
+                  <SelectItem value="all" className="text-[10px] uppercase font-mono font-bold py-3">All Regions</SelectItem>
                   {countries.map((c: any) => (
                     <SelectItem key={c.id} value={c.name} className="text-[10px] uppercase font-mono font-bold py-3">
-                      Node_{c.name.toUpperCase()}
+                      {c.name.toUpperCase()}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -98,7 +97,7 @@ export default function Home() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-40 space-y-6">
               <div className="h-16 w-16 border-2 border-accent border-t-transparent rounded-none animate-spin"></div>
-              <p className="font-mono uppercase tracking-[0.5em] text-[10px] text-accent animate-pulse">Decrypting_Registry...</p>
+              <p className="font-mono uppercase tracking-[0.5em] text-[10px] text-accent animate-pulse">Loading Groups...</p>
             </div>
           ) : filteredProducts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -111,15 +110,15 @@ export default function Home() {
                   price={p.price}
                   description={p.description}
                   imageUrls={p.imageUrls || []}
-                  imageHint="network node"
+                  imageHint="group preview"
                 />
               ))}
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-32 glass-card rounded-none border-dashed border-2 border-accent/10 text-center px-6 tech-border">
               <Database className="h-12 w-12 text-accent/20 mb-6" />
-              <h3 className="text-2xl font-bold font-headline uppercase tracking-tighter text-white">Region_Silent</h3>
-              <p className="text-muted-foreground mt-2 text-sm font-mono tracking-widest uppercase opacity-60">No active assets found in selected node.</p>
+              <h3 className="text-2xl font-bold font-headline uppercase tracking-tighter text-white">No Groups Found</h3>
+              <p className="text-muted-foreground mt-2 text-sm font-mono tracking-widest uppercase opacity-60">There are no groups available in this region yet.</p>
             </div>
           )}
         </div>
@@ -133,12 +132,12 @@ export default function Home() {
             </div>
             <div className="text-left">
               <span className="font-headline font-bold text-2xl tracking-tighter text-white block leading-none">ESAN TOOLS</span>
-              <span className="font-mono text-[9px] uppercase tracking-[0.4em] text-accent/60">Underground_Protocol</span>
+              <span className="font-mono text-[9px] uppercase tracking-[0.4em] text-accent/60">Professional Digital Service</span>
             </div>
           </div>
           <div className="flex flex-col items-center gap-2 opacity-40 font-mono text-[10px] uppercase tracking-[0.2em]">
-            <p>Authorized access only. All sessions logged.</p>
-            <p>© {year || "..."} ESAN_TECH_CORP. Protocol: V2.4.9</p>
+            <p>All transactions are secure. Support available 24/7.</p>
+            <p>© {year || "..."} ESAN TOOLS. All rights reserved.</p>
           </div>
         </div>
       </footer>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingCart, User, Terminal, LogOut, LayoutDashboard, UserCircle, Activity, Globe } from "lucide-react";
+import { ShoppingCart, User, Terminal, LogOut, LayoutDashboard, Activity, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -40,11 +40,11 @@ export function Navigation() {
           <div className="hidden lg:flex items-center gap-8">
             <div className="flex items-center gap-2">
               <Activity className="h-3 w-3 text-accent animate-pulse" />
-              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-accent/60">System: Operational</span>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-accent/60">System Online</span>
             </div>
             <div className="flex items-center gap-2">
               <Globe className="h-3 w-3 text-accent" />
-              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-accent/60">Node: Local-01</span>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-accent/60">Server: Local-01</span>
             </div>
           </div>
         </div>
@@ -66,18 +66,18 @@ export function Navigation() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-9 px-4 border border-accent/20 rounded-none bg-accent/5 hover:bg-accent/10 text-accent font-mono text-[10px] tracking-widest uppercase">
                   <User className="h-3 w-3 mr-2" />
-                  {user.displayName || "Unknown_Entity"}
+                  {user.displayName || "User"}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 p-2 glass-card border-accent/20 z-[110] rounded-none">
                 <DropdownMenuLabel className="px-3 py-2 font-mono text-[9px] uppercase tracking-widest text-accent/60">
-                  Authentication_Payload
+                  Account Settings
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-accent/10" />
                 <DropdownMenuItem className="focus:bg-accent focus:text-background py-2 px-3 rounded-none cursor-pointer font-mono text-[10px] uppercase" asChild>
                   <Link href="/dashboard">
                     <LayoutDashboard className="h-3 w-3 mr-2" />
-                    Dashboard_Root
+                    My Dashboard
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-accent/10" />
@@ -86,17 +86,17 @@ export function Navigation() {
                   onClick={handleLogout}
                 >
                   <LogOut className="h-3 w-3 mr-2" />
-                  Disconnect_Session
+                  Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="sm" className="text-[10px] font-mono font-bold tracking-[0.2em] h-8 text-accent/60 hover:text-accent" asChild>
-                <Link href="/login">AUTH_LOGIN</Link>
+                <Link href="/login">LOGIN</Link>
               </Button>
               <Button variant="default" size="sm" className="bg-accent text-background hover:bg-accent/90 font-mono font-bold px-4 h-8 text-[10px] tracking-[0.2em] rounded-none" asChild>
-                <Link href="/signup">AUTH_SIGNUP</Link>
+                <Link href="/signup">SIGN UP</Link>
               </Button>
             </div>
           )}

@@ -49,8 +49,8 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
 
     if (hasAccess) {
       toast({
-        title: "Access Granted",
-        description: "You already have access to this intelligence node.",
+        title: "Already Owned",
+        description: "You already have access to this group.",
       });
       return;
     }
@@ -67,14 +67,14 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
       }, { merge: true });
 
       toast({
-        title: "Staged",
-        description: `${title} added to procurement queue.`,
+        title: "Added to Cart",
+        description: `${title} has been added to your cart.`,
       });
     } catch (err: any) {
       toast({
         variant: "destructive",
-        title: "Protocol Error",
-        description: "Failed to queue intelligence node.",
+        title: "Error",
+        description: "Failed to add item to cart.",
       });
     } finally {
       setIsAdding(false);
@@ -105,7 +105,7 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
               <div className="flex items-center gap-2">
                 <div className="text-[9px] font-mono font-bold uppercase py-0.5 px-2 bg-accent/10 border border-accent/20 text-accent flex items-center gap-2">
                   <Globe className="h-2.5 w-2.5" />
-                  Node_{country.toUpperCase()}
+                  {country.toUpperCase()}
                 </div>
               </div>
             </div>
@@ -120,7 +120,7 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
 
         <div className="pt-5 border-t border-accent/10 flex items-center justify-between mt-auto">
           <div className="flex flex-col">
-            <span className="text-[8px] font-mono text-accent/40 uppercase tracking-widest mb-1">Procurement_Cost</span>
+            <span className="text-[8px] font-mono text-accent/40 uppercase tracking-widest mb-1">Price</span>
             <span className="text-xl font-bold font-mono text-accent">
               ₦{price.toLocaleString()}
             </span>
@@ -129,7 +129,7 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
             <Button size="sm" variant="ghost" className="h-9 px-3 text-[10px] font-mono font-bold uppercase tracking-widest border border-accent/10 hover:bg-accent/10 rounded-none" asChild>
               <Link href={`/products/${id}`}>
                 <Eye className="h-3 w-3 mr-2" />
-                INFO
+                DETAILS
               </Link>
             </Button>
             <Button 
@@ -144,11 +144,11 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
                   OWNED
                 </>
               ) : isInCart ? (
-                "STAGED"
+                "IN CART"
               ) : (
                 <>
                   <ShoppingCart className="h-3 w-3 mr-2" />
-                  {isAdding ? "WAIT" : "QUEUE"}
+                  {isAdding ? "ADDING..." : "BUY NOW"}
                 </>
               )}
             </Button>
@@ -156,7 +156,6 @@ export function ProductCard({ id, title, country, price, description, imageUrls,
         </div>
       </div>
       
-      {/* Visual Tech Flair */}
       <div className="absolute top-0 right-0 p-1 opacity-20">
         <Cpu className="h-3 w-3 text-accent" />
       </div>
