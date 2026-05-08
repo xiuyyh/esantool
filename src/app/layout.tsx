@@ -1,7 +1,9 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase';
 import { AppShell } from '@/components/app-shell';
+import { SplashScreen } from '@/components/splash-screen';
 
 export const metadata: Metadata = {
   title: 'ESAN TOOLS | Digital Marketplace',
@@ -24,6 +26,7 @@ export default async function RootLayout(props: {
       <body className="font-body antialiased min-h-screen overflow-x-hidden">
         <div className="scanline"></div>
         <FirebaseClientProvider>
+          <SplashScreen />
           <AppShell>
             {children}
           </AppShell>
