@@ -76,29 +76,29 @@ export default function AdminSettingsPage() {
   if (!user || !profile?.isAdmin) return null;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 space-y-10">
-      <div className="flex items-center justify-between border-b border-white/5 pb-8">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-12 space-y-8 sm:space-y-10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-8 gap-4">
         <div className="space-y-1">
-          <h1 className="font-headline text-4xl font-bold uppercase tracking-tight">System Settings</h1>
-          <p className="text-muted-foreground text-xs uppercase tracking-widest">Configure global protocol and notifications</p>
+          <h1 className="font-headline text-3xl sm:text-4xl font-bold uppercase tracking-tight">System Settings</h1>
+          <p className="text-muted-foreground text-[10px] sm:text-xs uppercase tracking-widest">Configure global protocol and notifications</p>
         </div>
-        <div className="bg-primary/10 p-4 rounded-2xl border border-primary/20">
-          <ShieldCheck className="h-8 w-8 text-primary" />
+        <div className="bg-primary/10 p-3 sm:p-4 rounded-2xl border border-primary/20 w-fit">
+          <ShieldCheck className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
         </div>
       </div>
 
-      <div className="grid gap-8">
+      <div className="grid gap-6 sm:gap-8">
         <Card className="glass-card border-white/10">
-          <CardHeader>
+          <CardHeader className="p-4 sm:p-6">
             <div className="flex items-center gap-3 mb-2">
               <MessageSquare className="h-5 w-5 text-accent" />
-              <CardTitle className="font-headline text-xl">Telegram Integration</CardTitle>
+              <CardTitle className="font-headline text-lg sm:text-xl">Telegram Integration</CardTitle>
             </div>
-            <CardDescription>
+            <CardDescription className="text-xs sm:text-sm">
               Receive instant alerts for every top-up request directly in your private channel.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-6 pt-0">
             <form onSubmit={handleSave} className="space-y-6">
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -123,7 +123,7 @@ export default function AdminSettingsPage() {
                   />
                 </div>
               </div>
-              <Button type="submit" disabled={saving} className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 uppercase tracking-widest">
+              <Button type="submit" disabled={saving} className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 sm:h-14 uppercase tracking-widest text-xs">
                 {saving ? <Loader2 className="animate-spin h-5 w-5 mr-2" /> : <Save className="h-5 w-5 mr-2" />}
                 Save Configuration
               </Button>
@@ -132,8 +132,8 @@ export default function AdminSettingsPage() {
         </Card>
         
         <div className="p-6 rounded-2xl border border-dashed border-white/10 text-center space-y-2 opacity-50">
-          <Terminal className="h-8 w-8 mx-auto text-muted-foreground" />
-          <p className="text-[10px] uppercase font-bold tracking-[0.2em]">Protocol v2.4 Status: Active</p>
+          <Terminal className="h-6 w-6 sm:h-8 sm:w-8 mx-auto text-muted-foreground" />
+          <p className="text-[9px] sm:text-[10px] uppercase font-bold tracking-[0.2em]">Protocol v2.4 Status: Active</p>
         </div>
       </div>
     </div>

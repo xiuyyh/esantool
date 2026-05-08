@@ -91,13 +91,13 @@ export default function AdminUsersPage() {
   if (!user || !profile?.isAdmin) return null;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12 space-y-10">
-      <div className="flex justify-between items-end border-b border-white/5 pb-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-12 space-y-8 sm:space-y-10">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-white/5 pb-6 sm:pb-8 gap-4">
         <div className="space-y-1">
-          <h1 className="font-headline text-4xl font-bold uppercase tracking-tight">User Management</h1>
-          <p className="text-muted-foreground text-xs uppercase tracking-widest">Oversee accounts and adjust protocols</p>
+          <h1 className="font-headline text-3xl sm:text-4xl font-bold uppercase tracking-tight">User Management</h1>
+          <p className="text-muted-foreground text-[10px] sm:text-xs uppercase tracking-widest">Oversee accounts and adjust protocols</p>
         </div>
-        <ShieldCheck className="h-10 w-10 text-primary opacity-50" />
+        <ShieldCheck className="h-8 w-8 sm:h-10 sm:w-10 text-primary opacity-50" />
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
@@ -105,90 +105,92 @@ export default function AdminUsersPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input 
             placeholder="Search by name or email..." 
-            className="pl-10 bg-white/5 border-white/10"
+            className="pl-10 bg-white/5 border-white/10 h-11"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+        <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest self-start sm:self-center">
           Total Nodes: {allUsers.length}
         </div>
       </div>
 
       <Card className="glass-card border-white/5 overflow-hidden">
-        <Table>
-          <TableHeader className="bg-white/5">
-            <TableRow className="border-white/5">
-              <TableHead className="text-[10px] font-bold uppercase tracking-widest">Identity</TableHead>
-              <TableHead className="text-[10px] font-bold uppercase tracking-widest text-center">Privilege</TableHead>
-              <TableHead className="text-[10px] font-bold uppercase tracking-widest">Wallet Status</TableHead>
-              <TableHead className="text-[10px] font-bold uppercase tracking-widest text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {usersLoading ? (
-              <TableRow>
-                <TableCell colSpan={4} className="text-center py-20 text-muted-foreground uppercase text-[10px]">
-                  Accessing user registry...
-                </TableCell>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader className="bg-white/5">
+              <TableRow className="border-white/5">
+                <TableHead className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest min-w-[200px]">Identity</TableHead>
+                <TableHead className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-center">Privilege</TableHead>
+                <TableHead className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest">Wallet Status</TableHead>
+                <TableHead className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-right">Actions</TableHead>
               </TableRow>
-            ) : filteredUsers.length > 0 ? (
-              filteredUsers.map((u: any) => (
-                <TableRow key={u.id} className="border-white/5 hover:bg-white/5 transition-colors">
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center border border-white/10">
-                        <UserCircle className="h-4 w-4 text-muted-foreground" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-bold text-sm">{u.displayName || "Unknown User"}</span>
-                        <span className="text-[10px] text-muted-foreground uppercase tracking-tight">{u.email}</span>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge variant="outline" className={`uppercase text-[9px] font-bold ${u.isAdmin ? 'border-primary text-primary' : 'opacity-40'}`}>
-                      {u.isAdmin ? 'Administrator' : 'Standard User'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Wallet className="h-3 w-3 text-accent opacity-50" />
-                      <span className="font-headline font-bold text-accent">₦{u.balance?.toLocaleString() || 0}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-8 text-[10px] font-bold uppercase tracking-widest hover:bg-accent/10 hover:text-accent"
-                      onClick={() => {
-                        setEditingUser(u);
-                        setNewBalance(u.balance?.toString() || "0");
-                      }}
-                    >
-                      <Edit2 className="h-3 w-3 mr-1" />
-                      Adjust
-                    </Button>
+            </TableHeader>
+            <TableBody>
+              {usersLoading ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-20 text-muted-foreground uppercase text-[10px]">
+                    Accessing user registry...
                   </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={4} className="text-center py-20 opacity-40 uppercase tracking-widest text-xs">
-                  No matches found in database.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ) : filteredUsers.length > 0 ? (
+                filteredUsers.map((u: any) => (
+                  <TableRow key={u.id} className="border-white/5 hover:bg-white/5 transition-colors">
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center border border-white/10 shrink-0">
+                          <UserCircle className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                        <div className="flex flex-col truncate">
+                          <span className="font-bold text-xs sm:text-sm truncate">{u.displayName || "Unknown User"}</span>
+                          <span className="text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-tight truncate">{u.email}</span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant="outline" className={`uppercase text-[8px] sm:text-[9px] font-bold ${u.isAdmin ? 'border-primary text-primary' : 'opacity-40'}`}>
+                        {u.isAdmin ? 'Admin' : 'User'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Wallet className="h-3 w-3 text-accent opacity-50" />
+                        <span className="font-headline font-bold text-accent text-sm">₦{u.balance?.toLocaleString() || 0}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 text-[9px] font-bold uppercase tracking-widest hover:bg-accent/10 hover:text-accent"
+                        onClick={() => {
+                          setEditingUser(u);
+                          setNewBalance(u.balance?.toString() || "0");
+                        }}
+                      >
+                        <Edit2 className="h-3 w-3 mr-1" />
+                        Adjust
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-20 opacity-40 uppercase tracking-widest text-[10px]">
+                    No matches found in database.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </Card>
 
       <Dialog open={!!editingUser} onOpenChange={(open) => !open && setEditingUser(null)}>
-        <DialogContent className="glass-card border-white/10">
+        <DialogContent className="glass-card border-white/10 w-[95vw] sm:w-full">
           <DialogHeader>
-            <DialogTitle className="font-headline text-xl">Adjust Wallet Balance</DialogTitle>
-            <DialogDescription className="text-xs uppercase tracking-widest text-muted-foreground">
+            <DialogTitle className="font-headline text-lg sm:text-xl">Adjust Wallet Balance</DialogTitle>
+            <DialogDescription className="text-[10px] uppercase tracking-widest text-muted-foreground">
               Directly override user account credits
             </DialogDescription>
           </DialogHeader>
@@ -196,10 +198,10 @@ export default function AdminUsersPage() {
           {editingUser && (
             <div className="space-y-6 py-4">
               <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
-                <UserCircle className="h-10 w-10 text-muted-foreground" />
-                <div className="flex flex-col">
-                  <span className="font-bold">{editingUser.displayName}</span>
-                  <span className="text-[10px] uppercase text-muted-foreground">{editingUser.email}</span>
+                <UserCircle className="h-10 w-10 text-muted-foreground shrink-0" />
+                <div className="flex flex-col truncate">
+                  <span className="font-bold text-sm truncate">{editingUser.displayName}</span>
+                  <span className="text-[10px] uppercase text-muted-foreground truncate">{editingUser.email}</span>
                 </div>
               </div>
 
@@ -218,15 +220,15 @@ export default function AdminUsersPage() {
             </div>
           )}
 
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="ghost" onClick={() => setEditingUser(null)} className="uppercase text-[10px] font-bold tracking-widest">
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button variant="ghost" onClick={() => setEditingUser(null)} className="w-full sm:w-auto uppercase text-[10px] font-bold tracking-widest order-2 sm:order-1">
               <X className="h-4 w-4 mr-1" />
               Abort
             </Button>
             <Button 
               onClick={handleUpdateBalance} 
               disabled={isUpdating}
-              className="bg-primary hover:bg-primary/90 text-white uppercase text-[10px] font-bold tracking-widest"
+              className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white uppercase text-[10px] font-bold tracking-widest order-1 sm:order-2"
             >
               {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
               Save Override
