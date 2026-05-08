@@ -167,15 +167,15 @@ export default function AdminDashboard() {
   if (!user || !profile?.isAdmin) return null;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8 sm:space-y-12">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8 sm:space-y-12 overflow-x-hidden">
       <div className="border-b border-white/5 pb-6">
         <h1 className="font-headline text-2xl sm:text-4xl font-bold uppercase tracking-tight">Bundle Management</h1>
         <p className="text-muted-foreground mt-1 text-[10px] sm:text-xs uppercase tracking-widest">Create and manage multi-link Telegram bundles</p>
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8 sm:gap-10">
-        <div className="lg:col-span-8 space-y-8">
-          <Card className="glass-card border-white/5">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10">
+        <div className="lg:col-span-8 space-y-8 min-w-0">
+          <Card className="glass-card border-white/5 w-full">
             <CardHeader className="p-4 sm:p-6">
               <CardTitle className="font-headline text-lg sm:text-xl uppercase tracking-widest">New Bundle Configuration</CardTitle>
             </CardHeader>
@@ -194,22 +194,30 @@ export default function AdminDashboard() {
 
                 <div className="space-y-4">
                   <Label className="text-[10px] uppercase font-bold text-muted-foreground">Encrypted Access Links</Label>
-                  {groupLinks.map((link, idx) => (
-                    <div key={idx} className="flex flex-col sm:flex-row gap-2 sm:items-end">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 flex-1">
-                        <Input placeholder="Label (e.g. Chat)" value={link.label} onChange={(e) => handleLinkChange(idx, "label", e.target.value)} className="bg-white/5 h-10" />
-                        <Input placeholder="Invite URL" value={link.url} onChange={(e) => handleLinkChange(idx, "url", e.target.value)} className="bg-white/5 h-10" />
+                  <div className="space-y-4">
+                    {groupLinks.map((link, idx) => (
+                      <div key={idx} className="flex flex-col gap-3 p-4 bg-white/[0.02] border border-white/5 rounded-xl">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">
+                          <div className="space-y-1">
+                            <Label className="text-[9px] uppercase font-bold opacity-40">Link Label</Label>
+                            <Input placeholder="e.g. Signals" value={link.label} onChange={(e) => handleLinkChange(idx, "label", e.target.value)} className="bg-white/5 h-10" />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-[9px] uppercase font-bold opacity-40">Invite URL</Label>
+                            <Input placeholder="https://t.me/..." value={link.url} onChange={(e) => handleLinkChange(idx, "url", e.target.value)} className="bg-white/5 h-10" />
+                          </div>
+                        </div>
+                        <div className="flex justify-end pt-1">
+                          {groupLinks.length > 1 && (
+                            <Button type="button" variant="ghost" size="sm" onClick={() => removeLinkLabel(idx)} className="text-destructive h-8 px-3 text-[10px] font-bold uppercase tracking-tighter">
+                              <Trash2 className="h-3 w-3 mr-2" />
+                              Remove Link
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex justify-end">
-                        {groupLinks.length > 1 && (
-                          <Button type="button" variant="ghost" size="sm" onClick={() => removeLinkLabel(idx)} className="text-destructive h-10 sm:h-10 w-full sm:w-10">
-                            <Trash2 className="h-4 w-4 mr-2 sm:mr-0" />
-                            <span className="sm:hidden text-xs uppercase font-bold">Remove Link</span>
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                   <Button type="button" variant="outline" size="sm" onClick={addLinkLabel} className="w-full sm:w-auto text-[10px] font-bold uppercase tracking-widest h-10 border-dashed">
                     <Plus className="h-3 w-3 mr-2" /> Add Next Link
                   </Button>
@@ -254,8 +262,8 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
-        <div className="lg:col-span-4 space-y-8">
-          <Card className="glass-card border-white/5">
+        <div className="lg:col-span-4 space-y-8 min-w-0">
+          <Card className="glass-card border-white/5 w-full">
             <CardHeader className="p-4 sm:p-6"><CardTitle className="font-headline text-lg uppercase tracking-widest">Region Registry</CardTitle></CardHeader>
             <CardContent className="p-4 sm:p-6 pt-0">
               <form onSubmit={handleAddCountry} className="space-y-4">
@@ -339,28 +347,38 @@ export default function AdminDashboard() {
                 </div>
               </div>
               
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <Label className="text-[10px] uppercase font-bold text-muted-foreground">Update Links</Label>
-                {editingGroup.links.map((link: any, idx: number) => (
-                  <div key={idx} className="flex flex-col sm:flex-row gap-2">
-                    <div className="grid grid-cols-2 gap-2 flex-1">
-                      <Input placeholder="Label" value={link.label} onChange={(e) => {
-                        const l = [...editingGroup.links];
-                        l[idx].label = e.target.value;
-                        setEditingGroup({...editingGroup, links: l});
-                      }} className="bg-white/5" />
-                      <Input placeholder="URL" value={link.url} onChange={(e) => {
-                        const l = [...editingGroup.links];
-                        l[idx].url = e.target.value;
-                        setEditingGroup({...editingGroup, links: l});
-                      }} className="bg-white/5" />
+                <div className="space-y-4">
+                  {editingGroup.links.map((link: any, idx: number) => (
+                    <div key={idx} className="flex flex-col gap-3 p-4 bg-white/[0.02] border border-white/5 rounded-xl">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">
+                        <div className="space-y-1">
+                          <Label className="text-[9px] uppercase font-bold opacity-40">Label</Label>
+                          <Input placeholder="Label" value={link.label} onChange={(e) => {
+                            const l = [...editingGroup.links];
+                            l[idx].label = e.target.value;
+                            setEditingGroup({...editingGroup, links: l});
+                          }} className="bg-white/5" />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-[9px] uppercase font-bold opacity-40">URL</Label>
+                          <Input placeholder="URL" value={link.url} onChange={(e) => {
+                            const l = [...editingGroup.links];
+                            l[idx].url = e.target.value;
+                            setEditingGroup({...editingGroup, links: l});
+                          }} className="bg-white/5" />
+                        </div>
+                      </div>
+                      <div className="flex justify-end">
+                        <Button type="button" variant="ghost" size="sm" onClick={() => {
+                          const l = editingGroup.links.filter((_:any, i:number) => i !== idx);
+                          setEditingGroup({...editingGroup, links: l});
+                        }} className="text-destructive h-8 text-[10px] font-bold uppercase"><Trash2 className="h-3.5 w-3.5 mr-2" />Remove</Button>
+                      </div>
                     </div>
-                    <Button type="button" variant="ghost" size="icon" onClick={() => {
-                      const l = editingGroup.links.filter((_:any, i:number) => i !== idx);
-                      setEditingGroup({...editingGroup, links: l});
-                    }} className="text-destructive self-end sm:self-center h-10 w-10"><Trash2 className="h-4 w-4" /></Button>
-                  </div>
-                ))}
+                  ))}
+                </div>
                 <Button type="button" variant="outline" size="sm" onClick={() => setEditingGroup({...editingGroup, links: [...editingGroup.links, {label:"", url:""}]})} className="w-full sm:w-auto text-[10px] uppercase tracking-widest">Add Link</Button>
               </div>
 
