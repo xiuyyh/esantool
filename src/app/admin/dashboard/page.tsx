@@ -134,9 +134,9 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteCountry = async (id: string) => {
-    if (!db || !confirm("Purge this region from registry? This may orphan existing bundles.")) return;
+    if (!db || !confirm("Delete this country from registry? This may orphan existing bundles.")) return;
     deleteDoc(doc(db, "countries", id));
-    toast({ title: "Purged", description: "Region protocol removed." });
+    toast({ title: "Purged", description: "Country protocol removed." });
   };
 
   const handleDeleteGroup = async (id: string) => {
@@ -283,7 +283,7 @@ export default function AdminDashboard() {
                     <span className="text-white/80">{c.name}</span>
                     <button 
                       onClick={() => handleDeleteCountry(c.id)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:bg-red-500/20 rounded text-destructive"
+                      className="opacity-40 hover:opacity-100 transition-opacity p-0.5 hover:bg-red-500/20 rounded text-destructive"
                       title="Remove Region"
                     >
                       <X className="h-2.5 w-2.5" />
