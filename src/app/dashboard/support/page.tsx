@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { MessageSquare, Send, Loader2, ChevronLeft, ShieldCheck, Mail } from "lucide-react";
+import { MessageSquare, Send, Loader2, ChevronLeft, ShieldCheck, Mail, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
