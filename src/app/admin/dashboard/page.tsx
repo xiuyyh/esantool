@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useFirestore, useCollection, useUser, useDoc, useMemoFirebase } from "@/firebase";
 import { collection, addDoc, deleteDoc, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, X, Trash2, Edit3, Globe, Lock, Loader2, Plus, Link as LinkIcon } from "lucide-react";
+import { Upload, X, Trash2, Edit3, Globe, Lock, Loader2, Plus, Link as LinkIcon, Zap } from "lucide-react";
+import { getBundlePricing } from "@/lib/pricing";
 import {
   Dialog,
   DialogContent,
@@ -107,6 +108,7 @@ export default function AdminDashboard() {
     addDoc(collection(db, "groups"), {
       title: groupTitle,
       price: Number(groupPrice),
+      salesCount: 0,
       description: groupDesc,
       country: groupCountry,
       links: validLinks,
@@ -185,7 +187,7 @@ export default function AdminDashboard() {
                     <Input value={groupTitle} onChange={(e) => setGroupTitle(e.target.value)} className="bg-white/5 h-12" placeholder="e.g. VIP Master Bundle" required />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">Valuation (₦)</Label>
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">Base Valuation (₦)</Label>
                     <Input type="number" value={groupPrice} onChange={(e) => setGroupPrice(e.target.value)} className="bg-white/5 h-12" placeholder="5000" required />
                   </div>
                 </div>
@@ -281,26 +283,40 @@ export default function AdminDashboard() {
                 <TableRow>
                   <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest min-w-[150px]">Identity</TableHead>
                   <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest">Region</TableHead>
-                  <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest">Links</TableHead>
-                  <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest">Price</TableHead>
+                  <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest">Tier</TableHead>
+                  <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest text-center">Sales</TableHead>
+                  <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest">Price (Base)</TableHead>
                   <TableHead className="font-bold text-right uppercase text-[9px] sm:text-[10px] tracking-widest">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {groups.map((group: any) => (
-                  <TableRow key={group.id} className="hover:bg-white/5 border-white/5">
-                    <TableCell className="font-bold text-sm">{group.title}</TableCell>
-                    <TableCell className="text-[10px] uppercase opacity-60">{group.country}</TableCell>
-                    <TableCell className="text-[10px] font-mono text-accent">[{group.links?.length || 0} Nodes]</TableCell>
-                    <TableCell className="font-headline font-bold text-sm">₦{group.price?.toLocaleString()}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => openEditDialog(group)} className="h-8 w-8 text-accent"><Edit3 className="h-4 w-4" /></Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDeleteGroup(group.id)} className="h-8 w-8 text-destructive"><Trash2 className="h-4 w-4" /></Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {groups.map((group: any) => {
+                  const pricing = getBundlePricing(group.price, group.salesCount || 0);
+                  return (
+                    <TableRow key={group.id} className="hover:bg-white/5 border-white/5">
+                      <TableCell className="font-bold text-sm">{group.title}</TableCell>
+                      <TableCell className="text-[10px] uppercase opacity-60">{group.country}</TableCell>
+                      <TableCell>
+                        <div className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded border ${pricing.borderColor} ${pricing.bgColor} ${pricing.color} flex items-center gap-1 w-fit`}>
+                          <Zap className="h-2 w-2" /> {pricing.tier}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center font-mono text-[10px]">{group.salesCount || 0}</TableCell>
+                      <TableCell className="font-headline font-bold text-sm">
+                        <div className="flex flex-col">
+                          <span className={pricing.color}>₦{pricing.price.toLocaleString()}</span>
+                          <span className="text-[9px] opacity-40">Base: ₦{group.price?.toLocaleString()}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => openEditDialog(group)} className="h-8 w-8 text-accent"><Edit3 className="h-4 w-4" /></Button>
+                          <Button variant="ghost" size="icon" onClick={() => handleDeleteGroup(group.id)} className="h-8 w-8 text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
@@ -318,7 +334,7 @@ export default function AdminDashboard() {
                   <Input value={editingGroup.title} onChange={(e) => setEditingGroup({...editingGroup, title: e.target.value})} className="bg-white/5" />
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-[9px] uppercase font-bold">Price (₦)</Label>
+                  <Label className="text-[9px] uppercase font-bold">Base Price (₦)</Label>
                   <Input type="number" value={editingGroup.price} onChange={(e) => setEditingGroup({...editingGroup, price: e.target.value})} className="bg-white/5" />
                 </div>
               </div>
@@ -363,4 +379,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-

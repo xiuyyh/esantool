@@ -1,14 +1,16 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, Trash2, ShieldCheck, Wallet, ChevronLeft, AlertCircle, PlusCircle, ArrowRight } from "lucide-react";
+import { ShoppingCart, Trash2, ShieldCheck, Wallet, ChevronLeft, AlertCircle, PlusCircle, ArrowRight, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase } from "@/firebase";
-import { doc, updateDoc, arrayUnion, arrayRemove, collection, increment } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, arrayRemove, collection, increment, writeBatch } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
+import { getBundlePricing } from "@/lib/pricing";
 
 const DEFAULT_IMAGE = "https://techstory.in/wp-content/uploads/2021/07/telegram.jpeg";
 
@@ -27,11 +29,16 @@ export default function CheckoutPage() {
 
   const cartItems = useMemo(() => {
     if (!profile?.cart || !allGroups) return [];
-    return allGroups.filter((g: any) => profile.cart.includes(g.id));
+    return allGroups
+      .filter((g: any) => profile.cart.includes(g.id))
+      .map((g: any) => {
+        const pricing = getBundlePricing(g.price, g.salesCount || 0);
+        return { ...g, dynamicPrice: pricing.price, pricingTier: pricing.tier };
+      });
   }, [profile?.cart, allGroups]);
 
   const totalPrice = useMemo(() => {
-    return cartItems.reduce((sum, item) => sum + (item.price || 0), 0);
+    return cartItems.reduce((sum, item) => sum + item.dynamicPrice, 0);
   }, [cartItems]);
 
   const userBalance = profile?.balance || 0;
@@ -45,7 +52,7 @@ export default function CheckoutPage() {
   };
 
   const handleCompletePurchase = async () => {
-    if (!userRef || !profile) return;
+    if (!userRef || !profile || !db) return;
     if (cartItems.length === 0) return;
 
     if (hasInsufficientFunds) {
@@ -60,16 +67,28 @@ export default function CheckoutPage() {
     setIsProcessing(true);
     try {
       const itemIds = cartItems.map(item => item.id);
-      
-      await updateDoc(userRef, {
+      const batch = writeBatch(db);
+
+      // 1. Update User Profile
+      batch.update(userRef, {
         balance: increment(-totalPrice),
         purchasedGroups: arrayUnion(...itemIds),
         cart: []
       });
 
+      // 2. Increment Sales Count for each group
+      cartItems.forEach(item => {
+        const groupRef = doc(db, "groups", item.id);
+        batch.update(groupRef, {
+          salesCount: increment(1)
+        });
+      });
+
+      await batch.commit();
+
       toast({
         title: "Purchase Successful",
-        description: "Your groups are now available in your dashboard.",
+        description: "Your bundles are now available in your dashboard.",
       });
       router.push("/dashboard");
     } catch (err: any) {
@@ -98,8 +117,8 @@ export default function CheckoutPage() {
     <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-6 lg:py-12 space-y-6 sm:space-y-10">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-white/5 pb-6">
         <div className="space-y-1">
-          <h1 className="font-headline text-3xl sm:text-5xl font-bold tracking-tight uppercase">My Cart</h1>
-          <p className="text-muted-foreground uppercase tracking-widest text-[10px] sm:text-xs">Secure Checkout</p>
+          <h1 className="font-headline text-3xl sm:text-5xl font-bold tracking-tight uppercase">Order Checkout</h1>
+          <p className="text-muted-foreground uppercase tracking-widest text-[10px] sm:text-xs">Processing Node Access</p>
         </div>
         <Link href="/" className="text-accent text-xs font-bold uppercase tracking-widest flex items-center hover:opacity-80 transition-opacity">
           <ChevronLeft className="h-4 w-4 mr-1" />
@@ -119,13 +138,17 @@ export default function CheckoutPage() {
                   <div className="flex-1 min-w-0">
                     <h3 className="font-headline font-bold text-sm sm:text-xl truncate mb-1">{item.title}</h3>
                     <div className="flex items-center gap-2">
+                      <div className="text-[8px] font-mono font-bold uppercase py-0.5 px-2 bg-accent/10 border border-accent/20 text-accent flex items-center gap-1">
+                        <Zap className="h-2 w-2" />
+                        {item.pricingTier}
+                      </div>
                       <span className="text-[9px] text-muted-foreground uppercase font-bold px-2 py-0.5 rounded-full bg-white/5 border border-white/5 truncate max-w-full">
                         {item.country}
                       </span>
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-1 shrink-0">
-                    <span className="font-headline font-bold text-base sm:text-2xl text-accent">₦{item.price?.toLocaleString()}</span>
+                    <span className="font-headline font-bold text-base sm:text-2xl text-accent">₦{item.dynamicPrice?.toLocaleString()}</span>
                     <Button 
                       variant="ghost" 
                       size="icon" 
@@ -161,7 +184,7 @@ export default function CheckoutPage() {
                   <span className="font-bold">{cartItems.length}</span>
                 </div>
                 <div className="flex justify-between items-end border-t border-white/5 pt-4 gap-2">
-                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground shrink-0 mb-1">Total Amount</span>
+                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground shrink-0 mb-1">Total Protocol Cost</span>
                   <span className={`font-headline font-bold text-2xl sm:text-3xl truncate ${hasInsufficientFunds && cartItems.length > 0 ? "text-destructive" : "text-accent"}`}>
                     ₦{totalPrice.toLocaleString()}
                   </span>
@@ -181,8 +204,8 @@ export default function CheckoutPage() {
                   <div className="flex gap-3">
                     <AlertCircle className="h-5 w-5 text-destructive shrink-0" />
                     <div className="space-y-1">
-                      <p className="text-xs font-bold text-destructive uppercase tracking-widest">Insufficient Funds</p>
-                      <p className="text-[10px] leading-relaxed opacity-80">You need ₦{(totalPrice - userBalance).toLocaleString()} more to complete this purchase.</p>
+                      <p className="text-xs font-bold text-destructive uppercase tracking-widest">Insufficient Credits</p>
+                      <p className="text-[10px] leading-relaxed opacity-80">You need ₦{(totalPrice - userBalance).toLocaleString()} more to finalize acquisition.</p>
                     </div>
                   </div>
                   <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-bold h-10 uppercase tracking-widest text-[10px]" size="sm">
@@ -195,11 +218,11 @@ export default function CheckoutPage() {
               )}
 
               <Button 
-                className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest disabled:opacity-20"
+                className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest disabled:opacity-20 shadow-[0_0_20px_rgba(0,100,255,0.2)]"
                 disabled={isProcessing || cartItems.length === 0 || hasInsufficientFunds}
                 onClick={handleCompletePurchase}
               >
-                {isProcessing ? "Processing..." : hasInsufficientFunds ? "Insufficient Credits" : "Complete Purchase"}
+                {isProcessing ? "INITIALIZING..." : hasInsufficientFunds ? "INSUFFICIENT CREDITS" : "AUTHORIZE PURCHASE"}
                 {!hasInsufficientFunds && !isProcessing && cartItems.length > 0 && <ShieldCheck className="ml-2 h-5 w-5" />}
               </Button>
             </CardContent>
@@ -207,7 +230,7 @@ export default function CheckoutPage() {
               <div className="w-full pt-4 flex flex-col items-center gap-2">
                 <p className="text-[9px] text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                   <ArrowRight className="h-3 w-3 text-accent" />
-                  Secure Encrypted Transaction
+                  Secure Encrypted Transaction Protocol
                 </p>
               </div>
             </CardFooter>

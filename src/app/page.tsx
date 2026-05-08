@@ -156,6 +156,7 @@ export default function Home() {
                   title={p.title}
                   country={p.country}
                   price={p.price}
+                  salesCount={p.salesCount || 0}
                   description={p.description}
                   imageUrls={p.imageUrls || []}
                   imageHint="group preview"

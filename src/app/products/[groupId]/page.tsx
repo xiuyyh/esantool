@@ -5,15 +5,15 @@ import { use, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ShoppingCart, ShieldCheck, Lock, ExternalLink, Globe, Check, Link as LinkIcon } from "lucide-react";
+import { ChevronLeft, ShoppingCart, ShieldCheck, Lock, ExternalLink, Globe, Check, Link as LinkIcon, Zap, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useFirestore, useDoc, useUser, useMemoFirebase } from "@/firebase";
 import { doc, setDoc, arrayUnion } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { getBundlePricing } from "@/lib/pricing";
 import {
   Carousel,
   CarouselContent,
@@ -41,6 +41,8 @@ export default function GroupDetailsPage({ params: paramsPromise }: { params: Pr
   const hasAccess = profile?.purchasedGroups?.includes(params.groupId);
   const isInCart = profile?.cart?.includes(params.groupId);
 
+  const pricing = group ? getBundlePricing(group.price, group.salesCount || 0) : null;
+
   const handleAddToCart = async () => {
     if (!user || !db || !group) {
       router.push("/login");
@@ -62,7 +64,7 @@ export default function GroupDetailsPage({ params: paramsPromise }: { params: Pr
   };
 
   if (loading) return <div className="max-w-5xl mx-auto px-4 py-20"><Skeleton className="h-[400px] w-full rounded-2xl" /></div>;
-  if (!group) return <div className="max-w-5xl mx-auto px-4 py-20 text-center"><h2 className="text-2xl font-bold">Bundle Not Found</h2><Button className="mt-6" onClick={() => router.push("/")}>Return</Button></div>;
+  if (!group || !pricing) return <div className="max-w-5xl mx-auto px-4 py-20 text-center"><h2 className="text-2xl font-bold">Bundle Not Found</h2><Button className="mt-6" onClick={() => router.push("/")}>Return</Button></div>;
 
   const images = group.imageUrls?.length > 0 ? group.imageUrls : [DEFAULT_IMAGE];
 
@@ -75,7 +77,7 @@ export default function GroupDetailsPage({ params: paramsPromise }: { params: Pr
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         <div className="lg:col-span-7 space-y-6">
-          <div className="relative rounded-3xl overflow-hidden border border-white/10 glass-card p-2">
+          <div className={`relative rounded-3xl overflow-hidden border glass-card p-2 ${pricing.borderColor}`}>
             <Carousel className="w-full">
               <CarouselContent>
                 {images.map((url: string, index: number) => (
@@ -88,35 +90,62 @@ export default function GroupDetailsPage({ params: paramsPromise }: { params: Pr
               </CarouselContent>
               {images.length > 1 && <><CarouselPrevious className="left-4" /><CarouselNext className="right-4" /></>}
             </Carousel>
+            <div className={`absolute top-4 left-4 ${pricing.bgColor} ${pricing.color} border ${pricing.borderColor} px-4 py-1 text-xs font-bold uppercase tracking-widest flex items-center gap-2 backdrop-blur-md`}>
+              <Zap className="h-4 w-4" />
+              {pricing.label} Protocol
+            </div>
           </div>
           
           <Card className="glass-card border-white/5">
             <CardContent className="p-8 space-y-6">
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center gap-4">
                 <Badge variant="outline" className="border-accent/20 text-accent uppercase px-3 py-1 font-bold tracking-widest">
                   <Globe className="h-3 w-3 mr-2 inline" /> {group.country}
                 </Badge>
                 <Badge variant="outline" className="border-white/10 uppercase px-3 py-1 font-bold tracking-widest">
-                  {group.links?.length || 0} Bundled Links
+                  {group.links?.length || 0} Bundled Nodes
+                </Badge>
+                <Badge variant="outline" className={`uppercase px-3 py-1 font-bold tracking-widest ${pricing.color} ${pricing.borderColor}`}>
+                  Status: {pricing.tier}
                 </Badge>
               </div>
               <h2 className="font-headline text-3xl font-bold uppercase tracking-tight">Technical Briefing</h2>
+              <div className="p-4 bg-white/[0.02] border border-white/5 space-y-2">
+                <div className="flex items-center gap-2 text-[10px] font-bold text-accent uppercase tracking-widest">
+                  <Info className="h-3 w-3" /> Protocol Cycle Info
+                </div>
+                <p className="text-[10px] text-muted-foreground leading-relaxed uppercase tracking-tight">
+                  This bundle is currently in <span className={pricing.color}>{pricing.label}</span> phase. Price adjustments occur automatically based on procurement volume (HQ: 0-10, MQ: 10-20, LQ: 20+).
+                </p>
+              </div>
               <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">{group.description}</p>
             </CardContent>
           </Card>
         </div>
 
         <div className="lg:col-span-5 space-y-6">
-          <Card className="glass-card border-accent/20 tech-border sticky top-24">
+          <Card className={`glass-card tech-border sticky top-24 border ${pricing.borderColor}`}>
             <CardContent className="p-8 space-y-8">
               <div className="space-y-1">
                 <h1 className="font-headline text-3xl font-bold tracking-tighter uppercase">{group.title}</h1>
-                <p className="text-accent text-[10px] uppercase font-bold tracking-[0.2em]">Multi-Node Protocol Bundle</p>
+                <p className={`${pricing.color} text-[10px] uppercase font-bold tracking-[0.2em]`}>{pricing.description}</p>
               </div>
 
-              <div className="flex justify-between items-baseline border-y border-white/5 py-6">
-                <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Acquisition Cost</span>
-                <span className="text-4xl font-bold font-headline text-accent">₦{group.price?.toLocaleString()}</span>
+              <div className="flex flex-col gap-2 border-y border-white/5 py-6">
+                <div className="flex justify-between items-baseline">
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Acquisition Cost</span>
+                  <div className="flex flex-col items-end">
+                    <span className={`text-4xl font-bold font-headline ${pricing.color}`}>₦{pricing.price.toLocaleString()}</span>
+                    {pricing.discount > 0 && (
+                      <span className="text-xs line-through opacity-40 font-mono">₦{group.price.toLocaleString()}</span>
+                    )}
+                  </div>
+                </div>
+                {pricing.discount > 0 && (
+                  <div className="bg-accent/10 border border-accent/20 p-2 text-center">
+                    <p className="text-[10px] font-bold text-accent uppercase tracking-[0.2em]">-{pricing.discount}% Dynamic Slash Applied</p>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-4">
@@ -142,7 +171,7 @@ export default function GroupDetailsPage({ params: paramsPromise }: { params: Pr
                 ) : (
                   <div className="space-y-6">
                     <div className="space-y-2">
-                      <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest ml-1">Included in this bundle:</p>
+                      <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest ml-1">Bundled Node Preview:</p>
                       <div className="grid grid-cols-1 gap-2">
                         {(group.links || []).map((link: any, idx: number) => (
                           <div key={idx} className="flex items-center gap-3 p-2 px-3 border border-white/5 bg-white/[0.02] rounded-lg opacity-60">
@@ -153,7 +182,7 @@ export default function GroupDetailsPage({ params: paramsPromise }: { params: Pr
                       </div>
                     </div>
                     
-                    <Button onClick={handleAddToCart} disabled={isAdding} className="w-full h-16 bg-primary hover:bg-primary/90 text-white font-bold text-lg uppercase tracking-[0.2em] shadow-lg shadow-primary/20">
+                    <Button onClick={handleAddToCart} disabled={isAdding} className={`w-full h-16 ${pricing.discount > 0 ? 'bg-accent/20 text-accent border border-accent/30' : 'bg-primary text-white'} hover:bg-primary/90 font-bold text-lg uppercase tracking-[0.2em] shadow-lg`}>
                       {isInCart ? "PROCEED TO CHECKOUT" : isAdding ? "COMMUNICATING..." : "ACQUIRE BUNDLE"}
                     </Button>
                     <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground uppercase tracking-widest opacity-50">
