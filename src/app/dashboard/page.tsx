@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useEffect } from "react";
@@ -104,25 +103,27 @@ export default function UserDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {purchasedGroups.length > 0 ? (
             purchasedGroups.map((group: any) => (
-              <Card key={group.id} className="glass-card border-accent/20 overflow-hidden group">
+              <Card key={group.id} className="glass-card border-accent/20 overflow-hidden group min-w-0">
                 <CardContent className="p-0">
-                  <div className="flex p-5 gap-5">
-                    <div className="h-24 w-24 rounded-xl overflow-hidden border border-white/10 shrink-0">
+                  <div className="flex p-4 sm:p-5 gap-4 sm:gap-5 min-w-0">
+                    <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-xl overflow-hidden border border-white/10 shrink-0">
                       <img src={group.imageUrls?.[0] || DEFAULT_IMAGE} className="w-full h-full object-cover" alt="" />
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col justify-center">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-headline font-bold text-xl truncate">{group.title}</h3>
-                        <div className="text-[10px] font-bold text-accent uppercase tracking-tighter flex items-center gap-1 border border-accent/20 px-2 py-0.5 rounded-full">
-                          <Globe className="h-3 w-3" />
+                      <div className="flex flex-col gap-1 mb-2">
+                        <div className="flex justify-between items-start gap-2">
+                          <h3 className="font-headline font-bold text-base sm:text-xl truncate">{group.title}</h3>
+                        </div>
+                        <div className="w-fit text-[9px] font-bold text-accent uppercase tracking-tighter flex items-center gap-1 border border-accent/20 px-2 py-0.5 rounded-full">
+                          <Globe className="h-2.5 w-2.5" />
                           {group.country}
                         </div>
                       </div>
-                      <div className="mt-2 p-3 rounded-xl bg-accent/5 border border-accent/10 flex items-center justify-between gap-3">
-                        <code className="text-xs font-mono text-accent truncate opacity-80">
+                      <div className="mt-2 p-2 sm:p-3 rounded-xl bg-accent/5 border border-accent/10 flex items-center justify-between gap-3 min-w-0">
+                        <code className="text-[10px] sm:text-xs font-mono text-accent truncate opacity-80 flex-1">
                           {group.accessLink}
                         </code>
-                        <Button asChild size="icon" className="h-8 w-8 bg-accent text-accent-foreground hover:bg-accent/90 shrink-0">
+                        <Button asChild size="icon" className="h-7 w-7 sm:h-8 sm:w-8 bg-accent text-accent-foreground hover:bg-accent/90 shrink-0">
                           <a href={group.accessLink} target="_blank" rel="noopener noreferrer">
                             <ExternalLink className="h-4 w-4" />
                           </a>

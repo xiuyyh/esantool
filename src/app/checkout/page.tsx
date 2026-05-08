@@ -112,17 +112,19 @@ export default function CheckoutPage() {
           {cartItems.length > 0 ? (
             cartItems.map((item) => (
               <Card key={item.id} className="glass-card border-white/5 overflow-hidden">
-                <CardContent className="p-3 sm:p-5 flex flex-row items-center gap-4">
-                  <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-lg overflow-hidden border border-white/10 shrink-0">
+                <CardContent className="p-3 sm:p-5 flex flex-row items-center gap-4 min-w-0">
+                  <div className="h-14 w-14 sm:h-20 sm:w-20 rounded-lg overflow-hidden border border-white/10 shrink-0">
                     <img src={item.imageUrls?.[0] || DEFAULT_IMAGE} className="w-full h-full object-cover" alt="" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-headline font-bold text-sm sm:text-xl truncate mb-1">{item.title}</h3>
                     <div className="flex items-center gap-2">
-                      <span className="text-[9px] text-muted-foreground uppercase font-bold px-2 py-0.5 rounded-full bg-white/5 border border-white/5">{item.country}</span>
+                      <span className="text-[9px] text-muted-foreground uppercase font-bold px-2 py-0.5 rounded-full bg-white/5 border border-white/5 truncate max-w-full">
+                        {item.country}
+                      </span>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-1">
+                  <div className="flex flex-col items-end gap-1 shrink-0">
                     <span className="font-headline font-bold text-base sm:text-2xl text-accent">₦{item.price?.toLocaleString()}</span>
                     <Button 
                       variant="ghost" 
@@ -158,9 +160,11 @@ export default function CheckoutPage() {
                   <span className="text-muted-foreground uppercase tracking-widest">Items Count</span>
                   <span className="font-bold">{cartItems.length}</span>
                 </div>
-                <div className="flex justify-between items-end border-t border-white/5 pt-4">
-                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground">Total Amount</span>
-                  <span className={`font-headline font-bold text-3xl ${hasInsufficientFunds && cartItems.length > 0 ? "text-destructive" : "text-accent"}`}>₦{totalPrice.toLocaleString()}</span>
+                <div className="flex justify-between items-end border-t border-white/5 pt-4 gap-2">
+                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground shrink-0 mb-1">Total Amount</span>
+                  <span className={`font-headline font-bold text-2xl sm:text-3xl truncate ${hasInsufficientFunds && cartItems.length > 0 ? "text-destructive" : "text-accent"}`}>
+                    ₦{totalPrice.toLocaleString()}
+                  </span>
                 </div>
               </div>
 
@@ -169,7 +173,7 @@ export default function CheckoutPage() {
                   <span>Your Balance</span>
                   <Wallet className="h-3 w-3" />
                 </div>
-                <div className="text-xl font-bold font-headline">₦{userBalance.toLocaleString()}</div>
+                <div className="text-xl font-bold font-headline truncate">₦{userBalance.toLocaleString()}</div>
               </div>
 
               {hasInsufficientFunds && cartItems.length > 0 && (
