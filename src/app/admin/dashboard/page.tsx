@@ -133,6 +133,12 @@ export default function AdminDashboard() {
     setCountryName("");
   };
 
+  const handleDeleteCountry = async (id: string) => {
+    if (!db || !confirm("Purge this region from registry? This may orphan existing bundles.")) return;
+    deleteDoc(doc(db, "countries", id));
+    toast({ title: "Purged", description: "Region protocol removed." });
+  };
+
   const handleDeleteGroup = async (id: string) => {
     if (!db || !confirm("Delete this bundle?")) return;
     deleteDoc(doc(db, "groups", id));
@@ -169,47 +175,47 @@ export default function AdminDashboard() {
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8 sm:space-y-12 overflow-x-hidden">
       <div className="border-b border-white/5 pb-6">
-        <h1 className="font-headline text-2xl sm:text-4xl font-bold uppercase tracking-tight">Bundle Management</h1>
-        <p className="text-muted-foreground mt-1 text-[10px] sm:text-xs uppercase tracking-widest">Create and manage multi-link Telegram bundles</p>
+        <h1 className="font-headline text-2xl sm:text-4xl font-bold uppercase tracking-tight text-white">Bundle Management</h1>
+        <p className="text-muted-foreground mt-1 text-[10px] sm:text-xs uppercase tracking-widest font-mono">Create and manage multi-link Telegram bundles</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10">
         <div className="lg:col-span-8 space-y-8 min-w-0">
           <Card className="glass-card border-white/5 w-full">
             <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="font-headline text-lg sm:text-xl uppercase tracking-widest">New Bundle Configuration</CardTitle>
+              <CardTitle className="font-headline text-lg sm:text-xl uppercase tracking-widest text-white">New Bundle Configuration</CardTitle>
             </CardHeader>
             <CardContent className="p-4 sm:p-6 pt-0">
               <form onSubmit={handleAddGroup} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div className="space-y-2">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">Bundle Identity</Label>
-                    <Input value={groupTitle} onChange={(e) => setGroupTitle(e.target.value)} className="bg-white/5 h-12" placeholder="e.g. VIP Master Bundle" required />
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground font-mono">Bundle Identity</Label>
+                    <Input value={groupTitle} onChange={(e) => setGroupTitle(e.target.value)} className="bg-white/5 h-12 border-white/10" placeholder="e.g. VIP Master Bundle" required />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">Base Valuation (₦)</Label>
-                    <Input type="number" value={groupPrice} onChange={(e) => setGroupPrice(e.target.value)} className="bg-white/5 h-12" placeholder="5000" required />
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground font-mono">Base Valuation (₦)</Label>
+                    <Input type="number" value={groupPrice} onChange={(e) => setGroupPrice(e.target.value)} className="bg-white/5 h-12 border-white/10" placeholder="5000" required />
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <Label className="text-[10px] uppercase font-bold text-muted-foreground">Encrypted Access Links</Label>
+                  <Label className="text-[10px] uppercase font-bold text-muted-foreground font-mono">Encrypted Access Links</Label>
                   <div className="space-y-4">
                     {groupLinks.map((link, idx) => (
                       <div key={idx} className="flex flex-col gap-3 p-4 bg-white/[0.02] border border-white/5 rounded-xl">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">
                           <div className="space-y-1">
-                            <Label className="text-[9px] uppercase font-bold opacity-40">Link Label</Label>
-                            <Input placeholder="e.g. Signals" value={link.label} onChange={(e) => handleLinkChange(idx, "label", e.target.value)} className="bg-white/5 h-10" />
+                            <Label className="text-[9px] uppercase font-bold opacity-40 font-mono">Link Label</Label>
+                            <Input placeholder="e.g. Signals" value={link.label} onChange={(e) => handleLinkChange(idx, "label", e.target.value)} className="bg-white/5 h-10 border-white/10" />
                           </div>
                           <div className="space-y-1">
-                            <Label className="text-[9px] uppercase font-bold opacity-40">Invite URL</Label>
-                            <Input placeholder="https://t.me/..." value={link.url} onChange={(e) => handleLinkChange(idx, "url", e.target.value)} className="bg-white/5 h-10" />
+                            <Label className="text-[9px] uppercase font-bold opacity-40 font-mono">Invite URL</Label>
+                            <Input placeholder="https://t.me/..." value={link.url} onChange={(e) => handleLinkChange(idx, "url", e.target.value)} className="bg-white/5 h-10 border-white/10" />
                           </div>
                         </div>
                         <div className="flex justify-end pt-1">
                           {groupLinks.length > 1 && (
-                            <Button type="button" variant="ghost" size="sm" onClick={() => removeLinkLabel(idx)} className="text-destructive h-8 px-3 text-[10px] font-bold uppercase tracking-tighter">
+                            <Button type="button" variant="ghost" size="sm" onClick={() => removeLinkLabel(idx)} className="text-destructive h-8 px-3 text-[10px] font-bold uppercase tracking-tighter hover:bg-destructive/10">
                               <Trash2 className="h-3 w-3 mr-2" />
                               Remove Link
                             </Button>
@@ -218,25 +224,25 @@ export default function AdminDashboard() {
                       </div>
                     ))}
                   </div>
-                  <Button type="button" variant="outline" size="sm" onClick={addLinkLabel} className="w-full sm:w-auto text-[10px] font-bold uppercase tracking-widest h-10 border-dashed">
+                  <Button type="button" variant="outline" size="sm" onClick={addLinkLabel} className="w-full sm:w-auto text-[10px] font-bold uppercase tracking-widest h-10 border-dashed border-white/20">
                     <Plus className="h-3 w-3 mr-2" /> Add Next Link
                   </Button>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">Region</Label>
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground font-mono">Region</Label>
                     <Select onValueChange={setGroupCountry} value={groupCountry}>
-                      <SelectTrigger className="bg-white/5 h-12"><SelectValue placeholder="Select Country" /></SelectTrigger>
-                      <SelectContent className="glass-card">
-                        {countries.map((c: any) => <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>)}
+                      <SelectTrigger className="bg-white/5 h-12 border-white/10"><SelectValue placeholder="Select Country" /></SelectTrigger>
+                      <SelectContent className="glass-card border-white/10">
+                        {countries.map((c: any) => <SelectItem key={c.id} value={c.name} className="uppercase text-[10px] font-bold">{c.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[10px] uppercase font-bold text-muted-foreground">Visual Assets</Label>
+                  <Label className="text-[10px] uppercase font-bold text-muted-foreground font-mono">Visual Assets</Label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                     {imageUrls.map((url, idx) => (
                       <div key={idx} className="relative aspect-square rounded-lg border border-white/10 bg-black/20 group">
@@ -252,11 +258,11 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[10px] uppercase font-bold text-muted-foreground">Transmission Details</Label>
-                  <Textarea value={groupDesc} onChange={(e) => setGroupDesc(e.target.value)} className="bg-white/5 min-h-[100px]" placeholder="Detailed description of bundle content..." required />
+                  <Label className="text-[10px] uppercase font-bold text-muted-foreground font-mono">Transmission Details</Label>
+                  <Textarea value={groupDesc} onChange={(e) => setGroupDesc(e.target.value)} className="bg-white/5 min-h-[100px] border-white/10" placeholder="Detailed description of bundle content..." required />
                 </div>
 
-                <Button type="submit" className="w-full bg-primary font-bold h-14 uppercase tracking-widest text-xs">Authorize New Bundle</Button>
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-14 uppercase tracking-widest text-xs">Authorize New Bundle</Button>
               </form>
             </CardContent>
           </Card>
@@ -264,16 +270,24 @@ export default function AdminDashboard() {
 
         <div className="lg:col-span-4 space-y-8 min-w-0">
           <Card className="glass-card border-white/5 w-full">
-            <CardHeader className="p-4 sm:p-6"><CardTitle className="font-headline text-lg uppercase tracking-widest">Region Registry</CardTitle></CardHeader>
+            <CardHeader className="p-4 sm:p-6"><CardTitle className="font-headline text-lg uppercase tracking-widest text-white">Region Registry</CardTitle></CardHeader>
             <CardContent className="p-4 sm:p-6 pt-0">
               <form onSubmit={handleAddCountry} className="space-y-4">
-                <Input value={countryName} onChange={(e) => setCountryName(e.target.value)} className="bg-white/5 h-11" placeholder="New Country Name" required />
-                <Button type="submit" variant="outline" className="w-full h-11 font-bold uppercase text-[10px] tracking-widest">Register Region</Button>
+                <Input value={countryName} onChange={(e) => setCountryName(e.target.value)} className="bg-white/5 h-11 border-white/10" placeholder="New Country Name" required />
+                <Button type="submit" variant="outline" className="w-full h-11 font-bold uppercase text-[10px] tracking-widest border-white/20">Register Region</Button>
               </form>
               <div className="mt-8 flex flex-wrap gap-2">
                 {countries.map((c: any) => (
-                  <div key={c.id} className="text-[9px] sm:text-[10px] font-bold bg-white/5 px-2 py-1 rounded-md border border-white/5 flex items-center gap-1">
-                    <Globe className="h-3 w-3 text-accent" /> {c.name}
+                  <div key={c.id} className="text-[9px] sm:text-[10px] font-bold bg-white/5 pl-2 pr-1 py-1 rounded-md border border-white/5 flex items-center gap-2 group transition-all hover:border-accent/40">
+                    <Globe className="h-3 w-3 text-accent" /> 
+                    <span className="text-white/80">{c.name}</span>
+                    <button 
+                      onClick={() => handleDeleteCountry(c.id)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:bg-red-500/20 rounded text-destructive"
+                      title="Remove Region"
+                    >
+                      <X className="h-2.5 w-2.5" />
+                    </button>
                   </div>
                 ))}
               </div>
@@ -283,18 +297,18 @@ export default function AdminDashboard() {
       </div>
 
       <section className="space-y-6">
-        <h2 className="font-headline text-xl sm:text-2xl font-bold uppercase tracking-tight">Active Bundles</h2>
+        <h2 className="font-headline text-xl sm:text-2xl font-bold uppercase tracking-tight text-white">Active Bundles</h2>
         <Card className="glass-card border-white/5 overflow-hidden">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader className="bg-white/5">
-                <TableRow>
-                  <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest min-w-[150px]">Identity</TableHead>
-                  <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest">Region</TableHead>
-                  <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest">Tier</TableHead>
-                  <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest text-center">Sales</TableHead>
-                  <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest">Price (Base)</TableHead>
-                  <TableHead className="font-bold text-right uppercase text-[9px] sm:text-[10px] tracking-widest">Action</TableHead>
+                <TableRow className="border-white/5">
+                  <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest text-white/60 min-w-[150px]">Identity</TableHead>
+                  <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest text-white/60">Region</TableHead>
+                  <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest text-white/60">Tier</TableHead>
+                  <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest text-white/60 text-center">Sales</TableHead>
+                  <TableHead className="font-bold uppercase text-[9px] sm:text-[10px] tracking-widest text-white/60">Price (Base)</TableHead>
+                  <TableHead className="font-bold text-right uppercase text-[9px] sm:text-[10px] tracking-widest text-white/60">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -302,24 +316,24 @@ export default function AdminDashboard() {
                   const pricing = getBundlePricing(group.price, group.salesCount || 0);
                   return (
                     <TableRow key={group.id} className="hover:bg-white/5 border-white/5">
-                      <TableCell className="font-bold text-sm">{group.title}</TableCell>
-                      <TableCell className="text-[10px] uppercase opacity-60">{group.country}</TableCell>
+                      <TableCell className="font-bold text-sm text-white">{group.title}</TableCell>
+                      <TableCell className="text-[10px] uppercase opacity-60 font-mono text-white/80">{group.country}</TableCell>
                       <TableCell>
                         <div className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded border ${pricing.borderColor} ${pricing.bgColor} ${pricing.color} flex items-center gap-1 w-fit`}>
                           <Zap className="h-2 w-2" /> {pricing.tier}
                         </div>
                       </TableCell>
-                      <TableCell className="text-center font-mono text-[10px]">{group.salesCount || 0}</TableCell>
+                      <TableCell className="text-center font-mono text-[10px] text-white/60">{group.salesCount || 0}</TableCell>
                       <TableCell className="font-headline font-bold text-sm">
                         <div className="flex flex-col">
                           <span className={pricing.color}>₦{pricing.price.toLocaleString()}</span>
-                          <span className="text-[9px] opacity-40">Base: ₦{group.price?.toLocaleString()}</span>
+                          <span className="text-[9px] opacity-40 font-mono">Base: ₦{group.price?.toLocaleString()}</span>
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
-                          <Button variant="ghost" size="icon" onClick={() => openEditDialog(group)} className="h-8 w-8 text-accent"><Edit3 className="h-4 w-4" /></Button>
-                          <Button variant="ghost" size="icon" onClick={() => handleDeleteGroup(group.id)} className="h-8 w-8 text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                          <Button variant="ghost" size="icon" onClick={() => openEditDialog(group)} className="h-8 w-8 text-accent hover:bg-accent/10"><Edit3 className="h-4 w-4" /></Button>
+                          <Button variant="ghost" size="icon" onClick={() => handleDeleteGroup(group.id)} className="h-8 w-8 text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></Button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -333,64 +347,64 @@ export default function AdminDashboard() {
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="glass-card border-white/10 max-w-2xl w-[95vw] sm:w-full max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="font-headline text-lg sm:text-xl uppercase tracking-widest">Update Protocol</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="font-headline text-lg sm:text-xl uppercase tracking-widest text-white">Update Protocol</DialogTitle></DialogHeader>
           {editingGroup && (
             <div className="space-y-6 py-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <Label className="text-[9px] uppercase font-bold">Bundle Title</Label>
-                  <Input value={editingGroup.title} onChange={(e) => setEditingGroup({...editingGroup, title: e.target.value})} className="bg-white/5" />
+                  <Label className="text-[9px] uppercase font-bold font-mono">Bundle Title</Label>
+                  <Input value={editingGroup.title} onChange={(e) => setEditingGroup({...editingGroup, title: e.target.value})} className="bg-white/5 border-white/10" />
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-[9px] uppercase font-bold">Base Price (₦)</Label>
-                  <Input type="number" value={editingGroup.price} onChange={(e) => setEditingGroup({...editingGroup, price: e.target.value})} className="bg-white/5" />
+                  <Label className="text-[9px] uppercase font-bold font-mono">Base Price (₦)</Label>
+                  <Input type="number" value={editingGroup.price} onChange={(e) => setEditingGroup({...editingGroup, price: e.target.value})} className="bg-white/5 border-white/10" />
                 </div>
               </div>
               
               <div className="space-y-4">
-                <Label className="text-[10px] uppercase font-bold text-muted-foreground">Update Links</Label>
+                <Label className="text-[10px] uppercase font-bold text-muted-foreground font-mono">Update Links</Label>
                 <div className="space-y-4">
                   {editingGroup.links.map((link: any, idx: number) => (
                     <div key={idx} className="flex flex-col gap-3 p-4 bg-white/[0.02] border border-white/5 rounded-xl">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">
                         <div className="space-y-1">
-                          <Label className="text-[9px] uppercase font-bold opacity-40">Label</Label>
+                          <Label className="text-[9px] uppercase font-bold opacity-40 font-mono">Label</Label>
                           <Input placeholder="Label" value={link.label} onChange={(e) => {
                             const l = [...editingGroup.links];
                             l[idx].label = e.target.value;
                             setEditingGroup({...editingGroup, links: l});
-                          }} className="bg-white/5" />
+                          }} className="bg-white/5 border-white/10" />
                         </div>
                         <div className="space-y-1">
-                          <Label className="text-[9px] uppercase font-bold opacity-40">URL</Label>
+                          <Label className="text-[9px] uppercase font-bold opacity-40 font-mono">URL</Label>
                           <Input placeholder="URL" value={link.url} onChange={(e) => {
                             const l = [...editingGroup.links];
                             l[idx].url = e.target.value;
                             setEditingGroup({...editingGroup, links: l});
-                          }} className="bg-white/5" />
+                          }} className="bg-white/5 border-white/10" />
                         </div>
                       </div>
                       <div className="flex justify-end">
                         <Button type="button" variant="ghost" size="sm" onClick={() => {
                           const l = editingGroup.links.filter((_:any, i:number) => i !== idx);
                           setEditingGroup({...editingGroup, links: l});
-                        }} className="text-destructive h-8 text-[10px] font-bold uppercase"><Trash2 className="h-3.5 w-3.5 mr-2" />Remove</Button>
+                        }} className="text-destructive h-8 text-[10px] font-bold uppercase hover:bg-destructive/10"><Trash2 className="h-3.5 w-3.5 mr-2" />Remove</Button>
                       </div>
                     </div>
                   ))}
                 </div>
-                <Button type="button" variant="outline" size="sm" onClick={() => setEditingGroup({...editingGroup, links: [...editingGroup.links, {label:"", url:""}]})} className="w-full sm:w-auto text-[10px] uppercase tracking-widest">Add Link</Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => setEditingGroup({...editingGroup, links: [...editingGroup.links, {label:"", url:""}]})} className="w-full sm:w-auto text-[10px] uppercase tracking-widest border-white/20">Add Link</Button>
               </div>
 
               <div className="space-y-1">
-                <Label className="text-[9px] uppercase font-bold">Protocol Description</Label>
-                <Textarea value={editingGroup.description} onChange={(e) => setEditingGroup({...editingGroup, description: e.target.value})} className="bg-white/5 min-h-[100px]" />
+                <Label className="text-[9px] uppercase font-bold font-mono">Protocol Description</Label>
+                <Textarea value={editingGroup.description} onChange={(e) => setEditingGroup({...editingGroup, description: e.target.value})} className="bg-white/5 min-h-[100px] border-white/10" />
               </div>
             </div>
           )}
           <DialogFooter className="flex flex-col sm:flex-row gap-2">
-            <Button variant="ghost" onClick={() => setIsEditDialogOpen(false)} className="w-full sm:w-auto order-2 sm:order-1">Cancel</Button>
-            <Button onClick={handleUpdateGroup} className="w-full sm:w-auto bg-primary order-1 sm:order-2">Save Changes</Button>
+            <Button variant="ghost" onClick={() => setIsEditDialogOpen(false)} className="w-full sm:w-auto order-2 sm:order-1 text-white/60">Cancel</Button>
+            <Button onClick={handleUpdateGroup} className="w-full sm:w-auto bg-primary text-white order-1 sm:order-2">Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
