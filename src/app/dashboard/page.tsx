@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useEffect } from "react";
@@ -7,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductCard } from "@/components/product-card";
-import { Globe, ShieldCheck, Lock, ExternalLink, Key, History } from "lucide-react";
+import { Globe, ShieldCheck, Lock, ExternalLink, Key, History, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -25,9 +26,7 @@ export default function UserDashboard() {
   const { data: allGroups, loading: groupsLoading } = useCollection(groupsQuery);
 
   useEffect(() => {
-    if (!userLoading && !user) {
-      router.push("/login");
-    }
+    if (!userLoading && !user) router.push("/login");
   }, [user, userLoading, router]);
 
   const purchasedGroups = useMemo(() => {
@@ -55,27 +54,21 @@ export default function UserDashboard() {
 
   if (!user) return null;
 
-  const balance = profile?.balance || 0;
-  const purchasedCount = profile?.purchasedGroups?.length || 0;
-
   return (
     <div className="max-w-screen-2xl px-4 sm:px-6 lg:px-8 py-10 space-y-12">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="glass-card border-accent/20 relative overflow-hidden group hover:border-accent/40 transition-all duration-300">
+        <Card className="glass-card border-accent/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">My Balance</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold font-headline text-accent">₦{balance.toLocaleString()}</div>
+            <div className="text-4xl font-bold font-headline text-accent">₦{profile?.balance?.toLocaleString() || 0}</div>
             <div className="flex gap-2 mt-4">
               <Button asChild size="sm" className="bg-primary hover:bg-primary/90 text-white font-bold h-8 uppercase tracking-widest text-[10px]">
                 <Link href="/dashboard/topup">Add Credits</Link>
               </Button>
-              <Button asChild variant="outline" size="sm" className="h-8 uppercase tracking-widest text-[10px] font-bold border-white/10 hover:bg-white/5">
-                <Link href="/dashboard/transactions">
-                  <History className="h-3 w-3 mr-1" />
-                  History
-                </Link>
+              <Button asChild variant="outline" size="sm" className="h-8 uppercase tracking-widest text-[10px] font-bold border-white/10">
+                <Link href="/dashboard/transactions"><History className="h-3 w-3 mr-1" /> History</Link>
               </Button>
             </div>
           </CardContent>
@@ -83,11 +76,11 @@ export default function UserDashboard() {
 
         <Card className="glass-card border-white/5">
           <CardHeader className="pb-2">
-            <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">My Groups</CardTitle>
+            <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Owned Bundles</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold font-headline">{purchasedCount}</div>
-            <p className="text-[10px] text-muted-foreground mt-4 uppercase tracking-widest">Groups purchased</p>
+            <div className="text-4xl font-bold font-headline">{profile?.purchasedGroups?.length || 0}</div>
+            <p className="text-[10px] text-muted-foreground mt-4 uppercase tracking-widest">Active digital protocols</p>
           </CardContent>
         </Card>
       </div>
@@ -96,51 +89,53 @@ export default function UserDashboard() {
         <div className="flex items-center justify-between border-b border-white/5 pb-4">
           <h2 className="font-headline text-2xl font-bold uppercase tracking-tight flex items-center gap-2">
             <Key className="h-6 w-6 text-accent" />
-            Purchased Groups
+            Authorized Bundles
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {purchasedGroups.length > 0 ? (
-            purchasedGroups.map((group: any) => (
-              <Card key={group.id} className="glass-card border-accent/20 overflow-hidden group min-w-0">
-                <CardContent className="p-0">
-                  <div className="flex p-4 sm:p-5 gap-4 sm:gap-5 min-w-0">
-                    <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-xl overflow-hidden border border-white/10 shrink-0">
-                      <img src={group.imageUrls?.[0] || DEFAULT_IMAGE} className="w-full h-full object-cover" alt="" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8">
+          {purchasedGroups.length > 0 ? (purchasedGroups.map((group: any) => (
+            <Card key={group.id} className="glass-card border-accent/20 overflow-hidden group">
+              <CardHeader className="border-b border-white/5 p-5">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="space-y-1">
+                    <CardTitle className="font-headline font-bold text-xl uppercase tracking-tighter">{group.title}</CardTitle>
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-3 w-3 text-accent" />
+                      <span className="text-[10px] font-bold text-accent uppercase">{group.country}</span>
                     </div>
-                    <div className="flex-1 min-w-0 flex flex-col justify-center">
-                      <div className="flex flex-col gap-1 mb-2">
-                        <div className="flex justify-between items-start gap-2">
-                          <h3 className="font-headline font-bold text-base sm:text-xl truncate">{group.title}</h3>
+                  </div>
+                  <div className="h-12 w-12 rounded-lg border border-white/10 overflow-hidden shrink-0">
+                    <img src={group.imageUrls?.[0] || DEFAULT_IMAGE} className="w-full h-full object-cover" alt="" />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-5 space-y-4">
+                <div className="space-y-2">
+                  <p className="text-[9px] uppercase font-bold text-muted-foreground tracking-widest ml-1">Included Nodes</p>
+                  <div className="space-y-2">
+                    {(group.links || []).map((link: any, idx: number) => (
+                      <div key={idx} className="flex items-center justify-between gap-4 p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-accent/20 transition-colors">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <LinkIcon className="h-3 w-3 text-accent shrink-0" />
+                          <span className="text-xs font-bold uppercase tracking-tight truncate">{link.label || `Node ${idx + 1}`}</span>
                         </div>
-                        <div className="w-fit text-[9px] font-bold text-accent uppercase tracking-tighter flex items-center gap-1 border border-accent/20 px-2 py-0.5 rounded-full">
-                          <Globe className="h-2.5 w-2.5" />
-                          {group.country}
-                        </div>
-                      </div>
-                      <div className="mt-2 p-2 sm:p-3 rounded-xl bg-accent/5 border border-accent/10 flex items-center justify-between gap-3 min-w-0">
-                        <code className="text-[10px] sm:text-xs font-mono text-accent truncate opacity-80 flex-1">
-                          {group.accessLink}
-                        </code>
-                        <Button asChild size="icon" className="h-7 w-7 sm:h-8 sm:w-8 bg-accent text-accent-foreground hover:bg-accent/90 shrink-0">
-                          <a href={group.accessLink} target="_blank" rel="noopener noreferrer">
+                        <Button asChild size="icon" className="h-8 w-8 bg-accent text-background hover:bg-accent/80 shrink-0">
+                          <a href={link.url} target="_blank" rel="noopener noreferrer">
                             <ExternalLink className="h-4 w-4" />
                           </a>
                         </Button>
                       </div>
-                    </div>
+                    ))}
                   </div>
-                </CardContent>
-              </Card>
-            ))
-          ) : (
+                </div>
+              </CardContent>
+            </Card>
+          ))) : (
             <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-3xl opacity-40">
-              <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-sm uppercase tracking-widest font-bold">No groups purchased yet.</p>
-              <Button variant="link" asChild className="mt-4 text-accent text-lg">
-                <Link href="/">Browse Shop</Link>
-              </Button>
+              <Lock className="h-12 w-12 mx-auto mb-4" />
+              <p className="text-sm uppercase tracking-widest font-bold">No authorized bundles found.</p>
+              <Button variant="link" asChild className="mt-4 text-accent uppercase tracking-widest text-xs"><Link href="/">Enter Marketplace</Link></Button>
             </div>
           )}
         </div>
@@ -151,25 +146,12 @@ export default function UserDashboard() {
           <div className="flex items-center justify-between border-b border-white/5 pb-4">
             <h2 className="font-headline text-2xl font-bold uppercase tracking-tight flex items-center gap-2">
               <ShieldCheck className="h-6 w-6 text-muted-foreground" />
-              New Groups
+              New Intel
             </h2>
-            <Link href="/" className="text-xs font-bold uppercase tracking-widest text-accent hover:opacity-80">
-              See All
-            </Link>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
             {availableGroups.slice(0, 4).map((group: any) => (
-              <ProductCard 
-                key={group.id} 
-                id={group.id}
-                title={group.title}
-                country={group.country}
-                price={group.price}
-                description={group.description}
-                imageUrls={group.imageUrls || []}
-                imageHint="region intel"
-              />
+              <ProductCard key={group.id} id={group.id} title={group.title} country={group.country} price={group.price} description={group.description} imageUrls={group.imageUrls || []} imageHint="bundle preview" />
             ))}
           </div>
         </section>
