@@ -14,7 +14,9 @@ import {
   History,
   Settings,
   CreditCard,
-  Users
+  Users,
+  MessageSquare,
+  LifeBuoy
 } from "lucide-react";
 
 import {
@@ -76,6 +78,11 @@ export function AppSidebar() {
           url: "/dashboard/transactions",
           icon: History,
         },
+        {
+          title: "Support Desk",
+          url: "/dashboard/support",
+          icon: LifeBuoy,
+        },
       ],
     });
 
@@ -97,6 +104,11 @@ export function AppSidebar() {
             title: "Deposit Requests",
             url: "/admin/transactions",
             icon: CreditCard,
+          },
+          {
+            title: "Support Tickets",
+            url: "/admin/support",
+            icon: MessageSquare,
           },
           {
             title: "System Settings",

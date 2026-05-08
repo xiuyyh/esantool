@@ -1,20 +1,21 @@
+
 "use client";
 
-import { useState, useEffect } from "react";
-import { Globe, Terminal, Cpu, Database, Network } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Globe, Terminal, Cpu, Database, Network, Search, Check } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection } from "firebase/firestore";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [year, setYear] = useState<number | null>(null);
   
   const db = useFirestore();
@@ -27,6 +28,12 @@ export default function Home() {
   useEffect(() => {
     setYear(new Date().getFullYear());
   }, []);
+
+  const filteredCountries = useMemo(() => {
+    return countries.filter(c => 
+      c.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [countries, searchTerm]);
 
   const filteredProducts = allProducts.filter((p: any) => {
     const matchesCountry = !selectedCountry || p.country === selectedCountry;
@@ -72,25 +79,66 @@ export default function Home() {
             
             <div className="flex flex-col gap-3">
               <span className="font-mono text-[10px] uppercase text-accent/40 tracking-widest text-right">Filter By Region</span>
-              <Select 
-                value={selectedCountry || "all"} 
-                onValueChange={(val) => setSelectedCountry(val === "all" ? null : val)}
-              >
-                <SelectTrigger className="glass-card border-accent/20 h-12 w-full sm:w-64 rounded-none font-mono text-[10px] uppercase tracking-widest text-accent">
-                  <div className="flex items-center gap-2">
-                    <Globe className="h-3 w-3" />
-                    <SelectValue placeholder="Select Country" />
+              
+              <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="glass-card border-accent/20 h-12 w-full sm:w-64 rounded-none font-mono text-[10px] uppercase tracking-widest text-accent justify-between hover:bg-accent/5"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-3 w-3" />
+                      {selectedCountry || "Select Country"}
+                    </div>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="glass-card border-accent/20 rounded-none p-2 w-full sm:w-64" align="end">
+                  <div className="flex items-center gap-2 px-3 py-2 border-b border-accent/10 mb-2">
+                    <Search className="h-3.5 w-3.5 text-accent/40" />
+                    <Input 
+                      placeholder="Search Region..." 
+                      className="h-8 border-none bg-transparent font-mono text-[10px] uppercase tracking-widest focus-visible:ring-0 p-0"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                   </div>
-                </SelectTrigger>
-                <SelectContent className="glass-card border-accent/20 rounded-none">
-                  <SelectItem value="all" className="text-[10px] uppercase font-mono font-bold py-3">All Regions</SelectItem>
-                  {countries.map((c: any) => (
-                    <SelectItem key={c.id} value={c.name} className="text-[10px] uppercase font-mono font-bold py-3">
-                      {c.name.toUpperCase()}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  <ScrollArea className="h-[200px]">
+                    <Button 
+                      variant="ghost" 
+                      className={cn(
+                        "w-full justify-start text-[10px] uppercase font-mono py-2 h-auto rounded-none mb-1",
+                        !selectedCountry && "bg-accent/10 text-accent"
+                      )}
+                      onClick={() => {
+                        setSelectedCountry(null);
+                        setIsPopoverOpen(false);
+                      }}
+                    >
+                      All Regions
+                    </Button>
+                    {filteredCountries.map((c: any) => (
+                      <Button
+                        key={c.id}
+                        variant="ghost"
+                        className={cn(
+                          "w-full justify-between text-[10px] uppercase font-mono py-2 h-auto rounded-none mb-1 text-left",
+                          selectedCountry === c.name && "bg-accent/10 text-accent"
+                        )}
+                        onClick={() => {
+                          setSelectedCountry(c.name);
+                          setIsPopoverOpen(false);
+                        }}
+                      >
+                        {c.name}
+                        {selectedCountry === c.name && <Check className="h-3 w-3" />}
+                      </Button>
+                    ))}
+                    {filteredCountries.length === 0 && (
+                      <p className="text-[10px] text-muted-foreground uppercase text-center py-4 opacity-40">No Match</p>
+                    )}
+                  </ScrollArea>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 
