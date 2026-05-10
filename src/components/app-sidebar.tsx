@@ -17,7 +17,8 @@ import {
   Users,
   MessageSquare,
   LifeBuoy,
-  Gift
+  Gift,
+  ShieldAlert
 } from "lucide-react";
 
 import {
@@ -94,25 +95,30 @@ export function AppSidebar() {
 
     if (profile?.isAdmin) {
       menuGroups.push({
-        label: "Admin",
+        label: "Admin Control",
         items: [
           {
-            title: "Groups Management",
+            title: "Groups & Nodes",
             url: "/admin/dashboard",
             icon: Key,
           },
           {
-            title: "User Management",
+            title: "User Database",
             url: "/admin/users",
             icon: Users,
           },
           {
-            title: "Deposit Requests",
+            title: "Deposit Ledger",
             url: "/admin/transactions",
             icon: CreditCard,
           },
           {
-            title: "Support Tickets",
+            title: "Resolution Center",
+            url: "/admin/disputes",
+            icon: ShieldAlert,
+          },
+          {
+            title: "Message Inbox",
             url: "/admin/support",
             icon: MessageSquare,
           },
@@ -153,11 +159,11 @@ export function AppSidebar() {
                       asChild
                       isActive={pathname === item.url}
                       tooltip={item.title}
-                      className="hover:bg-accent/10 hover:text-accent transition-colors"
+                      className="hover:bg-accent/10 hover:text-accent transition-colors h-10"
                     >
                       <Link href={item.url}>
                         <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
+                        <span className="font-mono text-[11px] uppercase tracking-tight">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
