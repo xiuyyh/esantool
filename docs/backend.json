@@ -71,8 +71,10 @@
         "userEmail": { "type": "string" },
         "groupId": { "type": "string" },
         "groupTitle": { "type": "string" },
+        "junkLinkName": { "type": "string", "description": "The specific label of the link identified as junk." },
         "reason": { "type": "string" },
         "status": { "type": "string", "enum": ["pending", "resolved"] },
+        "adminNote": { "type": "string", "description": "Reference note from the admin during resolution." },
         "resolutionLinks": {
           "type": "array",
           "items": {

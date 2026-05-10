@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductCard } from "@/components/product-card";
-import { Globe, ShieldCheck, Lock, ExternalLink, Key, History, Link as LinkIcon, AlertCircle, MessageSquare, Loader2, CheckCircle2, Gift } from "lucide-react";
+import { Globe, ShieldCheck, Lock, ExternalLink, Key, History, Link as LinkIcon, AlertCircle, MessageSquare, Loader2, CheckCircle2, Gift, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -22,6 +22,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const DEFAULT_IMAGE = "https://techstory.in/wp-content/uploads/2021/07/telegram.jpeg";
 
@@ -45,6 +46,7 @@ export default function UserDashboard() {
 
   const [disputeBundle, setDisputeBundle] = useState<any>(null);
   const [disputeReason, setDisputeReason] = useState("");
+  const [disputeJunkLink, setDisputeJunkLink] = useState("");
   const [isSubmittingDispute, setIsSubmittingDispute] = useState(false);
 
   useEffect(() => {
@@ -63,7 +65,7 @@ export default function UserDashboard() {
   }, [profile?.purchasedGroups, allGroups]);
 
   const handleFileDispute = async () => {
-    if (!user || !db || !disputeBundle || !disputeReason) return;
+    if (!user || !db || !disputeBundle || !disputeReason || !disputeJunkLink) return;
     setIsSubmittingDispute(true);
     try {
       await addDoc(collection(db, "disputes"), {
@@ -71,18 +73,20 @@ export default function UserDashboard() {
         userEmail: user.email,
         groupId: disputeBundle.id,
         groupTitle: disputeBundle.title,
+        junkLinkName: disputeJunkLink,
         reason: disputeReason,
         status: "pending",
         resolutionLinks: [],
         createdAt: serverTimestamp(),
       });
 
-      const message = `🚨 <b>Junk Group Dispute</b>\n\n<b>User:</b> ${user.email}\n<b>Bundle:</b> ${disputeBundle.title}\n<b>Reason:</b> ${disputeReason}`;
+      const message = `🚨 <b>Junk Group Dispute</b>\n\n<b>User:</b> ${user.email}\n<b>Bundle:</b> ${disputeBundle.title}\n<b>Junk Node:</b> ${disputeJunkLink}\n<b>Reason:</b> ${disputeReason}`;
       await notifyTelegram(message);
 
       toast({ title: "Dispute Filed", description: "Administrators have been notified of the protocol error." });
       setDisputeBundle(null);
       setDisputeReason("");
+      setDisputeJunkLink("");
     } catch (err) {
       toast({ variant: "destructive", title: "Error", description: "Failed to broadcast dispute." });
     } finally {
@@ -280,6 +284,21 @@ export default function UserDashboard() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
+              <label className="text-[9px] uppercase font-bold text-muted-foreground ml-1">Identify Broken Node</label>
+              <Select onValueChange={setDisputeJunkLink} value={disputeJunkLink}>
+                <SelectTrigger className="bg-white/5 border-white/10 h-11">
+                  <SelectValue placeholder="Select the junk link" />
+                </SelectTrigger>
+                <SelectContent className="glass-card border-white/10">
+                  {disputeBundle?.links?.map((link: any, idx: number) => (
+                    <SelectItem key={idx} value={link.label} className="text-xs uppercase font-bold">
+                      {link.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
               <label className="text-[9px] uppercase font-bold text-muted-foreground ml-1">Reason for Dispute</label>
               <Textarea 
                 placeholder="Describe the issue (e.g. Broken link, invalid content...)"
@@ -296,7 +315,11 @@ export default function UserDashboard() {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setDisputeBundle(null)} className="uppercase text-[10px] font-bold">Cancel</Button>
-            <Button onClick={handleFileDispute} disabled={isSubmittingDispute || !disputeReason} className="bg-destructive text-white uppercase text-[10px] font-bold">
+            <Button 
+              onClick={handleFileDispute} 
+              disabled={isSubmittingDispute || !disputeReason || !disputeJunkLink} 
+              className="bg-destructive text-white uppercase text-[10px] font-bold"
+            >
               {isSubmittingDispute ? <Loader2 className="animate-spin h-3 w-3 mr-2" /> : <MessageSquare className="h-3 w-3 mr-2" />}
               Broadcast Dispute
             </Button>
