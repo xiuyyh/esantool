@@ -197,7 +197,11 @@ export default function AdminDashboard() {
   };
 
   const openEditDialog = (group: any) => {
-    setEditingGroup({ ...group, links: group.links || [{ label: "", url: "" }] });
+    setEditingGroup({ 
+      ...group, 
+      links: group.links || [{ label: "", url: "" }],
+      salesCount: group.salesCount || 0
+    });
     setIsEditDialogOpen(true);
   };
 
@@ -208,6 +212,7 @@ export default function AdminDashboard() {
     const updateData = {
       title: editingGroup.title,
       price: Number(editingGroup.price),
+      salesCount: Number(editingGroup.salesCount),
       description: editingGroup.description,
       country: editingGroup.country,
       links: editingGroup.links.filter((l: any) => l.label && l.url),
@@ -440,14 +445,20 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <Label className="text-[9px] uppercase font-bold font-mono">Update Region</Label>
-                <Select onValueChange={(val) => setEditingGroup({...editingGroup, country: val})} value={editingGroup.country}>
-                  <SelectTrigger className="bg-white/5 border-white/10"><SelectValue placeholder="Select Country" /></SelectTrigger>
-                  <SelectContent className="glass-card border-white/10">
-                    {countries.map((c: any) => <SelectItem key={c.id} value={c.name} className="uppercase text-[10px] font-bold">{c.name}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label className="text-[9px] uppercase font-bold font-mono">Update Region</Label>
+                  <Select onValueChange={(val) => setEditingGroup({...editingGroup, country: val})} value={editingGroup.country}>
+                    <SelectTrigger className="bg-white/5 border-white/10"><SelectValue placeholder="Select Country" /></SelectTrigger>
+                    <SelectContent className="glass-card border-white/10">
+                      {countries.map((c: any) => <SelectItem key={c.id} value={c.name} className="uppercase text-[10px] font-bold">{c.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-[9px] uppercase font-bold font-mono">Sales Count Override</Label>
+                  <Input type="number" value={editingGroup.salesCount} onChange={(e) => setEditingGroup({...editingGroup, salesCount: e.target.value})} className="bg-white/5 border-white/10" placeholder="Reset or override sales" />
+                </div>
               </div>
               
               <div className="space-y-4">
