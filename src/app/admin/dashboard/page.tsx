@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useFirestore, useCollection, useUser, useDoc, useMemoFirebase } from "@/firebase";
 import { collection, addDoc, deleteDoc, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, X, Trash2, Edit3, Globe, Lock, Loader2, Plus, Link as LinkIcon, Zap } from "lucide-react";
+import { Upload, X, Trash2, Edit3, Globe, Lock, Loader2, Plus, Link as LinkIcon, Zap, Layers } from "lucide-react";
 import { getBundlePricing } from "@/lib/pricing";
 import {
   Dialog,
@@ -102,6 +102,11 @@ export default function AdminDashboard() {
     const validLinks = groupLinks.filter(l => l.label && l.url);
     if (validLinks.length === 0) {
       toast({ variant: "destructive", title: "Missing Links", description: "Please add at least one valid Telegram link." });
+      return;
+    }
+
+    if (!groupCountry) {
+      toast({ variant: "destructive", title: "Missing Region", description: "Please select a country for this bundle." });
       return;
     }
 
@@ -199,7 +204,16 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-4">
-                  <Label className="text-[10px] uppercase font-bold text-muted-foreground font-mono">Encrypted Access Links</Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground font-mono">Encrypted Access Links</Label>
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-accent/5 border border-accent/10">
+                      <Layers className="h-2.5 w-2.5 text-accent" />
+                      <span className="text-[9px] font-bold text-accent uppercase tracking-widest font-mono">
+                        {groupLinks.length} Active Nodes
+                      </span>
+                    </div>
+                  </div>
+                  
                   <div className="space-y-4">
                     {groupLinks.map((link, idx) => (
                       <div key={idx} className="flex flex-col gap-3 p-4 bg-white/[0.02] border border-white/5 rounded-xl">
@@ -360,9 +374,24 @@ export default function AdminDashboard() {
                   <Input type="number" value={editingGroup.price} onChange={(e) => setEditingGroup({...editingGroup, price: e.target.value})} className="bg-white/5 border-white/10" />
                 </div>
               </div>
+
+              <div className="space-y-1">
+                <Label className="text-[9px] uppercase font-bold font-mono">Update Region</Label>
+                <Select onValueChange={(val) => setEditingGroup({...editingGroup, country: val})} value={editingGroup.country}>
+                  <SelectTrigger className="bg-white/5 border-white/10"><SelectValue placeholder="Select Country" /></SelectTrigger>
+                  <SelectContent className="glass-card border-white/10">
+                    {countries.map((c: any) => <SelectItem key={c.id} value={c.name} className="uppercase text-[10px] font-bold">{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
               
               <div className="space-y-4">
-                <Label className="text-[10px] uppercase font-bold text-muted-foreground font-mono">Update Links</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-[10px] uppercase font-bold text-muted-foreground font-mono">Update Links</Label>
+                  <span className="text-[9px] font-bold text-accent uppercase font-mono px-2 py-0.5 rounded-full bg-accent/5">
+                    {editingGroup.links.length} Nodes Loaded
+                  </span>
+                </div>
                 <div className="space-y-4">
                   {editingGroup.links.map((link: any, idx: number) => (
                     <div key={idx} className="flex flex-col gap-3 p-4 bg-white/[0.02] border border-white/5 rounded-xl">
