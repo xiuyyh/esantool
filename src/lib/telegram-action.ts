@@ -51,8 +51,7 @@ export async function notifyTelegram(message: string) {
       body.reply_markup = {
         inline_keyboard: [
           [
-            { text: "✅ APPROVE REQUEST", url: adminUrl },
-            { text: "❌ REJECT REQUEST", url: adminUrl }
+            { text: "✅ VIEW REQUEST", url: adminUrl }
           ],
           [
             { text: "💳 Open Admin Panel", url: adminUrl }

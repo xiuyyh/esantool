@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Copy, Users, Wallet, Gift, Share2, Loader2, ChevronLeft, CheckCircle2 } from "lucide-react";
+import { Copy, Users, Wallet, Gift, Share2, Loader2, ChevronLeft, CheckCircle2, History } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -73,7 +73,7 @@ export default function ReferralsPage() {
             <CardHeader>
               <CardTitle className="text-xl uppercase tracking-widest">Your Referral Node</CardTitle>
               <CardDescription className="text-xs">
-                Earn ₦2,000 for every single purchase your referee completes.
+                Invite friends and acquire rewards for every protocol purchase they authorize.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 relative z-10">
@@ -162,7 +162,7 @@ export default function ReferralsPage() {
             <CardContent className="space-y-4">
               <div className="flex gap-3 items-start">
                 <CheckCircle2 className="h-3.5 w-3.5 text-accent shrink-0 mt-0.5" />
-                <p className="text-[10px] leading-tight text-white/70 uppercase">Earn ₦2,000 for every purchase made by your referee.</p>
+                <p className="text-[10px] leading-tight text-white/70 uppercase">Earn rewards for every purchase made by your referee.</p>
               </div>
               <div className="flex gap-3 items-start">
                 <CheckCircle2 className="h-3.5 w-3.5 text-accent shrink-0 mt-0.5" />
@@ -179,5 +179,3 @@ export default function ReferralsPage() {
     </div>
   );
 }
-
-import { History } from "lucide-react";
