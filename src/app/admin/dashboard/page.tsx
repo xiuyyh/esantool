@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useFirestore, useCollection, useUser, useDoc, useMemoFirebase } from "@/firebase";
+import { useFirestore, useCollection, useUser, useDoc, useMemoFirebase, errorEmitter, FirestorePermissionError } from "@/firebase";
 import { collection, addDoc, deleteDoc, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, X, Trash2, Edit3, Globe, Lock, Loader2, Plus, Link as LinkIcon, Zap, Layers, RotateCcw } from "lucide-react";
@@ -94,7 +94,7 @@ export default function AdminDashboard() {
 
   const removeImage = (index: number) => setImageUrls(prev => prev.filter((_, i) => i !== index));
 
-  const handleAddGroup = async (e: React.FormEvent) => {
+  const handleAddGroup = (e: React.FormEvent) => {
     e.preventDefault();
     if (!db) return;
     
@@ -109,7 +109,7 @@ export default function AdminDashboard() {
       return;
     }
 
-    addDoc(collection(db, "groups"), {
+    const data = {
       title: groupTitle,
       price: Number(groupPrice),
       salesCount: 0,
@@ -118,7 +118,16 @@ export default function AdminDashboard() {
       links: validLinks,
       imageUrls: imageUrls.length > 0 ? imageUrls : [DEFAULT_IMAGE],
       createdAt: serverTimestamp(),
-    });
+    };
+
+    addDoc(collection(db, "groups"), data)
+      .catch(async (err) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: 'groups',
+          operation: 'create',
+          requestResourceData: data
+        }));
+      });
     
     toast({ title: "Success", description: "Bundle added successfully." });
     setGroupTitle("");
@@ -129,36 +138,62 @@ export default function AdminDashboard() {
     setImageUrls([]);
   };
 
-  const handleAddCountry = async (e: React.FormEvent) => {
+  const handleAddCountry = (e: React.FormEvent) => {
     e.preventDefault();
     if (!db) return;
-    addDoc(collection(db, "countries"), { name: countryName });
+    addDoc(collection(db, "countries"), { name: countryName })
+      .catch(async () => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: 'countries',
+          operation: 'create',
+          requestResourceData: { name: countryName }
+        }));
+      });
     toast({ title: "Success", description: "Country added." });
     setCountryName("");
   };
 
-  const handleDeleteCountry = async (id: string) => {
+  const handleDeleteCountry = (id: string) => {
     if (!db || !confirm("Delete this country from registry? This may orphan existing bundles.")) return;
-    deleteDoc(doc(db, "countries", id));
+    deleteDoc(doc(db, "countries", id))
+      .catch(async () => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: `countries/${id}`,
+          operation: 'delete'
+        }));
+      });
     toast({ title: "Purged", description: "Country protocol removed." });
   };
 
-  const handleDeleteGroup = async (id: string) => {
+  const handleDeleteGroup = (id: string) => {
     if (!db || !confirm("Delete this bundle?")) return;
-    deleteDoc(doc(db, "groups", id));
+    deleteDoc(doc(db, "groups", id))
+      .catch(async () => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: `groups/${id}`,
+          operation: 'delete'
+        }));
+      });
     toast({ title: "Deleted", description: "Bundle has been removed." });
   };
 
-  const handleResetSales = async (id: string) => {
+  const handleResetSales = (id: string) => {
     if (!db || !confirm("Erase sales count for this bundle? This will reset its quality tier to HQ.")) return;
-    try {
-      await updateDoc(doc(db, "groups", id), {
-        salesCount: 0
+    
+    const docRef = doc(db, "groups", id);
+    const updateData = { salesCount: 0 };
+
+    updateDoc(docRef, updateData)
+      .then(() => {
+        toast({ title: "Protocol Reset", description: "Sales count has been cleared." });
+      })
+      .catch(async (err) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'update',
+          requestResourceData: updateData
+        }));
       });
-      toast({ title: "Protocol Reset", description: "Sales count has been cleared." });
-    } catch (err) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to reset protocol." });
-    }
   };
 
   const openEditDialog = (group: any) => {
@@ -166,16 +201,26 @@ export default function AdminDashboard() {
     setIsEditDialogOpen(true);
   };
 
-  const handleUpdateGroup = async () => {
+  const handleUpdateGroup = () => {
     if (!db || !editingGroup) return;
     
-    updateDoc(doc(db, "groups", editingGroup.id), {
+    const docRef = doc(db, "groups", editingGroup.id);
+    const updateData = {
       title: editingGroup.title,
       price: Number(editingGroup.price),
       description: editingGroup.description,
       country: editingGroup.country,
       links: editingGroup.links.filter((l: any) => l.label && l.url),
-    });
+    };
+
+    updateDoc(docRef, updateData)
+      .catch(async () => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'update',
+          requestResourceData: updateData
+        }));
+      });
 
     toast({ title: "Updated", description: "Bundle details saved." });
     setIsEditDialogOpen(false);
@@ -357,7 +402,15 @@ export default function AdminDashboard() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
-                          <Button variant="ghost" size="icon" onClick={() => handleResetSales(group.id)} title="Reset Sales Count" className="h-8 w-8 text-yellow-500 hover:bg-yellow-500/10"><RotateCcw className="h-4 w-4" /></Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => handleResetSales(group.id)} 
+                            title="Reset Sales Count" 
+                            className="h-8 w-8 text-yellow-500 hover:bg-yellow-500/10"
+                          >
+                            <RotateCcw className="h-4 w-4" />
+                          </Button>
                           <Button variant="ghost" size="icon" onClick={() => openEditDialog(group)} className="h-8 w-8 text-accent hover:bg-accent/10"><Edit3 className="h-4 w-4" /></Button>
                           <Button variant="ghost" size="icon" onClick={() => handleDeleteGroup(group.id)} className="h-8 w-8 text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></Button>
                         </div>

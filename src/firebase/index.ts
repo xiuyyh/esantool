@@ -1,4 +1,3 @@
-
 'use client';
 
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
@@ -18,3 +17,5 @@ export { FirebaseClientProvider } from './client-provider';
 export { useUser } from './auth/use-user';
 export { useCollection, useMemoFirebase } from './firestore/use-collection';
 export { useDoc } from './firestore/use-doc';
+export { errorEmitter } from './error-emitter';
+export { FirestorePermissionError, type SecurityRuleContext } from './errors';
