@@ -39,6 +39,8 @@
         "price": { "type": "number", "description": "The base price set by admin." },
         "salesCount": { "type": "number", "description": "Total number of times this bundle has been purchased." },
         "country": { "type": "string" },
+        "type": { "type": "string", "enum": ["bundle", "exclusive"], "description": "Exclusive items are hidden after first purchase." },
+        "isSold": { "type": "boolean", "description": "Whether an exclusive item has been sold." },
         "links": {
           "type": "array",
           "description": "List of links included in this bundle.",
@@ -58,7 +60,7 @@
         },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["title", "price", "country", "links"]
+      "required": ["title", "price", "country", "links", "type"]
     },
     "Dispute": {
       "title": "Bundle Dispute",
@@ -115,7 +117,9 @@
       "type": "object",
       "properties": {
         "telegramBotToken": { "type": "string" },
-        "telegramChannelId": { "type": "string" }
+        "telegramChannelId": { "type": "string" },
+        "bundleReferralReward": { "type": "number", "description": "Referral bonus for bundle purchases." },
+        "exclusiveReferralReward": { "type": "number", "description": "Referral bonus for exclusive purchases." }
       }
     }
   },

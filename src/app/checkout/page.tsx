@@ -4,16 +4,15 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, Trash2, ShieldCheck, Wallet, ChevronLeft, AlertCircle, PlusCircle, ArrowRight, Zap } from "lucide-react";
+import { ShoppingCart, Trash2, ShieldCheck, Wallet, ChevronLeft, AlertCircle, PlusCircle, ArrowRight, Zap, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase } from "@/firebase";
-import { doc, updateDoc, arrayUnion, arrayRemove, collection, increment, writeBatch, serverTimestamp, addDoc } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, arrayRemove, collection, increment, writeBatch, serverTimestamp, getDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { getBundlePricing } from "@/lib/pricing";
 
 const DEFAULT_IMAGE = "https://techstory.in/wp-content/uploads/2021/07/telegram.jpeg";
-const REFERRAL_BONUS = 2000;
 
 export default function CheckoutPage() {
   const { user } = useUser();
@@ -28,11 +27,17 @@ export default function CheckoutPage() {
   const groupsQuery = useMemoFirebase(() => db ? collection(db, "groups") : null, [db]);
   const { data: allGroups } = useCollection(groupsQuery);
 
+  const settingsRef = useMemoFirebase(() => db ? doc(db, "settings", "admin") : null, [db]);
+  const { data: settings } = useDoc(settingsRef);
+
   const cartItems = useMemo(() => {
     if (!profile?.cart || !allGroups) return [];
     return allGroups
       .filter((g: any) => profile.cart.includes(g.id))
       .map((g: any) => {
+        if (g.type === 'exclusive') {
+           return { ...g, dynamicPrice: g.price, pricingTier: 'EXCLUSIVE' };
+        }
         const pricing = getBundlePricing(g.price, g.salesCount || 0);
         return { ...g, dynamicPrice: pricing.price, pricingTier: pricing.tier };
       });
@@ -60,7 +65,7 @@ export default function CheckoutPage() {
       toast({
         variant: "destructive",
         title: "Payment Failed",
-        description: `Insufficient funds. Your balance: ₦${userBalance.toLocaleString()}. Total Price: ₦${totalPrice.toLocaleString()}.`,
+        description: `Insufficient funds. Balance: ₦${userBalance.toLocaleString()}.`,
       });
       return;
     }
@@ -77,47 +82,59 @@ export default function CheckoutPage() {
         cart: []
       });
 
-      // 2. Increment Sales Count for each group
+      // 2. Process items
       cartItems.forEach(item => {
         const groupRef = doc(db, "groups", item.id);
-        batch.update(groupRef, {
-          salesCount: increment(1)
-        });
+        
+        if (item.type === 'exclusive') {
+           batch.update(groupRef, { 
+             isSold: true,
+             salesCount: increment(1)
+           });
+        } else {
+           batch.update(groupRef, {
+             salesCount: increment(1)
+           });
+        }
+
+        // 3. Referral Reward Logic (Per Item)
+        if (profile.referredBy) {
+           const rewardAmount = item.type === 'exclusive' 
+             ? (settings?.exclusiveReferralReward || 5000) 
+             : (settings?.bundleReferralReward || 2000);
+
+           const referrerRef = doc(db, "users", profile.referredBy);
+           batch.update(referrerRef, {
+             balance: increment(rewardAmount),
+             referralEarnings: increment(rewardAmount)
+           });
+
+           // Log the bonus
+           const bonusTxRef = doc(collection(db, "transactions"));
+           batch.set(bonusTxRef, {
+             uid: profile.referredBy,
+             userEmail: "protocol@referral.esan",
+             userName: `Referral Bonus: ${item.title}`,
+             amount: rewardAmount,
+             status: "confirmed",
+             type: "referral_bonus",
+             createdAt: serverTimestamp()
+           });
+        }
       });
-
-      // 3. Referral Bonus Logic
-      if (profile.referredBy) {
-        const referrerRef = doc(db, "users", profile.referredBy);
-        batch.update(referrerRef, {
-          balance: increment(REFERRAL_BONUS),
-          referralEarnings: increment(REFERRAL_BONUS)
-        });
-
-        // Add a bonus transaction for the referrer
-        const bonusTxRef = doc(collection(db, "transactions"));
-        batch.set(bonusTxRef, {
-          uid: profile.referredBy,
-          userEmail: "system@bonus.esan",
-          userName: `Referral Bonus: ${profile.email}`,
-          amount: REFERRAL_BONUS,
-          status: "confirmed",
-          type: "referral_bonus",
-          createdAt: serverTimestamp()
-        });
-      }
 
       await batch.commit();
 
       toast({
-        title: "Purchase Successful",
-        description: "Your bundles are now available in your dashboard.",
+        title: "Node Authorized",
+        description: "Your acquisition is complete. Check your dashboard.",
       });
       router.push("/dashboard");
     } catch (err: any) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Payment could not be processed. Please try again.",
+        title: "Protocol Error",
+        description: "Authorization failed. Please try again.",
       });
     } finally {
       setIsProcessing(false);
@@ -127,9 +144,9 @@ export default function CheckoutPage() {
   if (!user) {
     return (
       <div className="max-w-screen-2xl mx-auto px-4 py-20 text-center">
-        <h2 className="text-3xl font-bold font-headline uppercase">Login Required</h2>
+        <h2 className="text-3xl font-bold font-headline uppercase">Identity Verification Required</h2>
         <Button className="mt-8 px-10 h-12 text-lg font-bold" asChild>
-          <Link href="/login">Login to continue</Link>
+          <Link href="/login">Authorize Identity</Link>
         </Button>
       </div>
     );
@@ -139,12 +156,12 @@ export default function CheckoutPage() {
     <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-6 lg:py-12 space-y-6 sm:space-y-10">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-white/5 pb-6">
         <div className="space-y-1">
-          <h1 className="font-headline text-3xl sm:text-5xl font-bold tracking-tight uppercase">Order Checkout</h1>
-          <p className="text-muted-foreground uppercase tracking-widest text-[10px] sm:text-xs">Processing Node Access</p>
+          <h1 className="font-headline text-3xl sm:text-5xl font-bold tracking-tight uppercase">Protocol Acquisition</h1>
+          <p className="text-muted-foreground uppercase tracking-widest text-[10px] sm:text-xs">Finalizing Node Transmission</p>
         </div>
         <Link href="/" className="text-accent text-xs font-bold uppercase tracking-widest flex items-center hover:opacity-80 transition-opacity">
           <ChevronLeft className="h-4 w-4 mr-1" />
-          Continue Shopping
+          Marketplace Registry
         </Link>
       </div>
 
@@ -158,10 +175,10 @@ export default function CheckoutPage() {
                     <img src={item.imageUrls?.[0] || DEFAULT_IMAGE} className="w-full h-full object-cover" alt="" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-headline font-bold text-sm sm:text-xl truncate mb-1">{item.title}</h3>
+                    <h3 className="font-headline font-bold text-sm sm:text-xl truncate mb-1 uppercase tracking-tight">{item.title}</h3>
                     <div className="flex items-center gap-2">
-                      <div className="text-[8px] font-mono font-bold uppercase py-0.5 px-2 bg-accent/10 border border-accent/20 text-accent flex items-center gap-1">
-                        <Zap className="h-2 w-2" />
+                      <div className={`text-[8px] font-mono font-bold uppercase py-0.5 px-2 ${item.type === 'exclusive' ? 'bg-accent/20 border-accent/40 text-accent' : 'bg-primary/10 border-primary/20 text-primary'} flex items-center gap-1`}>
+                        {item.type === 'exclusive' ? <Crown className="h-2 w-2" /> : <Zap className="h-2 w-2" />}
                         {item.pricingTier}
                       </div>
                       <span className="text-[9px] text-muted-foreground uppercase font-bold px-2 py-0.5 rounded-full bg-white/5 border border-white/5 truncate max-w-full">
@@ -170,7 +187,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-1 shrink-0">
-                    <span className="font-headline font-bold text-base sm:text-2xl text-accent">₦{item.dynamicPrice?.toLocaleString()}</span>
+                    <span className={`font-headline font-bold text-base sm:text-2xl ${item.type === 'exclusive' ? 'text-accent' : 'text-primary'}`}>₦{item.dynamicPrice?.toLocaleString()}</span>
                     <Button 
                       variant="ghost" 
                       size="icon" 
@@ -186,9 +203,9 @@ export default function CheckoutPage() {
           ) : (
             <div className="py-16 text-center border-2 border-dashed border-white/5 rounded-2xl opacity-50 flex flex-col items-center">
               <ShoppingCart className="h-10 w-10 mb-4 text-muted-foreground opacity-20" />
-              <p className="uppercase tracking-widest text-[10px] font-bold">Your cart is empty</p>
+              <p className="uppercase tracking-widest text-[10px] font-bold">Protocol Queue Empty</p>
               <Button asChild variant="link" className="mt-2 text-accent text-xs uppercase tracking-widest">
-                <Link href="/">Explore Groups</Link>
+                <Link href="/">Browse Registry</Link>
               </Button>
             </div>
           )}
@@ -197,16 +214,16 @@ export default function CheckoutPage() {
         <div className="lg:col-span-5 xl:col-span-4">
           <Card className="glass-card border-accent/20 sticky top-20">
             <CardHeader className="pb-4">
-              <CardTitle className="font-headline text-lg sm:text-xl uppercase tracking-widest">Order Summary</CardTitle>
+              <CardTitle className="font-headline text-lg sm:text-xl uppercase tracking-widest">Transaction Intel</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-3">
                 <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground uppercase tracking-widest">Items Count</span>
+                  <span className="text-muted-foreground uppercase tracking-widest">Nodes Scheduled</span>
                   <span className="font-bold">{cartItems.length}</span>
                 </div>
                 <div className="flex justify-between items-end border-t border-white/5 pt-4 gap-2">
-                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground shrink-0 mb-1">Total Protocol Cost</span>
+                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground shrink-0 mb-1">Total Acquisition Cost</span>
                   <span className={`font-headline font-bold text-2xl sm:text-3xl truncate ${hasInsufficientFunds && cartItems.length > 0 ? "text-destructive" : "text-accent"}`}>
                     ₦{totalPrice.toLocaleString()}
                   </span>
@@ -215,7 +232,7 @@ export default function CheckoutPage() {
 
               <div className={`p-4 rounded-xl border ${hasInsufficientFunds && cartItems.length > 0 ? "bg-destructive/5 border-destructive/20" : "bg-accent/5 border-accent/20"} space-y-2`}>
                 <div className="flex justify-between items-center text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
-                  <span>Your Balance</span>
+                  <span>Available Credits</span>
                   <Wallet className="h-3 w-3" />
                 </div>
                 <div className="text-xl font-bold font-headline truncate">₦{userBalance.toLocaleString()}</div>
@@ -226,25 +243,25 @@ export default function CheckoutPage() {
                   <div className="flex gap-3">
                     <AlertCircle className="h-5 w-5 text-destructive shrink-0" />
                     <div className="space-y-1">
-                      <p className="text-xs font-bold text-destructive uppercase tracking-widest">Insufficient Credits</p>
-                      <p className="text-[10px] leading-relaxed opacity-80">You need ₦{(totalPrice - userBalance).toLocaleString()} more to finalize acquisition.</p>
+                      <p className="text-xs font-bold text-destructive uppercase tracking-widest">Insufficient Funds</p>
+                      <p className="text-[10px] leading-relaxed opacity-80">You require ₦{(totalPrice - userBalance).toLocaleString()} more for authorization.</p>
                     </div>
                   </div>
                   <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-bold h-10 uppercase tracking-widest text-[10px]" size="sm">
                     <Link href="/dashboard/topup">
                       <PlusCircle className="mr-2 h-3.5 w-3.5" />
-                      Add Credits Now
+                      Add Credits
                     </Link>
                   </Button>
                 </div>
               )}
 
               <Button 
-                className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest disabled:opacity-20 shadow-[0_0_20px_rgba(0,100,255,0.2)]"
+                className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest disabled:opacity-20 shadow-xl"
                 disabled={isProcessing || cartItems.length === 0 || hasInsufficientFunds}
                 onClick={handleCompletePurchase}
               >
-                {isProcessing ? "INITIALIZING..." : hasInsufficientFunds ? "INSUFFICIENT CREDITS" : "AUTHORIZE PURCHASE"}
+                {isProcessing ? "TRANSMITTING..." : hasInsufficientFunds ? "INSUFFICIENT CREDITS" : "AUTHORIZE ACQUISITION"}
                 {!hasInsufficientFunds && !isProcessing && cartItems.length > 0 && <ShieldCheck className="ml-2 h-5 w-5" />}
               </Button>
             </CardContent>
@@ -252,7 +269,7 @@ export default function CheckoutPage() {
               <div className="w-full pt-4 flex flex-col items-center gap-2">
                 <p className="text-[9px] text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                   <ArrowRight className="h-3 w-3 text-accent" />
-                  Secure Encrypted Transaction Protocol
+                  Secure Protocol 2.8 Active
                 </p>
               </div>
             </CardFooter>
