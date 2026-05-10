@@ -1,31 +1,38 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Terminal, Mail, Lock, User, ArrowRight, ShieldCheck } from "lucide-react";
+import { Terminal, Mail, Lock, User, ArrowRight, ShieldCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuth, useFirestore } from "@/firebase";
+import { useAuth, useUser, useFirestore } from "@/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 
-export default function SignupPage() {
+function SignupFormContent() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const auth = useAuth();
   const db = useFirestore();
+  const { user, loading: authLoading } = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
   const refCode = searchParams.get("ref");
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push("/");
+    }
+  }, [user, authLoading, router]);
 
   const generateReferralCode = () => {
     return Math.random().toString(36).substring(2, 10).toUpperCase();
@@ -47,16 +54,16 @@ export default function SignupPage() {
       }
 
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      const newUser = userCredential.user;
       
-      await updateProfile(user, {
+      await updateProfile(newUser, {
         displayName: name,
       });
 
       // Initialize User Profile in Firestore
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        email: user.email,
+      await setDoc(doc(db, "users", newUser.uid), {
+        uid: newUser.uid,
+        email: newUser.email,
         displayName: name,
         balance: 0,
         isAdmin: false,
@@ -80,6 +87,14 @@ export default function SignupPage() {
     }
   };
 
+  if (authLoading) {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-accent" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl glass-card border-white/10 relative overflow-hidden">
@@ -92,7 +107,7 @@ export default function SignupPage() {
             <CardTitle className="font-headline text-xl font-bold uppercase tracking-tight">Sign Up</CardTitle>
             <CardDescription className="text-muted-foreground text-xs font-medium">
               Create an account to start buying.
-              {refCode && <span className="block text-accent font-bold mt-1">Referral Applied</span>}
+              {refCode && <span className="block text-accent font-bold mt-1 uppercase tracking-widest text-[10px]">Referral Protocol: Active</span>}
             </CardDescription>
           </div>
         </CardHeader>
@@ -164,5 +179,17 @@ export default function SignupPage() {
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-accent" />
+      </div>
+    }>
+      <SignupFormContent />
+    </Suspense>
   );
 }
