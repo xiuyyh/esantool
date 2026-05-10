@@ -20,6 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 
 export default function AdminDisputesPage() {
@@ -115,7 +116,7 @@ export default function AdminDisputesPage() {
             <TableRow className="border-white/5">
               <TableHead className="text-[10px] font-bold uppercase tracking-widest text-white/60">User / Identity</TableHead>
               <TableHead className="text-[10px] font-bold uppercase tracking-widest text-white/60">Target Issue</TableHead>
-              <TableHead className="text-[10px] font-bold uppercase tracking-widest text-white/60 text-center">Status</TableHead>
+              <TableHead className="text-[10px] font-bold uppercase tracking-widest text-center">Status</TableHead>
               <TableHead className="text-[10px] font-bold uppercase tracking-widest text-right">Action</TableHead>
             </TableRow>
           </TableHeader>
