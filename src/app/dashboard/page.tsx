@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductCard } from "@/components/product-card";
-import { Globe, ShieldCheck, Lock, ExternalLink, Key, History, Link as LinkIcon, AlertCircle, MessageSquare, Loader2, CheckCircle2, Gift, TriangleAlert } from "lucide-react";
+import { Globe, ShieldCheck, Lock, ExternalLink, Key, History, Link as LinkIcon, AlertCircle, MessageSquare, Loader2, CheckCircle2, Gift, TriangleAlert, Zap } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
