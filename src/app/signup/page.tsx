@@ -1,9 +1,9 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Terminal, Mail, Lock, User, ArrowRight, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth, useFirestore } from "@/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 
 export default function SignupPage() {
@@ -22,13 +22,30 @@ export default function SignupPage() {
   const auth = useAuth();
   const db = useFirestore();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
+
+  const refCode = searchParams.get("ref");
+
+  const generateReferralCode = () => {
+    return Math.random().toString(36).substring(2, 10).toUpperCase();
+  };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!auth || !db) return;
     setLoading(true);
     try {
+      let referrerUid = null;
+      if (refCode) {
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("referralCode", "==", refCode));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          referrerUid = querySnapshot.docs[0].id;
+        }
+      }
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       
@@ -45,6 +62,9 @@ export default function SignupPage() {
         isAdmin: false,
         purchasedGroups: [],
         cart: [],
+        referralCode: generateReferralCode(),
+        referredBy: referrerUid,
+        referralEarnings: 0,
         createdAt: new Date().toISOString()
       });
 
@@ -72,6 +92,7 @@ export default function SignupPage() {
             <CardTitle className="font-headline text-xl font-bold uppercase tracking-tight">Sign Up</CardTitle>
             <CardDescription className="text-muted-foreground text-xs font-medium">
               Create an account to start buying.
+              {refCode && <span className="block text-accent font-bold mt-1">Referral Applied</span>}
             </CardDescription>
           </div>
         </CardHeader>

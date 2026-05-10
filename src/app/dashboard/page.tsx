@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductCard } from "@/components/product-card";
-import { Globe, ShieldCheck, Lock, ExternalLink, Key, History, Link as LinkIcon, AlertCircle, MessageSquare, Loader2, CheckCircle2 } from "lucide-react";
+import { Globe, ShieldCheck, Lock, ExternalLink, Key, History, Link as LinkIcon, AlertCircle, MessageSquare, Loader2, CheckCircle2, Gift } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -106,7 +106,7 @@ export default function UserDashboard() {
 
   return (
     <div className="max-w-screen-2xl px-4 sm:px-6 lg:px-8 py-10 space-y-12">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="glass-card border-accent/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">My Balance</CardTitle>
@@ -131,6 +131,18 @@ export default function UserDashboard() {
           <CardContent>
             <div className="text-4xl font-bold font-headline">{profile?.purchasedGroups?.length || 0}</div>
             <p className="text-[10px] text-muted-foreground mt-4 uppercase tracking-widest">Active digital protocols</p>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card border-accent/20 bg-accent/5">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-[10px] font-bold text-accent uppercase tracking-widest">Referral Earnings</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-4xl font-bold font-headline text-accent">₦{profile?.referralEarnings?.toLocaleString() || 0}</div>
+            <Button asChild variant="ghost" size="sm" className="mt-4 h-8 text-[9px] font-bold uppercase tracking-widest text-accent border border-accent/20">
+              <Link href="/dashboard/referrals"><Gift className="h-3 w-3 mr-1" /> Refer & Earn</Link>
+            </Button>
           </CardContent>
         </Card>
 

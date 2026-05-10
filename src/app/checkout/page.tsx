@@ -8,11 +8,12 @@ import { ShoppingCart, Trash2, ShieldCheck, Wallet, ChevronLeft, AlertCircle, Pl
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase } from "@/firebase";
-import { doc, updateDoc, arrayUnion, arrayRemove, collection, increment, writeBatch } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, arrayRemove, collection, increment, writeBatch, serverTimestamp, addDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { getBundlePricing } from "@/lib/pricing";
 
 const DEFAULT_IMAGE = "https://techstory.in/wp-content/uploads/2021/07/telegram.jpeg";
+const REFERRAL_BONUS = 2000;
 
 export default function CheckoutPage() {
   const { user } = useUser();
@@ -83,6 +84,27 @@ export default function CheckoutPage() {
           salesCount: increment(1)
         });
       });
+
+      // 3. Referral Bonus Logic
+      if (profile.referredBy) {
+        const referrerRef = doc(db, "users", profile.referredBy);
+        batch.update(referrerRef, {
+          balance: increment(REFERRAL_BONUS),
+          referralEarnings: increment(REFERRAL_BONUS)
+        });
+
+        // Add a bonus transaction for the referrer
+        const bonusTxRef = doc(collection(db, "transactions"));
+        batch.set(bonusTxRef, {
+          uid: profile.referredBy,
+          userEmail: "system@bonus.esan",
+          userName: `Referral Bonus: ${profile.email}`,
+          amount: REFERRAL_BONUS,
+          status: "confirmed",
+          type: "referral_bonus",
+          createdAt: serverTimestamp()
+        });
+      }
 
       await batch.commit();
 

@@ -16,7 +16,8 @@ import {
   CreditCard,
   Users,
   MessageSquare,
-  LifeBuoy
+  LifeBuoy,
+  Gift
 } from "lucide-react";
 
 import {
@@ -77,6 +78,11 @@ export function AppSidebar() {
           title: "Transactions",
           url: "/dashboard/transactions",
           icon: History,
+        },
+        {
+          title: "Refer & Earn",
+          url: "/dashboard/referrals",
+          icon: Gift,
         },
         {
           title: "Support Desk",

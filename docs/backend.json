@@ -22,7 +22,10 @@
           "type": "array",
           "items": { "type": "string" },
           "description": "List of group IDs currently in the user's cart."
-        }
+        },
+        "referralCode": { "type": "string", "description": "Unique code for referring others." },
+        "referredBy": { "type": "string", "description": "UID of the user who referred this person." },
+        "referralEarnings": { "type": "number", "description": "Total Naira earned from referrals." }
       },
       "required": ["uid", "email"]
     },
@@ -102,7 +105,7 @@
         "amount": { "type": "number" },
         "status": { "type": "string", "enum": ["pending", "confirmed", "rejected"] },
         "createdAt": { "type": "string", "format": "date-time" },
-        "type": { "type": "string", "enum": ["credit"] }
+        "type": { "type": "string", "enum": ["credit", "referral_bonus"] }
       },
       "required": ["uid", "amount", "status"]
     },
@@ -134,7 +137,7 @@
     },
     "/transactions/{transactionId}": {
       "schema": { "$ref": "#/entities/Transaction" },
-      "description": "Top-up requests."
+      "description": "Top-up requests and bonuses."
     },
     "/disputes/{disputeId}": {
       "schema": { "$ref": "#/entities/Dispute" },
