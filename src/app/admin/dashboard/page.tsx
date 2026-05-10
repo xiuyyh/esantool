@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -12,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useFirestore, useCollection, useUser, useDoc, useMemoFirebase } from "@/firebase";
 import { collection, addDoc, deleteDoc, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, X, Trash2, Edit3, Globe, Lock, Loader2, Plus, Link as LinkIcon, Zap, Layers } from "lucide-react";
+import { Upload, X, Trash2, Edit3, Globe, Lock, Loader2, Plus, Link as LinkIcon, Zap, Layers, RotateCcw } from "lucide-react";
 import { getBundlePricing } from "@/lib/pricing";
 import {
   Dialog,
@@ -150,6 +149,18 @@ export default function AdminDashboard() {
     toast({ title: "Deleted", description: "Bundle has been removed." });
   };
 
+  const handleResetSales = async (id: string) => {
+    if (!db || !confirm("Erase sales count for this bundle? This will reset its quality tier to HQ.")) return;
+    try {
+      await updateDoc(doc(db, "groups", id), {
+        salesCount: 0
+      });
+      toast({ title: "Protocol Reset", description: "Sales count has been cleared." });
+    } catch (err) {
+      toast({ variant: "destructive", title: "Error", description: "Failed to reset protocol." });
+    }
+  };
+
   const openEditDialog = (group: any) => {
     setEditingGroup({ ...group, links: group.links || [{ label: "", url: "" }] });
     setIsEditDialogOpen(true);
@@ -195,11 +206,11 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div className="space-y-2">
                     <Label className="text-[10px] uppercase font-bold text-muted-foreground font-mono">Bundle Identity</Label>
-                    <Input value={groupTitle} onChange={(e) => setGroupTitle(e.target.value)} className="bg-white/5 h-12 border-white/10" placeholder="e.g. VIP Master Bundle" required />
+                    <input type="text" value={groupTitle} onChange={(e) => setGroupTitle(e.target.value)} className="flex h-12 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" placeholder="e.g. VIP Master Bundle" required />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[10px] uppercase font-bold text-muted-foreground font-mono">Base Valuation (₦)</Label>
-                    <Input type="number" value={groupPrice} onChange={(e) => setGroupPrice(e.target.value)} className="bg-white/5 h-12 border-white/10" placeholder="5000" required />
+                    <input type="number" value={groupPrice} onChange={(e) => setGroupPrice(e.target.value)} className="flex h-12 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" placeholder="5000" required />
                   </div>
                 </div>
 
@@ -287,7 +298,7 @@ export default function AdminDashboard() {
             <CardHeader className="p-4 sm:p-6"><CardTitle className="font-headline text-lg uppercase tracking-widest text-white">Region Registry</CardTitle></CardHeader>
             <CardContent className="p-4 sm:p-6 pt-0">
               <form onSubmit={handleAddCountry} className="space-y-4">
-                <Input value={countryName} onChange={(e) => setCountryName(e.target.value)} className="bg-white/5 h-11 border-white/10" placeholder="New Country Name" required />
+                <input type="text" value={countryName} onChange={(e) => setCountryName(e.target.value)} className="flex h-11 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" placeholder="New Country Name" required />
                 <Button type="submit" variant="outline" className="w-full h-11 font-bold uppercase text-[10px] tracking-widest border-white/20">Register Region</Button>
               </form>
               <div className="mt-8 flex flex-wrap gap-2">
@@ -346,6 +357,7 @@ export default function AdminDashboard() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => handleResetSales(group.id)} title="Reset Sales Count" className="h-8 w-8 text-yellow-500 hover:bg-yellow-500/10"><RotateCcw className="h-4 w-4" /></Button>
                           <Button variant="ghost" size="icon" onClick={() => openEditDialog(group)} className="h-8 w-8 text-accent hover:bg-accent/10"><Edit3 className="h-4 w-4" /></Button>
                           <Button variant="ghost" size="icon" onClick={() => handleDeleteGroup(group.id)} className="h-8 w-8 text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></Button>
                         </div>
