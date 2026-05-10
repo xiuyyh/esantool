@@ -42,7 +42,7 @@
           "items": {
             "type": "object",
             "properties": {
-              "label": { "type": "string", "description": "Label for the link (e.g., 'VIP Chat', 'Signals Channel')." },
+              "label": { "type": "string", "description": "Label for the link." },
               "url": { "type": "string", "description": "The actual Telegram invite URL." }
             },
             "required": ["label", "url"]
@@ -51,11 +51,36 @@
         "imageUrls": { 
           "type": "array", 
           "items": { "type": "string" },
-          "description": "Array of Base64 or URL strings for preview images."
+          "description": "Array of preview images."
         },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["title", "price", "country", "links"]
+    },
+    "Dispute": {
+      "title": "Bundle Dispute",
+      "description": "A claim filed by a user for a low-quality or junk bundle.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "groupId": { "type": "string" },
+        "groupTitle": { "type": "string" },
+        "reason": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "resolved"] },
+        "resolutionLinks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": { "type": "string" },
+              "url": { "type": "string" }
+            }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "groupId", "status"]
     },
     "Country": {
       "title": "Country",
@@ -110,6 +135,10 @@
     "/transactions/{transactionId}": {
       "schema": { "$ref": "#/entities/Transaction" },
       "description": "Top-up requests."
+    },
+    "/disputes/{disputeId}": {
+      "schema": { "$ref": "#/entities/Dispute" },
+      "description": "Junk group compensation claims."
     },
     "/settings/admin": {
       "schema": { "$ref": "#/entities/AdminSettings" },

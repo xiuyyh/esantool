@@ -1,16 +1,27 @@
 
 "use client";
 
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useUser, useDoc, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
-import { doc, collection } from "firebase/firestore";
+import { doc, collection, addDoc, serverTimestamp, query, where } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductCard } from "@/components/product-card";
-import { Globe, ShieldCheck, Lock, ExternalLink, Key, History, Link as LinkIcon } from "lucide-react";
+import { Globe, ShieldCheck, Lock, ExternalLink, Key, History, Link as LinkIcon, AlertCircle, MessageSquare, Loader2, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
+import { notifyTelegram } from "@/lib/telegram-action";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 const DEFAULT_IMAGE = "https://techstory.in/wp-content/uploads/2021/07/telegram.jpeg";
 
@@ -18,12 +29,23 @@ export default function UserDashboard() {
   const { user, loading: userLoading } = useUser();
   const db = useFirestore();
   const router = useRouter();
+  const { toast } = useToast();
   
   const userRef = useMemoFirebase(() => user && db ? doc(db, "users", user.uid) : null, [db, user?.uid]);
   const { data: profile, loading: profileLoading } = useDoc(userRef);
   
   const groupsQuery = useMemoFirebase(() => db ? collection(db, "groups") : null, [db]);
   const { data: allGroups, loading: groupsLoading } = useCollection(groupsQuery);
+
+  const disputesQuery = useMemoFirebase(() => {
+    if (!user || !db) return null;
+    return query(collection(db, "disputes"), where("uid", "==", user.uid));
+  }, [db, user?.uid]);
+  const { data: disputes } = useCollection(disputesQuery);
+
+  const [disputeBundle, setDisputeBundle] = useState<any>(null);
+  const [disputeReason, setDisputeReason] = useState("");
+  const [isSubmittingDispute, setIsSubmittingDispute] = useState(false);
 
   useEffect(() => {
     if (!userLoading && !user) router.push("/login");
@@ -39,6 +61,34 @@ export default function UserDashboard() {
     const purchasedIds = profile?.purchasedGroups || [];
     return allGroups.filter((g: any) => !purchasedIds.includes(g.id));
   }, [profile?.purchasedGroups, allGroups]);
+
+  const handleFileDispute = async () => {
+    if (!user || !db || !disputeBundle || !disputeReason) return;
+    setIsSubmittingDispute(true);
+    try {
+      await addDoc(collection(db, "disputes"), {
+        uid: user.uid,
+        userEmail: user.email,
+        groupId: disputeBundle.id,
+        groupTitle: disputeBundle.title,
+        reason: disputeReason,
+        status: "pending",
+        resolutionLinks: [],
+        createdAt: serverTimestamp(),
+      });
+
+      const message = `🚨 <b>Junk Group Dispute</b>\n\n<b>User:</b> ${user.email}\n<b>Bundle:</b> ${disputeBundle.title}\n<b>Reason:</b> ${disputeReason}`;
+      await notifyTelegram(message);
+
+      toast({ title: "Dispute Filed", description: "Administrators have been notified of the protocol error." });
+      setDisputeBundle(null);
+      setDisputeReason("");
+    } catch (err) {
+      toast({ variant: "destructive", title: "Error", description: "Failed to broadcast dispute." });
+    } finally {
+      setIsSubmittingDispute(false);
+    }
+  };
 
   if (userLoading || profileLoading || groupsLoading) {
     return (
@@ -83,6 +133,20 @@ export default function UserDashboard() {
             <p className="text-[10px] text-muted-foreground mt-4 uppercase tracking-widest">Active digital protocols</p>
           </CardContent>
         </Card>
+
+        {disputes.some(d => d.status === 'pending') && (
+          <Card className="glass-card border-yellow-500/20">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-[10px] font-bold text-yellow-500 uppercase tracking-widest flex items-center gap-2">
+                <AlertCircle className="h-3 w-3" /> Resolution Pending
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold font-headline">ACTIVE DISPUTE</div>
+              <p className="text-[9px] text-muted-foreground mt-4 uppercase tracking-widest">Admin is verifying junk group report</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <section className="space-y-6">
@@ -94,44 +158,83 @@ export default function UserDashboard() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8">
-          {purchasedGroups.length > 0 ? (purchasedGroups.map((group: any) => (
-            <Card key={group.id} className="glass-card border-accent/20 overflow-hidden group">
-              <CardHeader className="border-b border-white/5 p-5">
-                <div className="flex justify-between items-start gap-4">
-                  <div className="space-y-1">
-                    <CardTitle className="font-headline font-bold text-xl uppercase tracking-tighter">{group.title}</CardTitle>
-                    <div className="flex items-center gap-2">
-                      <Globe className="h-3 w-3 text-accent" />
-                      <span className="text-[10px] font-bold text-accent uppercase">{group.country}</span>
+          {purchasedGroups.length > 0 ? (purchasedGroups.map((group: any) => {
+            const bundleDispute = disputes.find(d => d.groupId === group.id);
+            return (
+              <Card key={group.id} className="glass-card border-accent/20 overflow-hidden group flex flex-col">
+                <CardHeader className="border-b border-white/5 p-5">
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="space-y-1">
+                      <CardTitle className="font-headline font-bold text-xl uppercase tracking-tighter">{group.title}</CardTitle>
+                      <div className="flex items-center gap-2">
+                        <Globe className="h-3 w-3 text-accent" />
+                        <span className="text-[10px] font-bold text-accent uppercase">{group.country}</span>
+                      </div>
+                    </div>
+                    <div className="h-12 w-12 rounded-lg border border-white/10 overflow-hidden shrink-0">
+                      <img src={group.imageUrls?.[0] || DEFAULT_IMAGE} className="w-full h-full object-cover" alt="" />
                     </div>
                   </div>
-                  <div className="h-12 w-12 rounded-lg border border-white/10 overflow-hidden shrink-0">
-                    <img src={group.imageUrls?.[0] || DEFAULT_IMAGE} className="w-full h-full object-cover" alt="" />
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-5 space-y-4">
-                <div className="space-y-2">
-                  <p className="text-[9px] uppercase font-bold text-muted-foreground tracking-widest ml-1">Included Nodes</p>
-                  <div className="space-y-2">
-                    {(group.links || []).map((link: any, idx: number) => (
-                      <div key={idx} className="flex items-center justify-between gap-4 p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-accent/20 transition-colors">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <LinkIcon className="h-3 w-3 text-accent shrink-0" />
-                          <span className="text-xs font-bold uppercase tracking-tight truncate">{link.label || `Node ${idx + 1}`}</span>
-                        </div>
-                        <Button asChild size="icon" className="h-8 w-8 bg-accent text-background hover:bg-accent/80 shrink-0">
-                          <a href={link.url} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-4 w-4" />
-                          </a>
-                        </Button>
+                </CardHeader>
+                <CardContent className="p-5 space-y-4 flex-1">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <p className="text-[9px] uppercase font-bold text-muted-foreground tracking-widest ml-1">Original Nodes</p>
+                      <div className="space-y-2">
+                        {(group.links || []).map((link: any, idx: number) => (
+                          <div key={idx} className="flex items-center justify-between gap-4 p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-accent/20 transition-colors">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <LinkIcon className="h-3 w-3 text-accent shrink-0" />
+                              <span className="text-xs font-bold uppercase tracking-tight truncate">{link.label}</span>
+                            </div>
+                            <Button asChild size="icon" className="h-8 w-8 bg-accent text-background hover:bg-accent/80 shrink-0">
+                              <a href={link.url} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="h-4 w-4" />
+                              </a>
+                            </Button>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </div>
+
+                    {bundleDispute?.status === 'resolved' && bundleDispute.resolutionLinks?.length > 0 && (
+                      <div className="space-y-2 pt-2 border-t border-white/5">
+                        <div className="flex items-center gap-2 text-[9px] uppercase font-bold text-green-500 tracking-widest ml-1">
+                          <CheckCircle2 className="h-3.5 w-3.5" /> Resolution Nodes (Compensated)
+                        </div>
+                        <div className="space-y-2">
+                          {bundleDispute.resolutionLinks.map((link: any, idx: number) => (
+                            <div key={idx} className="flex items-center justify-between gap-4 p-3 rounded-xl bg-green-500/5 border border-green-500/20">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <Zap className="h-3 w-3 text-green-500 shrink-0" />
+                                <span className="text-xs font-bold uppercase tracking-tight truncate">{link.label}</span>
+                              </div>
+                              <Button asChild size="icon" className="h-8 w-8 bg-green-500 text-white hover:bg-green-600 shrink-0">
+                                <a href={link.url} target="_blank" rel="noopener noreferrer">
+                                  <ExternalLink className="h-4 w-4" />
+                                </a>
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
+                </CardContent>
+                <div className="p-4 bg-white/5 border-t border-white/5 flex justify-end">
+                  {!bundleDispute ? (
+                    <Button variant="ghost" size="sm" onClick={() => setDisputeBundle(group)} className="text-destructive h-8 px-3 text-[9px] font-bold uppercase tracking-widest hover:bg-destructive/10">
+                      <AlertCircle className="h-3 w-3 mr-2" /> Report Junk Group
+                    </Button>
+                  ) : (
+                    <div className={`text-[8px] font-bold uppercase px-3 py-1 rounded border ${bundleDispute.status === 'pending' ? 'border-yellow-500/50 text-yellow-500 bg-yellow-500/5' : 'border-green-500/50 text-green-500 bg-green-500/5'}`}>
+                      Resolution Status: {bundleDispute.status}
+                    </div>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          ))) : (
+              </Card>
+            );
+          })) : (
             <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-3xl opacity-40">
               <Lock className="h-12 w-12 mx-auto mb-4" />
               <p className="text-sm uppercase tracking-widest font-bold">No authorized bundles found.</p>
@@ -156,6 +259,38 @@ export default function UserDashboard() {
           </div>
         </section>
       )}
+
+      <Dialog open={!!disputeBundle} onOpenChange={(open) => !open && setDisputeBundle(null)}>
+        <DialogContent className="glass-card border-white/10 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-headline text-lg uppercase tracking-widest">Resolution Dispute</DialogTitle>
+            <DialogDescription className="text-[10px] uppercase font-mono">Reporting Junk Nodes in: {disputeBundle?.title}</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-[9px] uppercase font-bold text-muted-foreground ml-1">Reason for Dispute</label>
+              <Textarea 
+                placeholder="Describe the issue (e.g. Broken link, invalid content...)"
+                className="bg-white/5 min-h-[120px] border-white/10"
+                value={disputeReason}
+                onChange={(e) => setDisputeReason(e.target.value)}
+              />
+            </div>
+            <div className="p-3 bg-yellow-500/5 border border-yellow-500/20 rounded-lg">
+              <p className="text-[9px] text-yellow-500 uppercase leading-relaxed font-bold">
+                ⚠️ Abuse of the resolution system may result in account termination. Only report verified junk groups.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setDisputeBundle(null)} className="uppercase text-[10px] font-bold">Cancel</Button>
+            <Button onClick={handleFileDispute} disabled={isSubmittingDispute || !disputeReason} className="bg-destructive text-white uppercase text-[10px] font-bold">
+              {isSubmittingDispute ? <Loader2 className="animate-spin h-3 w-3 mr-2" /> : <MessageSquare className="h-3 w-3 mr-2" />}
+              Broadcast Dispute
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { use, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ShoppingCart, ShieldCheck, Lock, ExternalLink, Globe, Check, Link as LinkIcon, Zap, Info } from "lucide-react";
+import { ChevronLeft, ShoppingCart, ShieldCheck, Lock, ExternalLink, Globe, Check, Link as LinkIcon, Zap, Info, Bot, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -170,15 +170,18 @@ export default function GroupDetailsPage({ params: paramsPromise }: { params: Pr
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    <div className="space-y-2">
-                      <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest ml-1">Bundled Node Preview:</p>
-                      <div className="grid grid-cols-1 gap-2">
-                        {(group.links || []).map((link: any, idx: number) => (
-                          <div key={idx} className="flex items-center gap-3 p-2 px-3 border border-white/5 bg-white/[0.02] rounded-lg opacity-60">
-                            <LinkIcon className="h-3.5 w-3.5 text-accent" />
-                            <span className="text-[10px] font-bold uppercase truncate">{link.label}</span>
-                          </div>
-                        ))}
+                    <div className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-3">
+                      <div className="flex items-start gap-3">
+                        <Bot className="h-4 w-4 text-accent shrink-0 mt-1" />
+                        <p className="text-[10px] leading-relaxed uppercase tracking-widest text-white/80">
+                          These private groups are autonomously generated and validated by our bot protocol.
+                        </p>
+                      </div>
+                      <div className="flex items-start gap-3 border-t border-white/5 pt-3">
+                        <AlertTriangle className="h-4 w-4 text-yellow-500 shrink-0 mt-1" />
+                        <p className="text-[10px] leading-relaxed uppercase tracking-widest text-muted-foreground">
+                          If you identify a junk or invalid group, you can file a <span className="text-yellow-500 font-bold">Resolution Dispute</span> in your dashboard for compensation.
+                        </p>
                       </div>
                     </div>
                     
