@@ -39,6 +39,7 @@ export function SoftwareCard({ id, title, price, description, imageUrls, version
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!user || !db) {
       router.push("/login");
       return;
@@ -69,20 +70,22 @@ export function SoftwareCard({ id, title, price, description, imageUrls, version
     <Card className="glass-card group hover:border-accent transition-all duration-500 rounded-none border-white/5 flex flex-col h-full tech-border relative overflow-hidden">
       <div className="p-4 sm:p-5 flex flex-col h-full space-y-4">
         <div className="flex gap-4 items-start min-w-0">
-          <div className="relative h-16 w-16 sm:h-20 sm:w-20 shrink-0 border border-white/10 bg-black overflow-hidden group-hover:border-accent transition-colors">
+          <Link href={`/software/${id}`} className="relative h-16 w-16 sm:h-20 sm:w-20 shrink-0 border border-white/10 bg-black overflow-hidden group-hover:border-accent transition-colors">
             <Image
               src={displayImage}
               alt={title}
               fill
               className="object-contain opacity-70 group-hover:opacity-100 transition-all duration-500"
             />
-          </div>
+          </Link>
 
           <div className="flex-1 min-w-0 flex flex-col justify-center">
             <div className="flex flex-col gap-1.5">
-              <h3 className="font-headline text-base sm:text-lg font-bold text-white group-hover:text-accent transition-colors truncate uppercase tracking-tighter">
-                {title}
-              </h3>
+              <Link href={`/software/${id}`} className="block min-w-0">
+                <h3 className="font-headline text-base sm:text-lg font-bold text-white group-hover:text-accent transition-colors truncate uppercase tracking-tighter">
+                  {title}
+                </h3>
+              </Link>
               <div className="flex flex-wrap items-center gap-2">
                  <div className="text-[8px] font-mono font-bold uppercase py-0.5 px-2 bg-accent/20 border border-accent/40 text-accent flex items-center gap-1">
                     <Monitor className="h-2 w-2" />
@@ -111,14 +114,22 @@ export function SoftwareCard({ id, title, price, description, imageUrls, version
                DIGITAL ASSET
             </span>
           </div>
-          <Button 
-            size="sm" 
-            className="h-8 sm:h-9 px-4 text-[9px] sm:text-[10px] bg-accent text-background hover:bg-accent/80 font-mono font-bold uppercase tracking-widest rounded-none"
-            onClick={handleAddToCart}
-            disabled={isAdding || hasAccess}
-          >
-            {hasAccess ? "OWNED" : isInCart ? "CART" : isAdding ? "..." : "BUY"}
-          </Button>
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" className="h-8 sm:h-9 px-2 sm:px-3 text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-widest border border-accent/10 hover:bg-accent/10 rounded-none hidden xs:flex" asChild>
+              <Link href={`/software/${id}`}>
+                <Eye className="h-3 w-3 mr-1.5" />
+                INFO
+              </Link>
+            </Button>
+            <Button 
+              size="sm" 
+              className="h-8 sm:h-9 px-4 text-[9px] sm:text-[10px] bg-accent text-background hover:bg-accent/80 font-mono font-bold uppercase tracking-widest rounded-none"
+              onClick={handleAddToCart}
+              disabled={isAdding || hasAccess}
+            >
+              {hasAccess ? "OWNED" : isInCart ? "CART" : isAdding ? "..." : "BUY"}
+            </Button>
+          </div>
         </div>
       </div>
     </Card>
