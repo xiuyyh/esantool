@@ -1,7 +1,7 @@
 
 "use client";
 
-import { MessageCircle, ChevronLeft, ExternalLink } from "lucide-react";
+import { ChevronLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
@@ -31,10 +31,6 @@ export default function SupportPage() {
         
         <CardContent className="pt-4 pb-8 space-y-6 text-center">
           <div className="flex flex-col items-center gap-4">
-            <div className="h-16 w-16 bg-accent/10 rounded-full flex items-center justify-center border border-accent/20">
-              <MessageCircle className="h-8 w-8 text-accent" />
-            </div>
-
             <div className="space-y-1">
               <p className="font-mono text-sm text-white font-bold tracking-widest">{WHATSAPP_NUMBER}</p>
               <p className="text-[8px] text-muted-foreground uppercase tracking-widest font-mono">Available: 9AM - 9PM</p>
