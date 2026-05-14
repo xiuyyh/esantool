@@ -2,14 +2,12 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Monitor, HardDrive, Search, Info, Cpu, Network } from "lucide-react";
+import { Monitor, HardDrive, Info, Cpu } from "lucide-react";
 import { SoftwareCard } from "@/components/software-card";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection } from "firebase/firestore";
-import { Input } from "@/components/ui/input";
 
 export default function SoftwareStorePage() {
-  const [searchTerm, setSearchTerm] = useState("");
   const [year, setYear] = useState<number | null>(null);
 
   const db = useFirestore();
@@ -19,13 +17,6 @@ export default function SoftwareStorePage() {
   useEffect(() => {
     setYear(new Date().getFullYear());
   }, []);
-
-  const filteredSoftware = useMemo(() => {
-    return allSoftware.filter((s: any) => 
-      s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.description?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [allSoftware, searchTerm]);
 
   return (
     <div className="flex flex-col flex-1 w-full min-w-0">
@@ -63,16 +54,6 @@ export default function SoftwareStorePage() {
                 Source custom-built digital tools designed for specific tasks. High performance, private, and reliable software assets.
               </p>
             </div>
-
-            <div className="relative w-full sm:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-accent/40" />
-              <Input 
-                placeholder="Search Tools..." 
-                className="pl-10 h-12 bg-white/5 border-white/10 font-mono text-[10px] uppercase tracking-widest text-accent"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
           </div>
 
           <div className="p-4 bg-accent/5 border border-accent/20 flex items-center gap-3">
@@ -89,7 +70,7 @@ export default function SoftwareStorePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {filteredSoftware.map((s: any) => (
+              {allSoftware.map((s: any) => (
                 <SoftwareCard 
                   key={s.id}
                   id={s.id}
@@ -103,11 +84,11 @@ export default function SoftwareStorePage() {
             </div>
           )}
           
-          {!loading && filteredSoftware.length === 0 && (
+          {!loading && allSoftware.length === 0 && (
             <div className="flex flex-col items-center justify-center py-32 glass-card rounded-none border-dashed border-2 border-accent/10 text-center px-6 tech-border">
               <HardDrive className="h-12 w-12 text-accent/20 mb-6" />
               <h3 className="text-2xl font-bold font-headline uppercase tracking-tighter text-white">Lab Empty</h3>
-              <p className="text-muted-foreground mt-2 text-sm font-mono tracking-widest uppercase opacity-60">No software matches your search parameters.</p>
+              <p className="text-muted-foreground mt-2 text-sm font-mono tracking-widest uppercase opacity-60">No software available in the registry.</p>
             </div>
           )}
         </div>
