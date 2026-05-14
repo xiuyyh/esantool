@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation";
 import {
   Terminal,
   LayoutDashboard,
-  Globe,
   LogOut,
   User,
   Key,
@@ -20,9 +19,7 @@ import {
   Gift,
   ShieldAlert,
   Monitor,
-  ChevronRight,
   Zap,
-  Crown,
   Layers,
   HelpCircle,
   HardDrive
@@ -40,15 +37,7 @@ import {
   SidebarGroupLabel,
   SidebarGroupContent,
   SidebarRail,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { doc } from "firebase/firestore";
@@ -75,7 +64,7 @@ export function AppSidebar() {
         {
           title: "Telegram Groups",
           url: "/",
-          icon: Zap,
+          icon: Layers,
         },
         {
           title: "Software Store",
