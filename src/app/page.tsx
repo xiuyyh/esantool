@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, Suspense } from "react";
@@ -49,7 +48,6 @@ function HomeContent() {
 
   const filteredProducts = allProducts.filter((p: any) => {
     const matchesCountry = !selectedCountry || p.country === selectedCountry;
-    // For single groups, we hide them once they are sold unless the user is already an owner (handled in card)
     const isAvailable = p.type !== 'exclusive' || !p.isSold;
     const matchesTab = activeTab === 'all' || 
       (activeTab === 'bundles' && (p.type === 'bundle' || !p.type)) ||
@@ -60,18 +58,18 @@ function HomeContent() {
 
   return (
     <div className="flex flex-col flex-1 w-full min-w-0">
-      <section className="py-3 bg-black/40 border-b border-accent/20 overflow-hidden whitespace-nowrap relative w-full pointer-events-none select-none z-10">
+      <section className="py-3 bg-black/60 border-b border-accent/30 overflow-hidden whitespace-nowrap relative w-full pointer-events-none select-none z-10">
         <div className="flex animate-marquee items-center gap-16 w-max">
           {[...Array(10)].map((_, i) => (
             <div key={i} className="flex items-center gap-6">
-              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-accent/40">
+              <span className="font-mono text-[11px] font-bold uppercase tracking-[0.3em] text-accent">
                 System Status: Online
               </span>
-              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-accent">
+              <span className="font-mono text-[11px] font-bold uppercase tracking-[0.3em] text-white">
                 Delivery: Instant
               </span>
-              <Cpu className="h-3 w-3 text-accent/20" />
-              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-accent/40">
+              <Cpu className="h-4 w-4 text-accent" />
+              <span className="font-mono text-[11px] font-bold uppercase tracking-[0.3em] text-accent">
                 Support: Active
               </span>
             </div>
@@ -81,54 +79,54 @@ function HomeContent() {
 
       <div className="max-w-screen-2xl px-6 sm:px-10 py-12 flex-1 w-full min-w-0 mx-auto">
         <div className="flex flex-col space-y-12">
-          <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-8 border-b border-accent/10 pb-10 relative">
+          <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-8 border-b border-accent/20 pb-10 relative">
             <div className="space-y-4">
-              <div className="flex items-center gap-3 text-accent/60 font-mono text-xs tracking-[0.4em] uppercase">
-                <Network className="h-4 w-4" />
+              <div className="flex items-center gap-3 text-accent font-mono text-xs tracking-[0.4em] uppercase font-bold">
+                <Network className="h-5 w-5" />
                 Trusted Group Access
               </div>
-              <h1 className="font-headline text-5xl sm:text-7xl font-bold tracking-tighter uppercase text-white">
+              <h1 className="font-headline text-5xl sm:text-7xl font-bold tracking-tighter uppercase text-white drop-shadow-lg">
                 ESAN SHOP
               </h1>
-              <p className="text-muted-foreground text-sm font-medium tracking-wide max-w-xl">
+              <p className="text-white text-base font-medium tracking-wide max-w-xl leading-relaxed">
                 Private Telegram group links (singles + bundles). Get instant access to exclusive communities. Fast, private, and reliable.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row items-start sm:items-end gap-6">
               <div className="space-y-3 w-full sm:w-auto">
-                <span className="font-mono text-[10px] uppercase text-accent/40 tracking-widest">Category</span>
+                <span className="font-mono text-[11px] uppercase text-accent tracking-widest font-bold">Category</span>
                 <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as any)}>
-                   <TabsList className="bg-white/5 h-12 border border-white/10 p-1">
-                      <TabsTrigger value="all" className="uppercase text-[9px] font-bold tracking-widest">All</TabsTrigger>
-                      <TabsTrigger value="bundles" className="uppercase text-[9px] font-bold tracking-widest">Bundles</TabsTrigger>
-                      <TabsTrigger value="exclusive" className="uppercase text-[9px] font-bold tracking-widest">
-                        <Crown className="h-3 w-3 mr-1" /> Single (Exclusive)
+                   <TabsList className="bg-white/10 h-12 border border-white/20 p-1">
+                      <TabsTrigger value="all" className="uppercase text-[10px] font-bold tracking-widest text-white data-[state=active]:bg-accent data-[state=active]:text-background">All</TabsTrigger>
+                      <TabsTrigger value="bundles" className="uppercase text-[10px] font-bold tracking-widest text-white data-[state=active]:bg-accent data-[state=active]:text-background">Bundles</TabsTrigger>
+                      <TabsTrigger value="exclusive" className="uppercase text-[10px] font-bold tracking-widest text-white data-[state=active]:bg-accent data-[state=active]:text-background">
+                        <Crown className="h-3.5 w-3.5 mr-1.5" /> Single (Exclusive)
                       </TabsTrigger>
                    </TabsList>
                 </Tabs>
               </div>
 
               <div className="space-y-3 w-full sm:w-auto">
-                <span className="font-mono text-[10px] uppercase text-accent/40 tracking-widest text-left block">Region</span>
+                <span className="font-mono text-[11px] uppercase text-accent tracking-widest text-left block font-bold">Region</span>
                 <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                   <PopoverTrigger asChild>
                     <Button 
                       variant="outline" 
-                      className="glass-card border-accent/20 h-12 w-full sm:w-64 rounded-none font-mono text-[10px] uppercase tracking-widest text-accent justify-between hover:bg-accent/5"
+                      className="glass-card border-accent/40 h-12 w-full sm:w-64 rounded-none font-mono text-[11px] uppercase tracking-widest text-accent justify-between hover:bg-accent/10 font-bold"
                     >
                       <div className="flex items-center gap-2">
-                        <Globe className="h-3 w-3" />
+                        <Globe className="h-4 w-4" />
                         {selectedCountry || "All Countries"}
                       </div>
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="glass-card border-accent/20 rounded-none p-2 w-full sm:w-64" align="end">
-                    <div className="flex items-center gap-2 px-3 py-2 border-b border-accent/10 mb-2">
-                      <Search className="h-3.5 w-3.5 text-accent/40" />
+                  <PopoverContent className="glass-card border-accent/40 rounded-none p-2 w-full sm:w-64" align="end">
+                    <div className="flex items-center gap-2 px-3 py-2 border-b border-accent/20 mb-2">
+                      <Search className="h-4 w-4 text-accent" />
                       <Input 
                         placeholder="Search Country..." 
-                        className="h-8 border-none bg-transparent font-mono text-[10px] uppercase tracking-widest focus-visible:ring-0 p-0"
+                        className="h-9 border-none bg-transparent font-mono text-[11px] uppercase tracking-widest focus-visible:ring-0 p-0 text-white placeholder:text-white/40"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
@@ -137,8 +135,8 @@ function HomeContent() {
                       <Button 
                         variant="ghost" 
                         className={cn(
-                          "w-full justify-start text-[10px] uppercase font-mono py-2 h-auto rounded-none mb-1",
-                          !selectedCountry && "bg-accent/10 text-accent"
+                          "w-full justify-start text-[11px] uppercase font-mono py-2.5 h-auto rounded-none mb-1 font-bold",
+                          !selectedCountry ? "bg-accent text-background" : "text-white hover:bg-accent/10 hover:text-accent"
                         )}
                         onClick={() => {
                           setSelectedCountry(null);
@@ -152,8 +150,8 @@ function HomeContent() {
                           key={c.id}
                           variant="ghost"
                           className={cn(
-                            "w-full justify-between text-[10px] uppercase font-mono py-2 h-auto rounded-none mb-1 text-left",
-                            selectedCountry === c.name && "bg-accent/10 text-accent"
+                            "w-full justify-between text-[11px] uppercase font-mono py-2.5 h-auto rounded-none mb-1 text-left font-bold",
+                            selectedCountry === c.name ? "bg-accent text-background" : "text-white hover:bg-accent/10 hover:text-accent"
                           )}
                           onClick={() => {
                             setSelectedCountry(c.name);
@@ -161,7 +159,7 @@ function HomeContent() {
                           }}
                         >
                           {c.name}
-                          {selectedCountry === c.name && <Check className="h-3 w-3" />}
+                          {selectedCountry === c.name && <Check className="h-4 w-4" />}
                         </Button>
                       ))}
                     </ScrollArea>
@@ -171,17 +169,17 @@ function HomeContent() {
             </div>
           </div>
 
-          <div className="p-4 bg-accent/5 border border-accent/20 flex items-center gap-3">
-             <Info className="h-4 w-4 text-accent shrink-0" />
-             <p className="text-[10px] uppercase font-bold tracking-widest text-accent leading-relaxed">
-                Notice: Single groups marked as <span className="underline">Exclusive</span> are unique and will be permanently removed from the shop after the first purchase.
+          <div className="p-5 bg-accent/10 border border-accent/40 flex items-center gap-4 shadow-lg shadow-accent/5">
+             <Info className="h-5 w-5 text-accent shrink-0" />
+             <p className="text-[11px] sm:text-xs uppercase font-bold tracking-widest text-accent leading-relaxed">
+                Notice: Single groups marked as <span className="underline decoration-2">Exclusive</span> are unique and will be permanently removed from the shop after the first purchase.
              </p>
           </div>
 
           {groupsLoading ? (
             <div className="flex flex-col items-center justify-center py-40 space-y-6">
-              <div className="h-16 w-16 border-2 border-accent border-t-transparent rounded-none animate-spin"></div>
-              <p className="font-mono uppercase tracking-[0.5em] text-[10px] text-accent animate-pulse">Opening Shop...</p>
+              <div className="h-16 w-16 border-4 border-accent border-t-transparent rounded-none animate-spin"></div>
+              <p className="font-mono uppercase tracking-[0.5em] text-xs text-accent animate-pulse font-bold">Opening Shop...</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -202,28 +200,28 @@ function HomeContent() {
           )}
           
           {!groupsLoading && filteredProducts.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-32 glass-card rounded-none border-dashed border-2 border-accent/10 text-center px-6 tech-border">
-              <Database className="h-12 w-12 text-accent/20 mb-6" />
-              <h3 className="text-2xl font-bold font-headline uppercase tracking-tighter text-white">No Results</h3>
-              <p className="text-muted-foreground mt-2 text-sm font-mono tracking-widest uppercase opacity-60">Try selecting a different category or country.</p>
+            <div className="flex flex-col items-center justify-center py-32 glass-card rounded-none border-dashed border-2 border-accent/20 text-center px-6 tech-border">
+              <Database className="h-14 w-14 text-accent mb-6" />
+              <h3 className="text-3xl font-bold font-headline uppercase tracking-tighter text-white">No Results</h3>
+              <p className="text-white mt-2 text-sm font-mono tracking-widest uppercase font-bold">Try selecting a different category or country.</p>
             </div>
           )}
         </div>
       </div>
 
-      <footer className="mt-auto py-16 border-t border-accent/10 bg-black/40 backdrop-blur-md">
+      <footer className="mt-auto py-20 border-t border-accent/20 bg-black/60 backdrop-blur-xl">
         <div className="max-w-screen-2xl px-10 text-center mx-auto">
-          <div className="flex items-center justify-center space-x-4 mb-10">
-            <div className="bg-accent/10 p-4 border border-accent/20">
-              <Terminal className="h-6 w-6 text-accent" />
+          <div className="flex items-center justify-center space-x-5 mb-12">
+            <div className="bg-accent/20 p-4 border border-accent/40 shadow-lg shadow-accent/5">
+              <Terminal className="h-7 w-7 text-accent" />
             </div>
             <div className="text-left">
-              <span className="font-headline font-bold text-2xl tracking-tighter text-white block leading-none">ESAN TOOLS</span>
-              <span className="font-mono text-[9px] uppercase tracking-[0.4em] text-accent/60">Digital Group Marketplace</span>
+              <span className="font-headline font-bold text-3xl tracking-tighter text-white block leading-none">ESAN TOOLS</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-accent font-bold">Digital Group Marketplace</span>
             </div>
           </div>
-          <div className="flex flex-col items-center gap-2 opacity-40 font-mono text-[10px] uppercase tracking-[0.2em]">
-            <p>Instant Delivery Active.</p>
+          <div className="flex flex-col items-center gap-3 font-mono text-[11px] uppercase tracking-[0.2em] font-bold text-white/60">
+            <p className="text-accent">Instant Delivery Active.</p>
             <p>© {year || "..."} ESAN TOOLS. All rights reserved.</p>
           </div>
         </div>
@@ -236,8 +234,8 @@ export default function Home() {
   return (
     <Suspense fallback={
       <div className="flex flex-col items-center justify-center py-40 space-y-6">
-        <div className="h-16 w-16 border-2 border-accent border-t-transparent rounded-none animate-spin"></div>
-        <p className="font-mono uppercase tracking-[0.5em] text-[10px] text-accent animate-pulse">Loading...</p>
+        <div className="h-16 w-16 border-4 border-accent border-t-transparent rounded-none animate-spin"></div>
+        <p className="font-mono uppercase tracking-[0.5em] text-xs text-accent animate-pulse font-bold">Loading...</p>
       </div>
     }>
       <HomeContent />

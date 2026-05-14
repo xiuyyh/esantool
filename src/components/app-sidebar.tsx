@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -157,13 +156,13 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-white/5 bg-card/50 backdrop-blur-xl">
-      <SidebarHeader className="h-20 flex items-center justify-center border-b border-white/5">
+    <Sidebar collapsible="icon" className="border-r border-white/10 bg-card/60 backdrop-blur-2xl">
+      <SidebarHeader className="h-20 flex items-center justify-center border-b border-white/10">
         <Link href="/" className="flex items-center space-x-3 group px-4">
-          <div className="bg-accent/10 p-2 rounded-lg group-hover:bg-accent/20 transition-colors">
+          <div className="bg-accent/20 p-2 rounded-lg group-hover:bg-accent/30 transition-colors shadow-lg shadow-accent/5">
             <Terminal className="h-6 w-6 text-accent" />
           </div>
-          <span className="font-headline text-xl font-bold tracking-tighter text-foreground group-data-[collapsible=icon]:hidden">
+          <span className="font-headline text-xl font-bold tracking-tighter text-white group-data-[collapsible=icon]:hidden">
             ESAN TOOLS
           </span>
         </Link>
@@ -172,7 +171,7 @@ export function AppSidebar() {
       <SidebarContent>
         {menuGroups.map((group) => (
           <SidebarGroup key={group.label}>
-            <SidebarGroupLabel className="text-[10px] uppercase tracking-widest text-muted-foreground/60">
+            <SidebarGroupLabel className="text-[10px] uppercase tracking-[0.2em] font-bold text-accent">
               {group.label}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -183,11 +182,11 @@ export function AppSidebar() {
                       asChild
                       isActive={pathname === item.url}
                       tooltip={item.title}
-                      className="hover:bg-accent/10 hover:text-accent transition-colors h-10"
+                      className="hover:bg-accent/20 hover:text-accent transition-colors h-11 text-white data-[active=true]:bg-accent/20 data-[active=true]:text-accent"
                     >
                       <Link href={item.url}>
-                        <item.icon className="h-4 w-4" />
-                        <span className="font-mono text-[11px] uppercase tracking-tight">{item.title}</span>
+                        <item.icon className="h-4.5 w-4.5" />
+                        <span className="font-mono text-[11px] uppercase tracking-wider font-bold">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -198,20 +197,20 @@ export function AppSidebar() {
         ))}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-white/5 p-4">
+      <SidebarFooter className="border-t border-white/10 p-4">
         {user ? (
           <div className="space-y-4">
             <div className="flex items-center gap-3 px-2 group-data-[collapsible=icon]:justify-center">
-              <div className="h-8 w-8 rounded-full border border-white/10 bg-secondary flex items-center justify-center shrink-0">
+              <div className="h-9 w-9 rounded-full border border-accent/30 bg-secondary flex items-center justify-center shrink-0">
                 {user.photoURL ? (
                   <img src={user.photoURL} alt="" className="h-full w-full object-cover rounded-full" />
                 ) : (
-                  <User className="h-4 w-4" />
+                  <User className="h-5 w-5 text-accent" />
                 )}
               </div>
               <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
-                <p className="text-xs font-bold truncate">{user.displayName || user.email}</p>
-                <p className="text-[10px] text-muted-foreground truncate uppercase tracking-tighter">
+                <p className="text-xs font-bold truncate text-white">{user.displayName || user.email}</p>
+                <p className="text-[9px] text-accent truncate uppercase tracking-widest font-bold">
                   {profile?.isAdmin ? "Administrator" : "Member"}
                 </p>
               </div>
@@ -220,10 +219,10 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton 
                   onClick={handleLogout}
-                  className="w-full text-destructive hover:bg-destructive/10 hover:text-destructive group-data-[collapsible=icon]:justify-center"
+                  className="w-full text-destructive hover:bg-destructive/20 hover:text-destructive group-data-[collapsible=icon]:justify-center h-10 font-bold"
                 >
                   <LogOut className="h-4 w-4" />
-                  <span className="group-data-[collapsible=icon]:hidden">Log Out</span>
+                  <span className="group-data-[collapsible=icon]:hidden uppercase text-[10px] tracking-widest">Log Out</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -231,10 +230,10 @@ export function AppSidebar() {
         ) : (
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild className="bg-primary text-white hover:bg-primary/90 group-data-[collapsible=icon]:justify-center">
+              <SidebarMenuButton asChild className="bg-primary text-white hover:bg-primary/90 group-data-[collapsible=icon]:justify-center h-12 shadow-lg shadow-primary/20">
                 <Link href="/login">
-                  <Key className="h-4 w-4" />
-                  <span className="group-data-[collapsible=icon]:hidden">Login</span>
+                  <Key className="h-5 w-5" />
+                  <span className="group-data-[collapsible=icon]:hidden font-bold uppercase tracking-widest text-xs">Login</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
