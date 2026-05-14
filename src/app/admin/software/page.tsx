@@ -46,7 +46,6 @@ export default function AdminSoftwarePage() {
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [desc, setDesc] = useState("");
-  const [downloadUrl, setDownloadUrl] = useState("");
   const [version, setVersion] = useState("1.0.0");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   
@@ -87,7 +86,7 @@ export default function AdminSoftwarePage() {
       title,
       price: Number(price),
       description: desc,
-      downloadUrl,
+      downloadUrl: "", // Now handled via manual setup/support
       version,
       imageUrls: imageUrls.length > 0 ? imageUrls : [DEFAULT_SOFTWARE_IMAGE],
       createdAt: serverTimestamp(),
@@ -106,7 +105,6 @@ export default function AdminSoftwarePage() {
     setTitle("");
     setPrice("");
     setDesc("");
-    setDownloadUrl("");
     setVersion("1.0.0");
     setImageUrls([]);
   };
@@ -136,7 +134,6 @@ export default function AdminSoftwarePage() {
       title: editingSoftware.title,
       price: Number(editingSoftware.price),
       description: editingSoftware.description,
-      downloadUrl: editingSoftware.downloadUrl,
       version: editingSoftware.version,
     };
 
@@ -186,11 +183,7 @@ export default function AdminSoftwarePage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground font-mono">Secure Download URL</Label>
-                    <Input value={downloadUrl} onChange={(e) => setDownloadUrl(e.target.value)} placeholder="https://cloud-storage.com/..." required className="bg-white/5 h-12" />
-                  </div>
+                <div className="grid grid-cols-1 sm:grid-cols-1 gap-4 sm:gap-6">
                   <div className="space-y-2">
                     <Label className="text-[10px] uppercase font-bold text-muted-foreground font-mono">Build Version</Label>
                     <Input value={version} onChange={(e) => setVersion(e.target.value)} placeholder="1.0.0" className="bg-white/5 h-12" />
@@ -239,7 +232,7 @@ export default function AdminSoftwarePage() {
                  </div>
                  <div className="p-4 rounded-xl border border-white/5 bg-black/20">
                     <p className="text-[9px] text-muted-foreground uppercase leading-relaxed">
-                       Software assets are delivered via encrypted download URLs immediately after authorized checkout.
+                       Software assets are delivered manually after purchase. Admins must coordinate with buyers for setup.
                     </p>
                  </div>
               </CardContent>
@@ -300,11 +293,7 @@ export default function AdminSoftwarePage() {
                   <Input type="number" value={editingSoftware.price} onChange={(e) => setEditingSoftware({...editingSoftware, price: e.target.value})} className="bg-white/5" />
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <Label className="text-[9px] uppercase font-bold">Download URL</Label>
-                  <Input value={editingSoftware.downloadUrl} onChange={(e) => setEditingSoftware({...editingSoftware, downloadUrl: e.target.value})} className="bg-white/5" />
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
                 <div className="space-y-1">
                   <Label className="text-[9px] uppercase font-bold">Version</Label>
                   <Input value={editingSoftware.version} onChange={(e) => setEditingSoftware({...editingSoftware, version: e.target.value})} className="bg-white/5" />

@@ -285,18 +285,13 @@ export default function UserDashboard() {
                     </p>
                     <div className="p-3 bg-accent/5 border border-accent/10 rounded-lg">
                       <p className="text-[9px] text-accent font-bold uppercase tracking-tight leading-relaxed">
-                        ⚠️ Important: After downloading, please contact our support team to complete the final setup and activation of your software.
+                        ⚠️ Important: This software requires manual setup. Please contact our support team to complete the activation and receive your build.
                       </p>
                     </div>
                     <div className="grid grid-cols-1 gap-2 pt-2">
-                       <Button asChild className="w-full bg-accent text-background font-bold uppercase text-[10px] tracking-widest h-12 shadow-[0_0_15px_rgba(0,242,255,0.2)]">
-                          <a href={item.downloadUrl} target="_blank" rel="noopener noreferrer">
-                             <Download className="h-4 w-4 mr-2" /> Download Software
-                          </a>
-                       </Button>
-                       <Button asChild variant="outline" className="w-full border-accent/20 text-accent font-bold uppercase text-[10px] tracking-widest h-10 hover:bg-accent/10">
+                       <Button asChild variant="default" className="w-full bg-accent text-background font-bold uppercase text-[10px] tracking-widest h-12 shadow-[0_0_15px_rgba(0,242,255,0.2)]">
                           <Link href="/dashboard/support">
-                             <MessageSquare className="h-3 w-3 mr-2" /> Contact Admin for Setup
+                             <MessageSquare className="h-4 w-4 mr-2" /> Contact Admin for Setup
                           </Link>
                        </Button>
                     </div>
@@ -306,7 +301,7 @@ export default function UserDashboard() {
               <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-3xl opacity-40">
                 <Monitor className="h-12 w-12 mx-auto mb-4" />
                 <p className="text-sm uppercase tracking-widest font-bold">Your software library is empty.</p>
-                <Button variant="link" asChild className="mt-4 text-accent uppercase tracking-widest text-xs"><Link href="/">Go to Shop</Link></Button>
+                <Button variant="link" asChild className="mt-4 text-accent uppercase tracking-widest text-xs"><Link href="/software">Go to Software Store</Link></Button>
               </div>
             )}
           </div>

@@ -1,10 +1,10 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Globe, Terminal, Cpu, Database, Network, Search, Check, Crown, Zap, Info, Monitor, HardDrive } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
-import { SoftwareCard } from "@/components/software-card";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
@@ -21,16 +21,13 @@ function HomeContent() {
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"all" | "bundles" | "exclusive" | "software">("all");
+  const [activeTab, setActiveTab] = useState<"all" | "bundles" | "exclusive">("all");
   const [year, setYear] = useState<number | null>(null);
   
   const db = useFirestore();
   const groupsQuery = useMemoFirebase(() => db ? collection(db, "groups") : null, [db]);
   const { data: allProducts, loading: groupsLoading } = useCollection(groupsQuery);
 
-  const softwareQuery = useMemoFirebase(() => db ? collection(db, "software") : null, [db]);
-  const { data: allSoftware, loading: softwareLoading } = useCollection(softwareQuery);
-  
   const countriesQuery = useMemoFirebase(() => db ? collection(db, "countries") : null, [db]);
   const { data: countries } = useCollection(countriesQuery);
 
@@ -39,7 +36,7 @@ function HomeContent() {
   }, []);
 
   useEffect(() => {
-    if (tabParam && ["all", "bundles", "exclusive", "software"].includes(tabParam)) {
+    if (tabParam && ["all", "bundles", "exclusive"].includes(tabParam)) {
       setActiveTab(tabParam as any);
     }
   }, [tabParam]);
@@ -59,12 +56,6 @@ function HomeContent() {
 
     return matchesCountry && isAvailable && matchesTab;
   });
-
-  const filteredSoftware = allSoftware.filter((s: any) => {
-    return activeTab === 'all' || activeTab === 'software';
-  });
-
-  const isLoading = groupsLoading || softwareLoading;
 
   return (
     <div className="flex flex-col flex-1 w-full min-w-0">
@@ -99,7 +90,7 @@ function HomeContent() {
                 ESAN SHOP
               </h1>
               <p className="text-muted-foreground text-sm font-medium tracking-wide max-w-xl">
-                Private Telegram group links (singles + bundles) + custom software tools. Get instant access to exclusive communities and build the exact tool you need. Fast, private, and reliable.
+                Private Telegram group links (singles + bundles). Get instant access to exclusive communities. Fast, private, and reliable.
               </p>
             </div>
 
@@ -109,85 +100,82 @@ function HomeContent() {
                 <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as any)}>
                    <TabsList className="bg-white/5 h-12 border border-white/10 p-1">
                       <TabsTrigger value="all" className="uppercase text-[9px] font-bold tracking-widest">All</TabsTrigger>
-                      <TabsTrigger value="bundles" className="uppercase text-[9px] font-bold tracking-widest">Groups</TabsTrigger>
-                      <TabsTrigger value="exclusive" className="uppercase text-[9px] font-bold tracking-widest"><Crown className="h-3 w-3 mr-1" /> Single Links</TabsTrigger>
-                      <TabsTrigger value="software" className="uppercase text-[9px] font-bold tracking-widest"><Monitor className="h-3 w-3 mr-1" /> Software</TabsTrigger>
+                      <TabsTrigger value="bundles" className="uppercase text-[9px] font-bold tracking-widest">Bundles</TabsTrigger>
+                      <TabsTrigger value="exclusive" className="uppercase text-[9px] font-bold tracking-widest"><Crown className="h-3 w-3 mr-1" /> Single Groups</TabsTrigger>
                    </TabsList>
                 </Tabs>
               </div>
 
-              {(activeTab === 'all' || activeTab === 'bundles' || activeTab === 'exclusive') && (
-                <div className="space-y-3 w-full sm:w-auto">
-                  <span className="font-mono text-[10px] uppercase text-accent/40 tracking-widest text-left block">Region</span>
-                  <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-                    <PopoverTrigger asChild>
-                      <Button 
-                        variant="outline" 
-                        className="glass-card border-accent/20 h-12 w-full sm:w-64 rounded-none font-mono text-[10px] uppercase tracking-widest text-accent justify-between hover:bg-accent/5"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Globe className="h-3 w-3" />
-                          {selectedCountry || "All Countries"}
-                        </div>
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="glass-card border-accent/20 rounded-none p-2 w-full sm:w-64" align="end">
-                      <div className="flex items-center gap-2 px-3 py-2 border-b border-accent/10 mb-2">
-                        <Search className="h-3.5 w-3.5 text-accent/40" />
-                        <Input 
-                          placeholder="Search Country..." 
-                          className="h-8 border-none bg-transparent font-mono text-[10px] uppercase tracking-widest focus-visible:ring-0 p-0"
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+              <div className="space-y-3 w-full sm:w-auto">
+                <span className="font-mono text-[10px] uppercase text-accent/40 tracking-widest text-left block">Region</span>
+                <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      className="glass-card border-accent/20 h-12 w-full sm:w-64 rounded-none font-mono text-[10px] uppercase tracking-widest text-accent justify-between hover:bg-accent/5"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Globe className="h-3 w-3" />
+                        {selectedCountry || "All Countries"}
                       </div>
-                      <ScrollArea className="h-[200px]">
-                        <Button 
-                          variant="ghost" 
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="glass-card border-accent/20 rounded-none p-2 w-full sm:w-64" align="end">
+                    <div className="flex items-center gap-2 px-3 py-2 border-b border-accent/10 mb-2">
+                      <Search className="h-3.5 w-3.5 text-accent/40" />
+                      <Input 
+                        placeholder="Search Country..." 
+                        className="h-8 border-none bg-transparent font-mono text-[10px] uppercase tracking-widest focus-visible:ring-0 p-0"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                    <ScrollArea className="h-[200px]">
+                      <Button 
+                        variant="ghost" 
+                        className={cn(
+                          "w-full justify-start text-[10px] uppercase font-mono py-2 h-auto rounded-none mb-1",
+                          !selectedCountry && "bg-accent/10 text-accent"
+                        )}
+                        onClick={() => {
+                          setSelectedCountry(null);
+                          setIsPopoverOpen(false);
+                        }}
+                      >
+                        All Countries
+                      </Button>
+                      {filteredCountries.map((c: any) => (
+                        <Button
+                          key={c.id}
+                          variant="ghost"
                           className={cn(
-                            "w-full justify-start text-[10px] uppercase font-mono py-2 h-auto rounded-none mb-1",
-                            !selectedCountry && "bg-accent/10 text-accent"
+                            "w-full justify-between text-[10px] uppercase font-mono py-2 h-auto rounded-none mb-1 text-left",
+                            selectedCountry === c.name && "bg-accent/10 text-accent"
                           )}
                           onClick={() => {
-                            setSelectedCountry(null);
+                            setSelectedCountry(c.name);
                             setIsPopoverOpen(false);
                           }}
                         >
-                          All Countries
+                          {c.name}
+                          {selectedCountry === c.name && <Check className="h-3 w-3" />}
                         </Button>
-                        {filteredCountries.map((c: any) => (
-                          <Button
-                            key={c.id}
-                            variant="ghost"
-                            className={cn(
-                              "w-full justify-between text-[10px] uppercase font-mono py-2 h-auto rounded-none mb-1 text-left",
-                              selectedCountry === c.name && "bg-accent/10 text-accent"
-                            )}
-                            onClick={() => {
-                              setSelectedCountry(c.name);
-                              setIsPopoverOpen(false);
-                            }}
-                          >
-                            {c.name}
-                            {selectedCountry === c.name && <Check className="h-3 w-3" />}
-                          </Button>
-                        ))}
-                      </ScrollArea>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              )}
+                      ))}
+                    </ScrollArea>
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
           </div>
 
           <div className="p-4 bg-accent/5 border border-accent/20 flex items-center gap-3">
              <Info className="h-4 w-4 text-accent shrink-0" />
              <p className="text-[10px] uppercase font-bold tracking-widest text-accent leading-relaxed">
-                Purchase Guarantee: All group links and software are verified. You will receive access immediately after payment.
+                Purchase Guarantee: All group links are verified. You will receive access immediately after payment.
              </p>
           </div>
 
-          {isLoading ? (
+          {groupsLoading ? (
             <div className="flex flex-col items-center justify-center py-40 space-y-6">
               <div className="h-16 w-16 border-2 border-accent border-t-transparent rounded-none animate-spin"></div>
               <p className="font-mono uppercase tracking-[0.5em] text-[10px] text-accent animate-pulse">Opening Shop...</p>
@@ -207,21 +195,10 @@ function HomeContent() {
                   imageHint="group links"
                 />
               ))}
-              {filteredSoftware.map((s: any) => (
-                <SoftwareCard 
-                  key={s.id}
-                  id={s.id}
-                  title={s.title}
-                  price={s.price}
-                  description={s.description}
-                  imageUrls={s.imageUrls || []}
-                  version={s.version}
-                />
-              ))}
             </div>
           )}
           
-          {!isLoading && filteredProducts.length === 0 && filteredSoftware.length === 0 && (
+          {!groupsLoading && filteredProducts.length === 0 && (
             <div className="flex flex-col items-center justify-center py-32 glass-card rounded-none border-dashed border-2 border-accent/10 text-center px-6 tech-border">
               <Database className="h-12 w-12 text-accent/20 mb-6" />
               <h3 className="text-2xl font-bold font-headline uppercase tracking-tighter text-white">No Results</h3>

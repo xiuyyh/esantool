@@ -75,12 +75,12 @@
         "title": { "type": "string" },
         "description": { "type": "string" },
         "price": { "type": "number" },
-        "downloadUrl": { "type": "string", "description": "Secure link to download the software." },
+        "downloadUrl": { "type": "string", "description": "Manual setup required via support." },
         "version": { "type": "string" },
         "imageUrls": { "type": "array", "items": { "type": "string" } },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["title", "price", "downloadUrl"]
+      "required": ["title", "price"]
     },
     "Dispute": {
       "title": "Bundle Dispute",
