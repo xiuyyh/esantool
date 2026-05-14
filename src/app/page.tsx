@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, Suspense } from "react";
@@ -97,7 +96,7 @@ function HomeContent() {
                 Trusted Group Access
               </div>
               <h1 className="font-headline text-5xl sm:text-7xl font-bold tracking-tighter uppercase text-white">
-                Shop
+                ESAN SHOP
               </h1>
               <p className="text-muted-foreground text-sm font-medium tracking-wide max-w-xl">
                 Private Telegram group links (singles + bundles) + custom software tools. Get instant access to exclusive communities and build the exact tool you need. Fast, private, and reliable.
