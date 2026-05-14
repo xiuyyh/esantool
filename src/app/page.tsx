@@ -49,6 +49,7 @@ function HomeContent() {
 
   const filteredProducts = allProducts.filter((p: any) => {
     const matchesCountry = !selectedCountry || p.country === selectedCountry;
+    // For single groups, we hide them once they are sold unless the user is already an owner (handled in card)
     const isAvailable = p.type !== 'exclusive' || !p.isSold;
     const matchesTab = activeTab === 'all' || 
       (activeTab === 'bundles' && (p.type === 'bundle' || !p.type)) ||
@@ -101,7 +102,9 @@ function HomeContent() {
                    <TabsList className="bg-white/5 h-12 border border-white/10 p-1">
                       <TabsTrigger value="all" className="uppercase text-[9px] font-bold tracking-widest">All</TabsTrigger>
                       <TabsTrigger value="bundles" className="uppercase text-[9px] font-bold tracking-widest">Bundles</TabsTrigger>
-                      <TabsTrigger value="exclusive" className="uppercase text-[9px] font-bold tracking-widest"><Crown className="h-3 w-3 mr-1" /> Single Groups</TabsTrigger>
+                      <TabsTrigger value="exclusive" className="uppercase text-[9px] font-bold tracking-widest">
+                        <Crown className="h-3 w-3 mr-1" /> Single (Exclusive)
+                      </TabsTrigger>
                    </TabsList>
                 </Tabs>
               </div>
@@ -171,7 +174,7 @@ function HomeContent() {
           <div className="p-4 bg-accent/5 border border-accent/20 flex items-center gap-3">
              <Info className="h-4 w-4 text-accent shrink-0" />
              <p className="text-[10px] uppercase font-bold tracking-widest text-accent leading-relaxed">
-                Purchase Guarantee: All group links are verified. You will receive access immediately after payment.
+                Notice: Single groups marked as <span className="underline">Exclusive</span> are unique and will be permanently removed from the shop after the first purchase.
              </p>
           </div>
 

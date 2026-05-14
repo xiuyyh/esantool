@@ -90,6 +90,7 @@ export function ProductCard({ id, title, country, price: basePrice, salesCount =
     }
   };
 
+  // If it's an exclusive item and it's been sold, and the current user isn't the owner, hide it.
   if (isExclusive && group?.isSold && !hasAccess) return null;
 
   return (
@@ -117,7 +118,7 @@ export function ProductCard({ id, title, country, price: basePrice, salesCount =
                 {isExclusive ? (
                    <div className="text-[8px] font-mono font-bold uppercase py-0.5 px-2 bg-accent/20 border border-accent/40 text-accent flex items-center gap-1">
                       <Crown className="h-2 w-2" />
-                      SINGLE GROUP
+                      SINGLE (EXCLUSIVE)
                    </div>
                 ) : (
                    <div className={`text-[8px] font-mono font-bold uppercase py-0.5 px-2 ${pricing.bgColor} border ${pricing.borderColor} ${pricing.color} flex items-center gap-1`}>
@@ -136,7 +137,7 @@ export function ProductCard({ id, title, country, price: basePrice, salesCount =
 
         <div className="flex-1 min-w-0">
           <p className="text-[10px] text-muted-foreground line-clamp-2 leading-relaxed font-mono uppercase tracking-widest opacity-60 break-words">
-            {isExclusive ? 'Private single group link purchase.' : `${pricing.description} • ${description}`}
+            {isExclusive ? 'Private one-off group link. This item will be deleted from store after purchase.' : `${pricing.description} • ${description}`}
           </p>
         </div>
 
@@ -152,15 +153,15 @@ export function ProductCard({ id, title, country, price: basePrice, salesCount =
                 </span>
               )}
             </div>
+            {isExclusive && (
+               <span className="text-[8px] font-bold text-accent uppercase tracking-widest flex items-center gap-1">
+                  <Check className="h-2 w-2" /> ONE-TIME BUY
+               </span>
+            )}
             {!isExclusive && pricing.discount > 0 && (
               <span className="text-[8px] font-bold text-accent uppercase tracking-widest">
                 -{pricing.discount}% OFF
               </span>
-            )}
-            {isExclusive && (
-               <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">
-                  ONE-TIME BUY
-               </span>
             )}
           </div>
           <div className="flex gap-2 min-w-0 shrink">
