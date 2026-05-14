@@ -59,7 +59,7 @@ export function ProductCard({ id, title, country, price: basePrice, salesCount =
     if (hasAccess) {
       toast({
         title: "Already Owned",
-        description: "Protocol already authorized for your account.",
+        description: "You already have access to this group.",
       });
       return;
     }
@@ -76,14 +76,14 @@ export function ProductCard({ id, title, country, price: basePrice, salesCount =
       }, { merge: true });
 
       toast({
-        title: "Queue Updated",
-        description: `${title} added to protocol queue.`,
+        title: "Added to Cart",
+        description: `${title} added to your checkout list.`,
       });
     } catch (err: any) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Transmission failed.",
+        description: "Failed to add to cart.",
       });
     } finally {
       setIsAdding(false);
@@ -117,7 +117,7 @@ export function ProductCard({ id, title, country, price: basePrice, salesCount =
                 {isExclusive ? (
                    <div className="text-[8px] font-mono font-bold uppercase py-0.5 px-2 bg-accent/20 border border-accent/40 text-accent flex items-center gap-1">
                       <Crown className="h-2 w-2" />
-                      EXCLUSIVE
+                      SINGLE GROUP
                    </div>
                 ) : (
                    <div className={`text-[8px] font-mono font-bold uppercase py-0.5 px-2 ${pricing.bgColor} border ${pricing.borderColor} ${pricing.color} flex items-center gap-1`}>
@@ -136,7 +136,7 @@ export function ProductCard({ id, title, country, price: basePrice, salesCount =
 
         <div className="flex-1 min-w-0">
           <p className="text-[10px] text-muted-foreground line-clamp-2 leading-relaxed font-mono uppercase tracking-widest opacity-60 break-words">
-            {isExclusive ? 'One-off private node acquisition.' : `${pricing.description} • ${description}`}
+            {isExclusive ? 'Private single group link purchase.' : `${pricing.description} • ${description}`}
           </p>
         </div>
 
@@ -154,12 +154,12 @@ export function ProductCard({ id, title, country, price: basePrice, salesCount =
             </div>
             {!isExclusive && pricing.discount > 0 && (
               <span className="text-[8px] font-bold text-accent uppercase tracking-widest">
-                -{pricing.discount}% CYCLE SLASH
+                -{pricing.discount}% OFF
               </span>
             )}
             {isExclusive && (
                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">
-                  FIXED PREMIUM
+                  ONE-TIME BUY
                </span>
             )}
           </div>

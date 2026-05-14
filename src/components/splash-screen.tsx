@@ -52,23 +52,23 @@ export function SplashScreen() {
             </div>
             <div>
               <h1 className="font-headline text-2xl font-bold uppercase tracking-tight text-white leading-none">ESAN TOOLS</h1>
-              <p className="text-accent text-[9px] uppercase font-bold tracking-[0.3em] mt-2">Premium Group Access</p>
+              <p className="text-accent text-[9px] uppercase font-bold tracking-[0.3em] mt-2">Easy Group Access</p>
             </div>
           </div>
 
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground uppercase tracking-wider font-mono leading-relaxed">
-              Verified access to high-quality Telegram groups and exclusive digital bundles.
+              Verified access to high-quality Telegram groups and exclusive digital tools.
             </p>
 
             <div className="grid grid-cols-1 gap-2">
               <div className="flex items-center gap-3 p-3 border border-white/5 bg-white/[0.02] text-left">
                 <ShieldCheck className="h-4 w-4 text-accent shrink-0" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-white/80">Vetted Private Communities</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-white/80">Verified Private Groups</span>
               </div>
               <div className="flex items-center gap-3 p-3 border border-white/5 bg-white/[0.02] text-left">
                 <Zap className="h-4 w-4 text-accent shrink-0" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-white/80">Multi-Link Protocol Bundles</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-white/80">Group Link Bundles</span>
               </div>
             </div>
           </div>
@@ -82,7 +82,7 @@ export function SplashScreen() {
           </Button>
 
           <p className="text-[8px] uppercase font-mono text-muted-foreground tracking-[0.2em] opacity-40">
-            Secure Node Deployment: Active
+            Safe Delivery System: Active
           </p>
         </div>
       </div>

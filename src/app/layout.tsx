@@ -7,7 +7,7 @@ import { SplashScreen } from '@/components/splash-screen';
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
-  title: 'ESAN TOOLS | Digital Marketplace',
+  title: 'ESAN TOOLS | Telegram Groups & Software',
   description: 'Easy access to private Telegram groups and digital tools.',
 };
 

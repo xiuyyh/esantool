@@ -75,10 +75,10 @@ export function AppSidebar() {
           url: "/",
           icon: Globe,
           subItems: [
-            { title: "All Assets", url: "/?tab=all", icon: Layers },
+            { title: "All Listings", url: "/?tab=all", icon: Layers },
             { title: "Group Bundles", url: "/?tab=bundles", icon: Zap },
-            { title: "Exclusive Nodes", url: "/?tab=exclusive", icon: Crown },
-            { title: "Software Lab", url: "/?tab=software", icon: Monitor },
+            { title: "Single Groups", url: "/?tab=exclusive", icon: Crown },
+            { title: "Software", url: "/?tab=software", icon: Monitor },
           ]
         },
       ],
@@ -95,7 +95,7 @@ export function AppSidebar() {
           icon: LayoutDashboard,
         },
         {
-          title: "Transactions",
+          title: "Wallet History",
           url: "/dashboard/transactions",
           icon: History,
         },
@@ -114,40 +114,40 @@ export function AppSidebar() {
 
     if (profile?.isAdmin) {
       menuGroups.push({
-        label: "Admin Control",
+        label: "Admin Management",
         items: [
           {
-            title: "Groups & Nodes",
+            title: "Groups & Links",
             url: "/admin/dashboard",
             icon: Key,
           },
           {
-            title: "Software Lab",
+            title: "Software Manager",
             url: "/admin/software",
             icon: Monitor,
           },
           {
-            title: "User Database",
+            title: "User Manager",
             url: "/admin/users",
             icon: Users,
           },
           {
-            title: "Deposit Ledger",
+            title: "Deposit Requests",
             url: "/admin/transactions",
             icon: CreditCard,
           },
           {
-            title: "Resolution Center",
+            title: "Issue Resolver",
             url: "/admin/disputes",
             icon: ShieldAlert,
           },
           {
-            title: "Message Inbox",
+            title: "Support Messages",
             url: "/admin/support",
             icon: MessageSquare,
           },
           {
-            title: "System Settings",
+            title: "App Settings",
             url: "/admin/settings",
             icon: Settings,
           },
@@ -242,7 +242,7 @@ export function AppSidebar() {
               <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
                 <p className="text-xs font-bold truncate">{user.displayName || user.email}</p>
                 <p className="text-[10px] text-muted-foreground truncate uppercase tracking-tighter">
-                  {profile?.isAdmin ? "Administrator" : "User"}
+                  {profile?.isAdmin ? "Administrator" : "Member"}
                 </p>
               </div>
             </div>

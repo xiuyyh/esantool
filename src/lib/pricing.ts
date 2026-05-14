@@ -15,7 +15,7 @@ export function getBundlePricing(basePrice: number, salesCount: number = 0) {
       color: 'text-accent',
       borderColor: 'border-accent/40',
       bgColor: 'bg-accent/10',
-      description: 'Exclusive Standard Node'
+      description: 'Exclusive Standard Bundle'
     };
   }
   if (salesCount < 20) {
@@ -27,7 +27,7 @@ export function getBundlePricing(basePrice: number, salesCount: number = 0) {
       color: 'text-yellow-500',
       borderColor: 'border-yellow-500/30',
       bgColor: 'bg-yellow-500/10',
-      description: 'Public Distribution Level'
+      description: 'Popular Distribution'
     };
   }
   return {
@@ -38,6 +38,6 @@ export function getBundlePricing(basePrice: number, salesCount: number = 0) {
     color: 'text-muted-foreground',
     borderColor: 'border-white/10',
     bgColor: 'bg-white/5',
-    description: 'Archive Protocol Node'
+    description: 'Archive Group List'
   };
 }
