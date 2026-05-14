@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Terminal, Save, MessageSquare, ShieldCheck, Loader2, Gift, Zap, Crown } from "lucide-react";
+import { Terminal, Save, MessageSquare, ShieldCheck, Loader2, Gift, Zap, Crown, Monitor } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function AdminSettingsPage() {
@@ -28,6 +28,7 @@ export default function AdminSettingsPage() {
   const [channelId, setChannelId] = useState("");
   const [bundleReward, setBundleReward] = useState("2000");
   const [exclusiveReward, setExclusiveReward] = useState("5000");
+  const [softwareReward, setSoftwareReward] = useState("3000");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -47,6 +48,7 @@ export default function AdminSettingsPage() {
       setChannelId(settings.telegramChannelId || "");
       setBundleReward(settings.bundleReferralReward?.toString() || "2000");
       setExclusiveReward(settings.exclusiveReferralReward?.toString() || "5000");
+      setSoftwareReward(settings.softwareReferralReward?.toString() || "3000");
     }
   }, [settings]);
 
@@ -61,6 +63,7 @@ export default function AdminSettingsPage() {
         telegramChannelId: channelId,
         bundleReferralReward: Number(bundleReward),
         exclusiveReferralReward: Number(exclusiveReward),
+        softwareReferralReward: Number(softwareReward),
       }, { merge: true });
       
       toast({ title: "Settings Saved", description: "Admin configuration updated successfully." });
@@ -106,32 +109,39 @@ export default function AdminSettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="p-4 sm:p-6 pt-0 space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <Label className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground flex items-center gap-2">
-                     <Zap className="h-3 w-3" /> Bundle Reward (₦)
+                     <Zap className="h-3 w-3" /> Bundle (₦)
                   </Label>
                   <Input 
                     type="number"
-                    placeholder="2000"
                     className="bg-white/5 border-white/10 h-12 font-headline font-bold"
                     value={bundleReward}
                     onChange={(e) => setBundleReward(e.target.value)}
                   />
-                  <p className="text-[9px] text-muted-foreground uppercase opacity-60">Paid when referee buys a standard bundle</p>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground flex items-center gap-2">
-                     <Crown className="h-3 w-3" /> Exclusive Reward (₦)
+                     <Crown className="h-3 w-3" /> Exclusive (₦)
                   </Label>
                   <Input 
                     type="number"
-                    placeholder="5000"
                     className="bg-white/5 border-white/10 h-12 font-headline font-bold"
                     value={exclusiveReward}
                     onChange={(e) => setExclusiveReward(e.target.value)}
                   />
-                  <p className="text-[9px] text-muted-foreground uppercase opacity-60">Paid when referee buys a one-off exclusive node</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground flex items-center gap-2">
+                     <Monitor className="h-3 w-3" /> Software (₦)
+                  </Label>
+                  <Input 
+                    type="number"
+                    className="bg-white/5 border-white/10 h-12 font-headline font-bold"
+                    value={softwareReward}
+                    onChange={(e) => setSoftwareReward(e.target.value)}
+                  />
                 </div>
               </div>
             </CardContent>
@@ -180,7 +190,7 @@ export default function AdminSettingsPage() {
         
         <div className="p-6 rounded-2xl border border-dashed border-white/10 text-center space-y-2 opacity-50">
           <Terminal className="h-6 w-6 sm:h-8 sm:w-8 mx-auto text-muted-foreground" />
-          <p className="text-[9px] sm:text-[10px] uppercase font-bold tracking-[0.2em]">Protocol v2.8 Multi-Reward System: Online</p>
+          <p className="text-[9px] sm:text-[10px] uppercase font-bold tracking-[0.2em]">Protocol v2.9 Multi-Asset Registry: Online</p>
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductCard } from "@/components/product-card";
-import { Globe, ShieldCheck, Lock, ExternalLink, Key, History, Link as LinkIcon, AlertCircle, MessageSquare, Loader2, CheckCircle2, Gift, TriangleAlert, Zap } from "lucide-react";
+import { Globe, ShieldCheck, Lock, ExternalLink, Key, History, Link as LinkIcon, AlertCircle, MessageSquare, Loader2, CheckCircle2, Gift, TriangleAlert, Zap, Monitor, Download } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const DEFAULT_IMAGE = "https://techstory.in/wp-content/uploads/2021/07/telegram.jpeg";
 
@@ -37,6 +38,9 @@ export default function UserDashboard() {
   
   const groupsQuery = useMemoFirebase(() => db ? collection(db, "groups") : null, [db]);
   const { data: allGroups, loading: groupsLoading } = useCollection(groupsQuery);
+
+  const softwareQuery = useMemoFirebase(() => db ? collection(db, "software") : null, [db]);
+  const { data: allSoftware, loading: softwareLoading } = useCollection(softwareQuery);
 
   const disputesQuery = useMemoFirebase(() => {
     if (!user || !db) return null;
@@ -58,11 +62,10 @@ export default function UserDashboard() {
     return allGroups.filter((g: any) => profile.purchasedGroups.includes(g.id));
   }, [profile?.purchasedGroups, allGroups]);
 
-  const availableGroups = useMemo(() => {
-    if (!allGroups) return [];
-    const purchasedIds = profile?.purchasedGroups || [];
-    return allGroups.filter((g: any) => !purchasedIds.includes(g.id));
-  }, [profile?.purchasedGroups, allGroups]);
+  const purchasedSoftware = useMemo(() => {
+    if (!profile?.purchasedSoftware || !allSoftware) return [];
+    return allSoftware.filter((s: any) => profile.purchasedSoftware.includes(s.id));
+  }, [profile?.purchasedSoftware, allSoftware]);
 
   const handleFileDispute = async () => {
     if (!user || !db || !disputeBundle || !disputeReason || !disputeJunkLink) return;
@@ -94,7 +97,7 @@ export default function UserDashboard() {
     }
   };
 
-  if (userLoading || profileLoading || groupsLoading) {
+  if (userLoading || profileLoading || groupsLoading || softwareLoading) {
     return (
       <div className="max-w-screen-2xl px-4 py-20 space-y-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -130,11 +133,11 @@ export default function UserDashboard() {
 
         <Card className="glass-card border-white/5">
           <CardHeader className="pb-2">
-            <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Owned Bundles</CardTitle>
+            <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Digital Assets</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold font-headline">{profile?.purchasedGroups?.length || 0}</div>
-            <p className="text-[10px] text-muted-foreground mt-4 uppercase tracking-widest">Active digital protocols</p>
+            <div className="text-4xl font-bold font-headline">{(profile?.purchasedGroups?.length || 0) + (profile?.purchasedSoftware?.length || 0)}</div>
+            <p className="text-[10px] text-muted-foreground mt-4 uppercase tracking-widest">Active protocols & software</p>
           </CardContent>
         </Card>
 
@@ -165,67 +168,46 @@ export default function UserDashboard() {
         )}
       </div>
 
-      <section className="space-y-6">
+      <Tabs defaultValue="groups" className="space-y-8">
         <div className="flex items-center justify-between border-b border-white/5 pb-4">
-          <h2 className="font-headline text-2xl font-bold uppercase tracking-tight flex items-center gap-2">
-            <Key className="h-6 w-6 text-accent" />
-            Authorized Bundles
-          </h2>
+           <TabsList className="bg-white/5">
+              <TabsTrigger value="groups" className="uppercase text-[10px] font-bold tracking-widest">Authorized Bundles</TabsTrigger>
+              <TabsTrigger value="software" className="uppercase text-[10px] font-bold tracking-widest">Software Library</TabsTrigger>
+           </TabsList>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8">
-          {purchasedGroups.length > 0 ? (purchasedGroups.map((group: any) => {
-            const bundleDispute = disputes.find(d => d.groupId === group.id);
-            return (
-              <Card key={group.id} className="glass-card border-accent/20 overflow-hidden group flex flex-col">
-                <CardHeader className="border-b border-white/5 p-5">
-                  <div className="flex justify-between items-start gap-4">
-                    <div className="space-y-1">
-                      <CardTitle className="font-headline font-bold text-xl uppercase tracking-tighter">{group.title}</CardTitle>
-                      <div className="flex items-center gap-2">
-                        <Globe className="h-3 w-3 text-accent" />
-                        <span className="text-[10px] font-bold text-accent uppercase">{group.country}</span>
-                      </div>
-                    </div>
-                    <div className="h-12 w-12 rounded-lg border border-white/10 overflow-hidden shrink-0">
-                      <img src={group.imageUrls?.[0] || DEFAULT_IMAGE} className="w-full h-full object-cover" alt="" />
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-5 space-y-4 flex-1">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <p className="text-[9px] uppercase font-bold text-muted-foreground tracking-widest ml-1">Original Nodes</p>
-                      <div className="space-y-2">
-                        {(group.links || []).map((link: any, idx: number) => (
-                          <div key={idx} className="flex items-center justify-between gap-4 p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-accent/20 transition-colors">
-                            <div className="flex items-center gap-3 min-w-0">
-                              <LinkIcon className="h-3 w-3 text-accent shrink-0" />
-                              <span className="text-xs font-bold uppercase tracking-tight truncate">{link.label}</span>
-                            </div>
-                            <Button asChild size="icon" className="h-8 w-8 bg-accent text-background hover:bg-accent/80 shrink-0">
-                              <a href={link.url} target="_blank" rel="noopener noreferrer">
-                                <ExternalLink className="h-4 w-4" />
-                              </a>
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {bundleDispute?.status === 'resolved' && bundleDispute.resolutionLinks?.length > 0 && (
-                      <div className="space-y-2 pt-2 border-t border-white/5">
-                        <div className="flex items-center gap-2 text-[9px] uppercase font-bold text-green-500 tracking-widest ml-1">
-                          <CheckCircle2 className="h-3.5 w-3.5" /> Resolution Nodes (Compensated)
+        <TabsContent value="groups">
+          <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8">
+            {purchasedGroups.length > 0 ? (purchasedGroups.map((group: any) => {
+              const bundleDispute = disputes.find(d => d.groupId === group.id);
+              return (
+                <Card key={group.id} className="glass-card border-accent/20 overflow-hidden group flex flex-col">
+                  <CardHeader className="border-b border-white/5 p-5">
+                    <div className="flex justify-between items-start gap-4">
+                      <div className="space-y-1">
+                        <CardTitle className="font-headline font-bold text-xl uppercase tracking-tighter">{group.title}</CardTitle>
+                        <div className="flex items-center gap-2">
+                          <Globe className="h-3 w-3 text-accent" />
+                          <span className="text-[10px] font-bold text-accent uppercase">{group.country}</span>
                         </div>
+                      </div>
+                      <div className="h-12 w-12 rounded-lg border border-white/10 overflow-hidden shrink-0">
+                        <img src={group.imageUrls?.[0] || DEFAULT_IMAGE} className="w-full h-full object-cover" alt="" />
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-5 space-y-4 flex-1">
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <p className="text-[9px] uppercase font-bold text-muted-foreground tracking-widest ml-1">Original Nodes</p>
                         <div className="space-y-2">
-                          {bundleDispute.resolutionLinks.map((link: any, idx: number) => (
-                            <div key={idx} className="flex items-center justify-between gap-4 p-3 rounded-xl bg-green-500/5 border border-green-500/20">
+                          {(group.links || []).map((link: any, idx: number) => (
+                            <div key={idx} className="flex items-center justify-between gap-4 p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-accent/20 transition-colors">
                               <div className="flex items-center gap-3 min-w-0">
-                                <Zap className="h-3 w-3 text-green-500 shrink-0" />
+                                <LinkIcon className="h-3 w-3 text-accent shrink-0" />
                                 <span className="text-xs font-bold uppercase tracking-tight truncate">{link.label}</span>
                               </div>
-                              <Button asChild size="icon" className="h-8 w-8 bg-green-500 text-white hover:bg-green-600 shrink-0">
+                              <Button asChild size="icon" className="h-8 w-8 bg-accent text-background hover:bg-accent/80 shrink-0">
                                 <a href={link.url} target="_blank" rel="noopener noreferrer">
                                   <ExternalLink className="h-4 w-4" />
                                 </a>
@@ -234,47 +216,93 @@ export default function UserDashboard() {
                           ))}
                         </div>
                       </div>
+
+                      {bundleDispute?.status === 'resolved' && bundleDispute.resolutionLinks?.length > 0 && (
+                        <div className="space-y-2 pt-2 border-t border-white/5">
+                          <div className="flex items-center gap-2 text-[9px] uppercase font-bold text-green-500 tracking-widest ml-1">
+                            <CheckCircle2 className="h-3.5 w-3.5" /> Resolution Nodes (Compensated)
+                          </div>
+                          <div className="space-y-2">
+                            {bundleDispute.resolutionLinks.map((link: any, idx: number) => (
+                              <div key={idx} className="flex items-center justify-between gap-4 p-3 rounded-xl bg-green-500/5 border border-green-500/20">
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <Zap className="h-3 w-3 text-green-500 shrink-0" />
+                                  <span className="text-xs font-bold uppercase tracking-tight truncate">{link.label}</span>
+                                </div>
+                                <Button asChild size="icon" className="h-8 w-8 bg-green-500 text-white hover:bg-green-600 shrink-0">
+                                  <a href={link.url} target="_blank" rel="noopener noreferrer">
+                                    <ExternalLink className="h-4 w-4" />
+                                  </a>
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                  <div className="p-4 bg-white/5 border-t border-white/5 flex justify-end">
+                    {!bundleDispute ? (
+                      <Button variant="ghost" size="sm" onClick={() => setDisputeBundle(group)} className="text-destructive h-8 px-3 text-[9px] font-bold uppercase tracking-widest hover:bg-destructive/10">
+                        <AlertCircle className="h-3 w-3 mr-2" /> Report Junk Group
+                      </Button>
+                    ) : (
+                      <div className={`text-[8px] font-bold uppercase px-3 py-1 rounded border ${bundleDispute.status === 'pending' ? 'border-yellow-500/50 text-yellow-500 bg-yellow-500/5' : 'border-green-500/50 text-green-500 bg-green-500/5'}`}>
+                        Resolution Status: {bundleDispute.status}
+                      </div>
                     )}
                   </div>
-                </CardContent>
-                <div className="p-4 bg-white/5 border-t border-white/5 flex justify-end">
-                  {!bundleDispute ? (
-                    <Button variant="ghost" size="sm" onClick={() => setDisputeBundle(group)} className="text-destructive h-8 px-3 text-[9px] font-bold uppercase tracking-widest hover:bg-destructive/10">
-                      <AlertCircle className="h-3 w-3 mr-2" /> Report Junk Group
-                    </Button>
-                  ) : (
-                    <div className={`text-[8px] font-bold uppercase px-3 py-1 rounded border ${bundleDispute.status === 'pending' ? 'border-yellow-500/50 text-yellow-500 bg-yellow-500/5' : 'border-green-500/50 text-green-500 bg-green-500/5'}`}>
-                      Resolution Status: {bundleDispute.status}
-                    </div>
-                  )}
-                </div>
-              </Card>
-            );
-          })) : (
-            <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-3xl opacity-40">
-              <Lock className="h-12 w-12 mx-auto mb-4" />
-              <p className="text-sm uppercase tracking-widest font-bold">No authorized bundles found.</p>
-              <Button variant="link" asChild className="mt-4 text-accent uppercase tracking-widest text-xs"><Link href="/">Enter Marketplace</Link></Button>
-            </div>
-          )}
-        </div>
-      </section>
+                </Card>
+              );
+            })) : (
+              <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-3xl opacity-40">
+                <Lock className="h-12 w-12 mx-auto mb-4" />
+                <p className="text-sm uppercase tracking-widest font-bold">No authorized bundles found.</p>
+                <Button variant="link" asChild className="mt-4 text-accent uppercase tracking-widest text-xs"><Link href="/">Enter Marketplace</Link></Button>
+              </div>
+            )}
+          </div>
+        </TabsContent>
 
-      {availableGroups.length > 0 && (
-        <section className="space-y-6 pt-6">
-          <div className="flex items-center justify-between border-b border-white/5 pb-4">
-            <h2 className="font-headline text-2xl font-bold uppercase tracking-tight flex items-center gap-2">
-              <ShieldCheck className="h-6 w-6 text-muted-foreground" />
-              New Intel
-            </h2>
+        <TabsContent value="software">
+          <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8">
+            {purchasedSoftware.length > 0 ? (purchasedSoftware.map((item: any) => (
+              <Card key={item.id} className="glass-card border-white/5 overflow-hidden group">
+                 <div className="p-5 flex gap-4 border-b border-white/5">
+                    <div className="h-16 w-16 rounded-xl border border-white/10 bg-black overflow-hidden shrink-0">
+                       <img src={item.imageUrls?.[0] || DEFAULT_IMAGE} className="w-full h-full object-cover" alt="" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                       <CardTitle className="font-headline font-bold text-xl uppercase tracking-tight truncate">{item.title}</CardTitle>
+                       <div className="flex items-center gap-2 mt-1">
+                          <Monitor className="h-3 w-3 text-accent" />
+                          <span className="text-[9px] uppercase font-bold text-accent">Version: {item.version}</span>
+                       </div>
+                    </div>
+                 </div>
+                 <CardContent className="p-5 space-y-4">
+                    <p className="text-[10px] text-muted-foreground leading-relaxed uppercase font-mono line-clamp-2">
+                       {item.description}
+                    </p>
+                    <div className="pt-2">
+                       <Button asChild className="w-full bg-accent text-background font-bold uppercase text-[10px] tracking-widest h-12 shadow-[0_0_15px_rgba(0,242,255,0.2)]">
+                          <a href={item.downloadUrl} target="_blank" rel="noopener noreferrer">
+                             <Download className="h-4 w-4 mr-2" /> Download Authorized Build
+                          </a>
+                       </Button>
+                    </div>
+                 </CardContent>
+              </Card>
+            ))) : (
+              <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-3xl opacity-40">
+                <Monitor className="h-12 w-12 mx-auto mb-4" />
+                <p className="text-sm uppercase tracking-widest font-bold">Software library empty.</p>
+                <Button variant="link" asChild className="mt-4 text-accent uppercase tracking-widest text-xs"><Link href="/">Acquire Assets</Link></Button>
+              </div>
+            )}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
-            {availableGroups.slice(0, 4).map((group: any) => (
-              <ProductCard key={group.id} id={group.id} title={group.title} country={group.country} price={group.price} description={group.description} imageUrls={group.imageUrls || []} imageHint="bundle preview" />
-            ))}
-          </div>
-        </section>
-      )}
+        </TabsContent>
+      </Tabs>
 
       <Dialog open={!!disputeBundle} onOpenChange={(open) => !open && setDisputeBundle(null)}>
         <DialogContent className="glass-card border-white/10 max-w-md">

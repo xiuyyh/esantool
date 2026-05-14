@@ -18,10 +18,15 @@
           "items": { "type": "string" },
           "description": "List of group IDs the user has purchased access to."
         },
+        "purchasedSoftware": { 
+          "type": "array", 
+          "items": { "type": "string" },
+          "description": "List of software IDs the user has purchased."
+        },
         "cart": {
           "type": "array",
           "items": { "type": "string" },
-          "description": "List of group IDs currently in the user's cart."
+          "description": "List of group or software IDs currently in the user's cart."
         },
         "referralCode": { "type": "string", "description": "Unique code for referring others." },
         "referredBy": { "type": "string", "description": "UID of the user who referred this person." },
@@ -61,6 +66,21 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["title", "price", "country", "links", "type"]
+    },
+    "Software": {
+      "title": "Software Asset",
+      "description": "Digital software listed in the marketplace.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "downloadUrl": { "type": "string", "description": "Secure link to download the software." },
+        "version": { "type": "string" },
+        "imageUrls": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "price", "downloadUrl"]
     },
     "Dispute": {
       "title": "Bundle Dispute",
@@ -121,7 +141,8 @@
         "telegramBotToken": { "type": "string" },
         "telegramChannelId": { "type": "string" },
         "bundleReferralReward": { "type": "number", "description": "Referral bonus for bundle purchases." },
-        "exclusiveReferralReward": { "type": "number", "description": "Referral bonus for exclusive purchases." }
+        "exclusiveReferralReward": { "type": "number", "description": "Referral bonus for exclusive purchases." },
+        "softwareReferralReward": { "type": "number", "description": "Referral bonus for software purchases." }
       }
     }
   },
@@ -136,6 +157,10 @@
     "/groups/{groupId}": {
       "schema": { "$ref": "#/entities/TelegramGroup" },
       "description": "Marketplace group listings."
+    },
+    "/software/{softwareId}": {
+      "schema": { "$ref": "#/entities/Software" },
+      "description": "Software marketplace listings."
     },
     "/countries/{countryId}": {
       "schema": { "$ref": "#/entities/Country" },

@@ -18,7 +18,8 @@ import {
   MessageSquare,
   LifeBuoy,
   Gift,
-  ShieldAlert
+  ShieldAlert,
+  Monitor
 } from "lucide-react";
 
 import {
@@ -101,6 +102,11 @@ export function AppSidebar() {
             title: "Groups & Nodes",
             url: "/admin/dashboard",
             icon: Key,
+          },
+          {
+            title: "Software Lab",
+            url: "/admin/software",
+            icon: Monitor,
           },
           {
             title: "User Database",

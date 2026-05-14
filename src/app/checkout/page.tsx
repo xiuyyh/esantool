@@ -4,11 +4,11 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, Trash2, ShieldCheck, Wallet, ChevronLeft, AlertCircle, PlusCircle, ArrowRight, Zap, Crown } from "lucide-react";
+import { ShoppingCart, Trash2, ShieldCheck, Wallet, ChevronLeft, AlertCircle, PlusCircle, ArrowRight, Zap, Crown, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase } from "@/firebase";
-import { doc, updateDoc, arrayUnion, arrayRemove, collection, increment, writeBatch, serverTimestamp, getDoc } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, arrayRemove, collection, increment, writeBatch, serverTimestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { getBundlePricing } from "@/lib/pricing";
 
@@ -27,21 +27,38 @@ export default function CheckoutPage() {
   const groupsQuery = useMemoFirebase(() => db ? collection(db, "groups") : null, [db]);
   const { data: allGroups } = useCollection(groupsQuery);
 
+  const softwareQuery = useMemoFirebase(() => db ? collection(db, "software") : null, [db]);
+  const { data: allSoftware } = useCollection(softwareQuery);
+
   const settingsRef = useMemoFirebase(() => db ? doc(db, "settings", "admin") : null, [db]);
   const { data: settings } = useDoc(settingsRef);
 
   const cartItems = useMemo(() => {
-    if (!profile?.cart || !allGroups) return [];
-    return allGroups
-      .filter((g: any) => profile.cart.includes(g.id))
-      .map((g: any) => {
+    if (!profile?.cart || !allGroups || !allSoftware) return [];
+    
+    const items: any[] = [];
+    
+    // Add Groups
+    allGroups.forEach((g: any) => {
+      if (profile.cart.includes(g.id)) {
         if (g.type === 'exclusive') {
-           return { ...g, dynamicPrice: g.price, pricingTier: 'EXCLUSIVE' };
+           items.push({ ...g, dynamicPrice: g.price, pricingTier: 'EXCLUSIVE', assetType: 'group' });
+        } else {
+           const pricing = getBundlePricing(g.price, g.salesCount || 0);
+           items.push({ ...g, dynamicPrice: pricing.price, pricingTier: pricing.tier, assetType: 'group' });
         }
-        const pricing = getBundlePricing(g.price, g.salesCount || 0);
-        return { ...g, dynamicPrice: pricing.price, pricingTier: pricing.tier };
-      });
-  }, [profile?.cart, allGroups]);
+      }
+    });
+
+    // Add Software
+    allSoftware.forEach((s: any) => {
+      if (profile.cart.includes(s.id)) {
+        items.push({ ...s, dynamicPrice: s.price, pricingTier: 'SOFTWARE', assetType: 'software' });
+      }
+    });
+
+    return items;
+  }, [profile?.cart, allGroups, allSoftware]);
 
   const totalPrice = useMemo(() => {
     return cartItems.reduce((sum, item) => sum + item.dynamicPrice, 0);
@@ -72,36 +89,41 @@ export default function CheckoutPage() {
 
     setIsProcessing(true);
     try {
-      const itemIds = cartItems.map(item => item.id);
       const batch = writeBatch(db);
+      
+      const purchasedGroupIds = cartItems.filter(i => i.assetType === 'group').map(i => i.id);
+      const purchasedSoftwareIds = cartItems.filter(i => i.assetType === 'software').map(i => i.id);
 
       // 1. Update User Profile
       batch.update(userRef, {
         balance: increment(-totalPrice),
-        purchasedGroups: arrayUnion(...itemIds),
+        purchasedGroups: arrayUnion(...purchasedGroupIds),
+        purchasedSoftware: arrayUnion(...purchasedSoftwareIds),
         cart: []
       });
 
       // 2. Process items
       cartItems.forEach(item => {
-        const groupRef = doc(db, "groups", item.id);
+        const itemRef = doc(db, item.assetType === 'group' ? "groups" : "software", item.id);
         
-        if (item.type === 'exclusive') {
-           batch.update(groupRef, { 
-             isSold: true,
-             salesCount: increment(1)
-           });
-        } else {
-           batch.update(groupRef, {
-             salesCount: increment(1)
-           });
+        if (item.assetType === 'group') {
+          if (item.type === 'exclusive') {
+             batch.update(itemRef, { isSold: true, salesCount: increment(1) });
+          } else {
+             batch.update(itemRef, { salesCount: increment(1) });
+          }
         }
 
-        // 3. Referral Reward Logic (Per Item)
+        // 3. Referral Reward Logic
         if (profile.referredBy) {
-           const rewardAmount = item.type === 'exclusive' 
-             ? (settings?.exclusiveReferralReward || 5000) 
-             : (settings?.bundleReferralReward || 2000);
+           let rewardAmount = 0;
+           if (item.assetType === 'software') {
+             rewardAmount = settings?.softwareReferralReward || 3000;
+           } else {
+             rewardAmount = item.type === 'exclusive' 
+               ? (settings?.exclusiveReferralReward || 5000) 
+               : (settings?.bundleReferralReward || 2000);
+           }
 
            const referrerRef = doc(db, "users", profile.referredBy);
            batch.update(referrerRef, {
@@ -109,7 +131,6 @@ export default function CheckoutPage() {
              referralEarnings: increment(rewardAmount)
            });
 
-           // Log the bonus
            const bonusTxRef = doc(collection(db, "transactions"));
            batch.set(bonusTxRef, {
              uid: profile.referredBy,
@@ -126,8 +147,8 @@ export default function CheckoutPage() {
       await batch.commit();
 
       toast({
-        title: "Node Authorized",
-        description: "Your acquisition is complete. Check your dashboard.",
+        title: "Acquisition Authorized",
+        description: "Your digital assets have been delivered to your dashboard.",
       });
       router.push("/dashboard");
     } catch (err: any) {
@@ -157,7 +178,7 @@ export default function CheckoutPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-white/5 pb-6">
         <div className="space-y-1">
           <h1 className="font-headline text-3xl sm:text-5xl font-bold tracking-tight uppercase">Protocol Acquisition</h1>
-          <p className="text-muted-foreground uppercase tracking-widest text-[10px] sm:text-xs">Finalizing Node Transmission</p>
+          <p className="text-muted-foreground uppercase tracking-widest text-[10px] sm:text-xs">Finalizing Asset Transmission</p>
         </div>
         <Link href="/" className="text-accent text-xs font-bold uppercase tracking-widest flex items-center hover:opacity-80 transition-opacity">
           <ChevronLeft className="h-4 w-4 mr-1" />
@@ -177,17 +198,19 @@ export default function CheckoutPage() {
                   <div className="flex-1 min-w-0">
                     <h3 className="font-headline font-bold text-sm sm:text-xl truncate mb-1 uppercase tracking-tight">{item.title}</h3>
                     <div className="flex items-center gap-2">
-                      <div className={`text-[8px] font-mono font-bold uppercase py-0.5 px-2 ${item.type === 'exclusive' ? 'bg-accent/20 border-accent/40 text-accent' : 'bg-primary/10 border-primary/20 text-primary'} flex items-center gap-1`}>
-                        {item.type === 'exclusive' ? <Crown className="h-2 w-2" /> : <Zap className="h-2 w-2" />}
+                      <div className={`text-[8px] font-mono font-bold uppercase py-0.5 px-2 ${item.assetType === 'software' ? 'bg-accent/10 border-accent/20 text-accent' : item.type === 'exclusive' ? 'bg-accent/20 border-accent/40 text-accent' : 'bg-primary/10 border-primary/20 text-primary'} flex items-center gap-1`}>
+                        {item.assetType === 'software' ? <Monitor className="h-2 w-2" /> : item.type === 'exclusive' ? <Crown className="h-2 w-2" /> : <Zap className="h-2 w-2" />}
                         {item.pricingTier}
                       </div>
-                      <span className="text-[9px] text-muted-foreground uppercase font-bold px-2 py-0.5 rounded-full bg-white/5 border border-white/5 truncate max-w-full">
-                        {item.country}
-                      </span>
+                      {item.country && (
+                        <span className="text-[9px] text-muted-foreground uppercase font-bold px-2 py-0.5 rounded-full bg-white/5 border border-white/5 truncate max-w-full">
+                          {item.country}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-1 shrink-0">
-                    <span className={`font-headline font-bold text-base sm:text-2xl ${item.type === 'exclusive' ? 'text-accent' : 'text-primary'}`}>₦{item.dynamicPrice?.toLocaleString()}</span>
+                    <span className="font-headline font-bold text-base sm:text-2xl text-accent">₦{item.dynamicPrice?.toLocaleString()}</span>
                     <Button 
                       variant="ghost" 
                       size="icon" 
@@ -203,7 +226,7 @@ export default function CheckoutPage() {
           ) : (
             <div className="py-16 text-center border-2 border-dashed border-white/5 rounded-2xl opacity-50 flex flex-col items-center">
               <ShoppingCart className="h-10 w-10 mb-4 text-muted-foreground opacity-20" />
-              <p className="uppercase tracking-widest text-[10px] font-bold">Protocol Queue Empty</p>
+              <p className="uppercase tracking-widest text-[10px] font-bold">Acquisition Queue Empty</p>
               <Button asChild variant="link" className="mt-2 text-accent text-xs uppercase tracking-widest">
                 <Link href="/">Browse Registry</Link>
               </Button>
@@ -219,11 +242,11 @@ export default function CheckoutPage() {
             <CardContent className="space-y-6">
               <div className="space-y-3">
                 <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground uppercase tracking-widest">Nodes Scheduled</span>
+                  <span className="text-muted-foreground uppercase tracking-widest">Assets Scheduled</span>
                   <span className="font-bold">{cartItems.length}</span>
                 </div>
                 <div className="flex justify-between items-end border-t border-white/5 pt-4 gap-2">
-                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground shrink-0 mb-1">Total Acquisition Cost</span>
+                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground shrink-0 mb-1">Total Valuation</span>
                   <span className={`font-headline font-bold text-2xl sm:text-3xl truncate ${hasInsufficientFunds && cartItems.length > 0 ? "text-destructive" : "text-accent"}`}>
                     ₦{totalPrice.toLocaleString()}
                   </span>
