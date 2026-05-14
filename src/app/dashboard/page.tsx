@@ -283,11 +283,21 @@ export default function UserDashboard() {
                     <p className="text-[10px] text-muted-foreground leading-relaxed uppercase font-mono line-clamp-2">
                        {item.description}
                     </p>
-                    <div className="pt-2">
+                    <div className="p-3 bg-accent/5 border border-accent/10 rounded-lg">
+                      <p className="text-[9px] text-accent font-bold uppercase tracking-tight leading-relaxed">
+                        ⚠️ Important: After downloading, please contact our support team to complete the final setup and activation of your software.
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-1 gap-2 pt-2">
                        <Button asChild className="w-full bg-accent text-background font-bold uppercase text-[10px] tracking-widest h-12 shadow-[0_0_15px_rgba(0,242,255,0.2)]">
                           <a href={item.downloadUrl} target="_blank" rel="noopener noreferrer">
                              <Download className="h-4 w-4 mr-2" /> Download Software
                           </a>
+                       </Button>
+                       <Button asChild variant="outline" className="w-full border-accent/20 text-accent font-bold uppercase text-[10px] tracking-widest h-10 hover:bg-accent/10">
+                          <Link href="/dashboard/support">
+                             <MessageSquare className="h-3 w-3 mr-2" /> Contact Admin for Setup
+                          </Link>
                        </Button>
                     </div>
                  </CardContent>
