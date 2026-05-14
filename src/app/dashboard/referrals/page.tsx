@@ -36,7 +36,7 @@ export default function ReferralsPage() {
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
-    toast({ title: "Copied!", description: "Referral link copied to clipboard." });
+    toast({ title: "Copied!", description: "Link copied to clipboard." });
   };
 
   if (userLoading || profileLoading) {
@@ -56,8 +56,8 @@ export default function ReferralsPage() {
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-white/5 pb-8 gap-4">
         <div className="space-y-1">
-          <h1 className="font-headline text-4xl font-bold uppercase tracking-tight text-white">Refer & Earn</h1>
-          <p className="text-muted-foreground text-[10px] uppercase tracking-[0.3em]">Naira protocol for network expansion</p>
+          <h1 className="font-headline text-4xl font-bold uppercase tracking-tight text-white">Invite Friends</h1>
+          <p className="text-muted-foreground text-[10px] uppercase tracking-[0.3em]">Earn rewards for every person you bring</p>
         </div>
         <div className="bg-accent/10 p-4 rounded-2xl border border-accent/20">
           <Gift className="h-8 w-8 text-accent" />
@@ -71,14 +71,14 @@ export default function ReferralsPage() {
               <Share2 className="h-32 w-32 text-accent" />
             </div>
             <CardHeader>
-              <CardTitle className="text-xl uppercase tracking-widest">Your Referral Node</CardTitle>
+              <CardTitle className="text-xl uppercase tracking-widest">Share Your Link</CardTitle>
               <CardDescription className="text-xs">
-                Invite friends and acquire rewards for every protocol purchase they authorize.
+                Invite friends and earn a bonus for every group or tool they buy.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 relative z-10">
               <div className="space-y-2">
-                <label className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest ml-1">Invite Link</label>
+                <label className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest ml-1">My Invite Link</label>
                 <div className="flex gap-2">
                   <Input 
                     value={referralLink} 
@@ -93,7 +93,7 @@ export default function ReferralsPage() {
 
               <div className="p-4 bg-accent/5 border border-accent/10 rounded-xl">
                 <p className="text-[10px] leading-relaxed text-accent font-bold uppercase tracking-tight">
-                  Pro-Tip: Share your link in relevant tech communities to maximize earnings. All bonuses are added instantly to your wallet.
+                  Help us grow! Share this link with your friends. Bonuses are added automatically to your balance.
                 </p>
               </div>
             </CardContent>
@@ -102,21 +102,21 @@ export default function ReferralsPage() {
           <Card className="glass-card border-white/5 overflow-hidden">
             <CardHeader className="bg-white/5">
               <CardTitle className="text-sm uppercase tracking-widest flex items-center gap-2">
-                <History className="h-4 w-4 text-accent" /> Referral Earnings Ledger
+                <History className="h-4 w-4 text-accent" /> Referral Earnings History
               </CardTitle>
             </CardHeader>
             <Table>
               <TableHeader>
                 <TableRow className="border-white/5">
                   <TableHead className="text-[9px] uppercase tracking-widest font-bold">Date</TableHead>
-                  <TableHead className="text-[9px] uppercase tracking-widest font-bold">Identity Source</TableHead>
-                  <TableHead className="text-[9px] uppercase tracking-widest font-bold text-right">Amount</TableHead>
+                  <TableHead className="text-[9px] uppercase tracking-widest font-bold">Item Purchased</TableHead>
+                  <TableHead className="text-[9px] uppercase tracking-widest font-bold text-right">Bonus</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {bonusesLoading ? (
                   <TableRow>
-                    <TableCell colSpan={3} className="text-center py-10 opacity-40 uppercase text-[10px]">Accessing Ledger...</TableCell>
+                    <TableCell colSpan={3} className="text-center py-10 opacity-40 uppercase text-[10px]">Loading...</TableCell>
                   </TableRow>
                 ) : bonuses.length > 0 ? (
                   bonuses.map((tx: any) => (
@@ -135,7 +135,7 @@ export default function ReferralsPage() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={3} className="text-center py-20 opacity-40 uppercase text-[10px] tracking-widest">
-                      No referral bonuses logged yet.
+                      No referral rewards yet.
                     </TableCell>
                   </TableRow>
                 )}
@@ -147,30 +147,30 @@ export default function ReferralsPage() {
         <div className="space-y-6">
           <Card className="glass-card border-accent/40 bg-accent/5">
             <CardHeader className="pb-2">
-              <CardTitle className="text-[10px] font-bold text-accent uppercase tracking-widest">Total Earned</CardTitle>
+              <CardTitle className="text-[10px] font-bold text-accent uppercase tracking-widest">Total Earnings</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold font-headline text-accent">₦{profile?.referralEarnings?.toLocaleString() || 0}</div>
-              <p className="text-[9px] text-muted-foreground uppercase tracking-widest mt-4">Naira credits acquired via network</p>
+              <p className="text-[9px] text-muted-foreground uppercase tracking-widest mt-4">Total money earned from friends</p>
             </CardContent>
           </Card>
 
           <Card className="glass-card border-white/10">
             <CardHeader className="pb-2">
-              <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Protocol Rules</CardTitle>
+              <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Rules</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex gap-3 items-start">
                 <CheckCircle2 className="h-3.5 w-3.5 text-accent shrink-0 mt-0.5" />
-                <p className="text-[10px] leading-tight text-white/70 uppercase">Earn rewards for every purchase made by your referee.</p>
+                <p className="text-[10px] leading-tight text-white/70 uppercase">Get a bonus for every purchase your friend makes.</p>
               </div>
               <div className="flex gap-3 items-start">
                 <CheckCircle2 className="h-3.5 w-3.5 text-accent shrink-0 mt-0.5" />
-                <p className="text-[10px] leading-tight text-white/70 uppercase">Earnings are unlimited. Refer as many as you can.</p>
+                <p className="text-[10px] leading-tight text-white/70 uppercase">Refer as many friends as you want.</p>
               </div>
               <div className="flex gap-3 items-start">
                 <CheckCircle2 className="h-3.5 w-3.5 text-accent shrink-0 mt-0.5" />
-                <p className="text-[10px] leading-tight text-white/70 uppercase">Bonuses can be used to buy any bundle on the market.</p>
+                <p className="text-[10px] leading-tight text-white/70 uppercase">Use your bonuses to buy any item in the shop.</p>
               </div>
             </CardContent>
           </Card>

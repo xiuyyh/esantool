@@ -77,7 +77,7 @@ function HomeContent() {
                 System Status: Online
               </span>
               <span className="font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-accent">
-                Security: {i % 2 === 0 ? "Verified" : "Active"}
+                Delivery: Instant
               </span>
               <Cpu className="h-3 w-3 text-accent/20" />
               <span className="font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-accent/40">
@@ -94,13 +94,13 @@ function HomeContent() {
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-accent/60 font-mono text-xs tracking-[0.4em] uppercase">
                 <Network className="h-4 w-4" />
-                Easy Telegram Access
+                Trusted Group Access
               </div>
               <h1 className="font-headline text-5xl sm:text-7xl font-bold tracking-tighter uppercase text-white">
-                Store
+                Shop
               </h1>
-              <p className="text-muted-foreground text-sm uppercase font-mono tracking-widest max-w-xl">
-                Browse our Telegram group bundles, buy exclusive single group links, or download digital tools and software.
+              <p className="text-muted-foreground text-sm font-medium tracking-wide max-w-xl">
+                Private Telegram group links (singles + bundles) + custom software tools. Get instant access to exclusive communities and build the exact tool you need. Fast, private, and reliable.
               </p>
             </div>
 
@@ -111,7 +111,7 @@ function HomeContent() {
                    <TabsList className="bg-white/5 h-12 border border-white/10 p-1">
                       <TabsTrigger value="all" className="uppercase text-[9px] font-bold tracking-widest">All</TabsTrigger>
                       <TabsTrigger value="bundles" className="uppercase text-[9px] font-bold tracking-widest">Groups</TabsTrigger>
-                      <TabsTrigger value="exclusive" className="uppercase text-[9px] font-bold tracking-widest"><Crown className="h-3 w-3 mr-1" /> Single Groups</TabsTrigger>
+                      <TabsTrigger value="exclusive" className="uppercase text-[9px] font-bold tracking-widest"><Crown className="h-3 w-3 mr-1" /> Single Links</TabsTrigger>
                       <TabsTrigger value="software" className="uppercase text-[9px] font-bold tracking-widest"><Monitor className="h-3 w-3 mr-1" /> Software</TabsTrigger>
                    </TabsList>
                 </Tabs>
@@ -128,7 +128,7 @@ function HomeContent() {
                       >
                         <div className="flex items-center gap-2">
                           <Globe className="h-3 w-3" />
-                          {selectedCountry || "All Regions"}
+                          {selectedCountry || "All Countries"}
                         </div>
                       </Button>
                     </PopoverTrigger>
@@ -136,7 +136,7 @@ function HomeContent() {
                       <div className="flex items-center gap-2 px-3 py-2 border-b border-accent/10 mb-2">
                         <Search className="h-3.5 w-3.5 text-accent/40" />
                         <Input 
-                          placeholder="Search Region..." 
+                          placeholder="Search Country..." 
                           className="h-8 border-none bg-transparent font-mono text-[10px] uppercase tracking-widest focus-visible:ring-0 p-0"
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
@@ -154,7 +154,7 @@ function HomeContent() {
                             setIsPopoverOpen(false);
                           }}
                         >
-                          All Regions
+                          All Countries
                         </Button>
                         {filteredCountries.map((c: any) => (
                           <Button
@@ -184,14 +184,14 @@ function HomeContent() {
           <div className="p-4 bg-accent/5 border border-accent/20 flex items-center gap-3">
              <Info className="h-4 w-4 text-accent shrink-0" />
              <p className="text-[10px] uppercase font-bold tracking-widest text-accent leading-relaxed">
-                Purchase Guarantee: All group links and software are verified by our system. You will receive your access immediately after purchase.
+                Purchase Guarantee: All group links and software are verified. You will receive access immediately after payment.
              </p>
           </div>
 
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-40 space-y-6">
               <div className="h-16 w-16 border-2 border-accent border-t-transparent rounded-none animate-spin"></div>
-              <p className="font-mono uppercase tracking-[0.5em] text-[10px] text-accent animate-pulse">Loading Store...</p>
+              <p className="font-mono uppercase tracking-[0.5em] text-[10px] text-accent animate-pulse">Opening Shop...</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -205,7 +205,7 @@ function HomeContent() {
                   salesCount={p.salesCount || 0}
                   description={p.description}
                   imageUrls={p.imageUrls || []}
-                  imageHint="group preview"
+                  imageHint="group links"
                 />
               ))}
               {filteredSoftware.map((s: any) => (
@@ -225,8 +225,8 @@ function HomeContent() {
           {!isLoading && filteredProducts.length === 0 && filteredSoftware.length === 0 && (
             <div className="flex flex-col items-center justify-center py-32 glass-card rounded-none border-dashed border-2 border-accent/10 text-center px-6 tech-border">
               <Database className="h-12 w-12 text-accent/20 mb-6" />
-              <h3 className="text-2xl font-bold font-headline uppercase tracking-tighter text-white">Nothing Found</h3>
-              <p className="text-muted-foreground mt-2 text-sm font-mono tracking-widest uppercase opacity-60">No matching groups or software in our listings.</p>
+              <h3 className="text-2xl font-bold font-headline uppercase tracking-tighter text-white">No Results</h3>
+              <p className="text-muted-foreground mt-2 text-sm font-mono tracking-widest uppercase opacity-60">Try selecting a different category or country.</p>
             </div>
           )}
         </div>
@@ -240,11 +240,11 @@ function HomeContent() {
             </div>
             <div className="text-left">
               <span className="font-headline font-bold text-2xl tracking-tighter text-white block leading-none">ESAN TOOLS</span>
-              <span className="font-mono text-[9px] uppercase tracking-[0.4em] text-accent/60">Professional Group Marketplace</span>
+              <span className="font-mono text-[9px] uppercase tracking-[0.4em] text-accent/60">Digital Group Marketplace</span>
             </div>
           </div>
           <div className="flex flex-col items-center gap-2 opacity-40 font-mono text-[10px] uppercase tracking-[0.2em]">
-            <p>Direct delivery system active.</p>
+            <p>Instant Delivery Active.</p>
             <p>© {year || "..."} ESAN TOOLS. All rights reserved.</p>
           </div>
         </div>
@@ -258,7 +258,7 @@ export default function Home() {
     <Suspense fallback={
       <div className="flex flex-col items-center justify-center py-40 space-y-6">
         <div className="h-16 w-16 border-2 border-accent border-t-transparent rounded-none animate-spin"></div>
-        <p className="font-mono uppercase tracking-[0.5em] text-[10px] text-accent animate-pulse">Booting Store...</p>
+        <p className="font-mono uppercase tracking-[0.5em] text-[10px] text-accent animate-pulse">Loading...</p>
       </div>
     }>
       <HomeContent />

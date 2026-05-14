@@ -7,8 +7,7 @@ import { doc, collection, addDoc, serverTimestamp, query, where } from "firebase
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ProductCard } from "@/components/product-card";
-import { Globe, ShieldCheck, Lock, ExternalLink, Key, History, Link as LinkIcon, AlertCircle, MessageSquare, Loader2, CheckCircle2, Gift, TriangleAlert, Zap, Monitor, Download } from "lucide-react";
+import { Globe, ShieldCheck, Lock, ExternalLink, History, Link as LinkIcon, AlertCircle, MessageSquare, Loader2, CheckCircle2, Gift, TriangleAlert, Zap, Monitor, Download } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -83,15 +82,15 @@ export default function UserDashboard() {
         createdAt: serverTimestamp(),
       });
 
-      const message = `🚨 <b>Junk Group Dispute</b>\n\n<b>User:</b> ${user.email}\n<b>Bundle:</b> ${disputeBundle.title}\n<b>Junk Node:</b> ${disputeJunkLink}\n<b>Reason:</b> ${disputeReason}`;
+      const message = `🚨 <b>Junk Group Dispute</b>\n\n<b>User:</b> ${user.email}\n<b>Bundle:</b> ${disputeBundle.title}\n<b>Junk Link:</b> ${disputeJunkLink}\n<b>Reason:</b> ${disputeReason}`;
       await notifyTelegram(message);
 
-      toast({ title: "Dispute Filed", description: "Administrators have been notified of the protocol error." });
+      toast({ title: "Report Sent", description: "Our team has been notified of the broken link." });
       setDisputeBundle(null);
       setDisputeReason("");
       setDisputeJunkLink("");
     } catch (err) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to broadcast dispute." });
+      toast({ variant: "destructive", title: "Error", description: "Failed to send report." });
     } finally {
       setIsSubmittingDispute(false);
     }
@@ -122,7 +121,7 @@ export default function UserDashboard() {
             <div className="text-4xl font-bold font-headline text-accent">₦{profile?.balance?.toLocaleString() || 0}</div>
             <div className="flex gap-2 mt-4">
               <Button asChild size="sm" className="bg-primary hover:bg-primary/90 text-white font-bold h-8 uppercase tracking-widest text-[10px]">
-                <Link href="/dashboard/topup">Add Credits</Link>
+                <Link href="/dashboard/topup">Add Money</Link>
               </Button>
               <Button asChild variant="outline" size="sm" className="h-8 uppercase tracking-widest text-[10px] font-bold border-white/10">
                 <Link href="/dashboard/transactions"><History className="h-3 w-3 mr-1" /> History</Link>
@@ -133,22 +132,22 @@ export default function UserDashboard() {
 
         <Card className="glass-card border-white/5">
           <CardHeader className="pb-2">
-            <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Digital Assets</CardTitle>
+            <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Total Items</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-4xl font-bold font-headline">{(profile?.purchasedGroups?.length || 0) + (profile?.purchasedSoftware?.length || 0)}</div>
-            <p className="text-[10px] text-muted-foreground mt-4 uppercase tracking-widest">Active protocols & software</p>
+            <p className="text-[10px] text-muted-foreground mt-4 uppercase tracking-widest">Groups & Software</p>
           </CardContent>
         </Card>
 
         <Card className="glass-card border-accent/20 bg-accent/5">
           <CardHeader className="pb-2">
-            <CardTitle className="text-[10px] font-bold text-accent uppercase tracking-widest">Referral Earnings</CardTitle>
+            <CardTitle className="text-[10px] font-bold text-accent uppercase tracking-widest">Referral Bonus</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-4xl font-bold font-headline text-accent">₦{profile?.referralEarnings?.toLocaleString() || 0}</div>
             <Button asChild variant="ghost" size="sm" className="mt-4 h-8 text-[9px] font-bold uppercase tracking-widest text-accent border border-accent/20">
-              <Link href="/dashboard/referrals"><Gift className="h-3 w-3 mr-1" /> Refer & Earn</Link>
+              <Link href="/dashboard/referrals"><Gift className="h-3 w-3 mr-1" /> Invite Friends</Link>
             </Button>
           </CardContent>
         </Card>
@@ -157,12 +156,12 @@ export default function UserDashboard() {
           <Card className="glass-card border-yellow-500/20">
             <CardHeader className="pb-2">
               <CardTitle className="text-[10px] font-bold text-yellow-500 uppercase tracking-widest flex items-center gap-2">
-                <AlertCircle className="h-3 w-3" /> Resolution Pending
+                <AlertCircle className="h-3 w-3" /> Report Pending
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold font-headline">ACTIVE DISPUTE</div>
-              <p className="text-[9px] text-muted-foreground mt-4 uppercase tracking-widest">Admin is verifying junk group report</p>
+              <div className="text-2xl font-bold font-headline">REPORT SENT</div>
+              <p className="text-[9px] text-muted-foreground mt-4 uppercase tracking-widest">We are checking the broken link</p>
             </CardContent>
           </Card>
         )}
@@ -171,8 +170,8 @@ export default function UserDashboard() {
       <Tabs defaultValue="groups" className="space-y-8">
         <div className="flex items-center justify-between border-b border-white/5 pb-4">
            <TabsList className="bg-white/5">
-              <TabsTrigger value="groups" className="uppercase text-[10px] font-bold tracking-widest">Authorized Bundles</TabsTrigger>
-              <TabsTrigger value="software" className="uppercase text-[10px] font-bold tracking-widest">Software Library</TabsTrigger>
+              <TabsTrigger value="groups" className="uppercase text-[10px] font-bold tracking-widest">My Groups</TabsTrigger>
+              <TabsTrigger value="software" className="uppercase text-[10px] font-bold tracking-widest">My Software</TabsTrigger>
            </TabsList>
         </div>
 
@@ -199,7 +198,7 @@ export default function UserDashboard() {
                   <CardContent className="p-5 space-y-4 flex-1">
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <p className="text-[9px] uppercase font-bold text-muted-foreground tracking-widest ml-1">Original Nodes</p>
+                        <p className="text-[9px] uppercase font-bold text-muted-foreground tracking-widest ml-1">Access Links</p>
                         <div className="space-y-2">
                           {(group.links || []).map((link: any, idx: number) => (
                             <div key={idx} className="flex items-center justify-between gap-4 p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-accent/20 transition-colors">
@@ -220,7 +219,7 @@ export default function UserDashboard() {
                       {bundleDispute?.status === 'resolved' && bundleDispute.resolutionLinks?.length > 0 && (
                         <div className="space-y-2 pt-2 border-t border-white/5">
                           <div className="flex items-center gap-2 text-[9px] uppercase font-bold text-green-500 tracking-widest ml-1">
-                            <CheckCircle2 className="h-3.5 w-3.5" /> Resolution Nodes (Compensated)
+                            <CheckCircle2 className="h-3.5 w-3.5" /> Replacement Links
                           </div>
                           <div className="space-y-2">
                             {bundleDispute.resolutionLinks.map((link: any, idx: number) => (
@@ -244,11 +243,11 @@ export default function UserDashboard() {
                   <div className="p-4 bg-white/5 border-t border-white/5 flex justify-end">
                     {!bundleDispute ? (
                       <Button variant="ghost" size="sm" onClick={() => setDisputeBundle(group)} className="text-destructive h-8 px-3 text-[9px] font-bold uppercase tracking-widest hover:bg-destructive/10">
-                        <AlertCircle className="h-3 w-3 mr-2" /> Report Junk Group
+                        <AlertCircle className="h-3 w-3 mr-2" /> Report Broken Link
                       </Button>
                     ) : (
                       <div className={`text-[8px] font-bold uppercase px-3 py-1 rounded border ${bundleDispute.status === 'pending' ? 'border-yellow-500/50 text-yellow-500 bg-yellow-500/5' : 'border-green-500/50 text-green-500 bg-green-500/5'}`}>
-                        Resolution Status: {bundleDispute.status}
+                        Status: {bundleDispute.status === 'pending' ? 'Checking Link' : 'Fixed'}
                       </div>
                     )}
                   </div>
@@ -257,8 +256,8 @@ export default function UserDashboard() {
             })) : (
               <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-3xl opacity-40">
                 <Lock className="h-12 w-12 mx-auto mb-4" />
-                <p className="text-sm uppercase tracking-widest font-bold">No authorized bundles found.</p>
-                <Button variant="link" asChild className="mt-4 text-accent uppercase tracking-widest text-xs"><Link href="/">Enter Marketplace</Link></Button>
+                <p className="text-sm uppercase tracking-widest font-bold">You haven't joined any groups yet.</p>
+                <Button variant="link" asChild className="mt-4 text-accent uppercase tracking-widest text-xs"><Link href="/">Go to Shop</Link></Button>
               </div>
             )}
           </div>
@@ -276,7 +275,7 @@ export default function UserDashboard() {
                        <CardTitle className="font-headline font-bold text-xl uppercase tracking-tight truncate">{item.title}</CardTitle>
                        <div className="flex items-center gap-2 mt-1">
                           <Monitor className="h-3 w-3 text-accent" />
-                          <span className="text-[9px] uppercase font-bold text-accent">Version: {item.version}</span>
+                          <span className="text-[9px] uppercase font-bold text-accent">V{item.version}</span>
                        </div>
                     </div>
                  </div>
@@ -287,7 +286,7 @@ export default function UserDashboard() {
                     <div className="pt-2">
                        <Button asChild className="w-full bg-accent text-background font-bold uppercase text-[10px] tracking-widest h-12 shadow-[0_0_15px_rgba(0,242,255,0.2)]">
                           <a href={item.downloadUrl} target="_blank" rel="noopener noreferrer">
-                             <Download className="h-4 w-4 mr-2" /> Download Authorized Build
+                             <Download className="h-4 w-4 mr-2" /> Download Software
                           </a>
                        </Button>
                     </div>
@@ -296,8 +295,8 @@ export default function UserDashboard() {
             ))) : (
               <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-3xl opacity-40">
                 <Monitor className="h-12 w-12 mx-auto mb-4" />
-                <p className="text-sm uppercase tracking-widest font-bold">Software library empty.</p>
-                <Button variant="link" asChild className="mt-4 text-accent uppercase tracking-widest text-xs"><Link href="/">Acquire Assets</Link></Button>
+                <p className="text-sm uppercase tracking-widest font-bold">Your software library is empty.</p>
+                <Button variant="link" asChild className="mt-4 text-accent uppercase tracking-widest text-xs"><Link href="/">Go to Shop</Link></Button>
               </div>
             )}
           </div>
@@ -307,15 +306,15 @@ export default function UserDashboard() {
       <Dialog open={!!disputeBundle} onOpenChange={(open) => !open && setDisputeBundle(null)}>
         <DialogContent className="glass-card border-white/10 max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-headline text-lg uppercase tracking-widest">Resolution Dispute</DialogTitle>
-            <DialogDescription className="text-[10px] uppercase font-mono">Reporting Junk Nodes in: {disputeBundle?.title}</DialogDescription>
+            <DialogTitle className="font-headline text-lg uppercase tracking-widest">Report Broken Link</DialogTitle>
+            <DialogDescription className="text-[10px] uppercase font-mono">Select the link that isn't working in: {disputeBundle?.title}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label className="text-[9px] uppercase font-bold text-muted-foreground ml-1">Identify Broken Node</label>
+              <label className="text-[9px] uppercase font-bold text-muted-foreground ml-1">Broken Link</label>
               <Select onValueChange={setDisputeJunkLink} value={disputeJunkLink}>
                 <SelectTrigger className="bg-white/5 border-white/10 h-11">
-                  <SelectValue placeholder="Select the junk link" />
+                  <SelectValue placeholder="Which link is broken?" />
                 </SelectTrigger>
                 <SelectContent className="glass-card border-white/10">
                   {disputeBundle?.links?.map((link: any, idx: number) => (
@@ -327,9 +326,9 @@ export default function UserDashboard() {
               </Select>
             </div>
             <div className="space-y-2">
-              <label className="text-[9px] uppercase font-bold text-muted-foreground ml-1">Reason for Dispute</label>
+              <label className="text-[9px] uppercase font-bold text-muted-foreground ml-1">What's wrong?</label>
               <Textarea 
-                placeholder="Describe the issue (e.g. Broken link, invalid content...)"
+                placeholder="Briefly explain the issue (e.g. link expired, invalid group...)"
                 className="bg-white/5 min-h-[120px] border-white/10"
                 value={disputeReason}
                 onChange={(e) => setDisputeReason(e.target.value)}
@@ -337,7 +336,7 @@ export default function UserDashboard() {
             </div>
             <div className="p-3 bg-yellow-500/5 border border-yellow-500/20 rounded-lg">
               <p className="text-[9px] text-yellow-500 uppercase leading-relaxed font-bold">
-                ⚠️ Abuse of the resolution system may result in account termination. Only report verified junk groups.
+                ⚠️ False reports may lead to account suspension. Please only report links that are actually broken.
               </p>
             </div>
           </div>
@@ -349,7 +348,7 @@ export default function UserDashboard() {
               className="bg-destructive text-white uppercase text-[10px] font-bold"
             >
               {isSubmittingDispute ? <Loader2 className="animate-spin h-3 w-3 mr-2" /> : <MessageSquare className="h-3 w-3 mr-2" />}
-              Broadcast Dispute
+              Send Report
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -8,7 +8,7 @@ import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: 'ESAN TOOLS | Telegram Groups & Software',
-  description: 'Easy access to private Telegram groups and digital tools.',
+  description: 'Easy access to private Telegram groups and exclusive software tools.',
 };
 
 export default async function RootLayout(props: {

@@ -134,7 +134,7 @@ export default function CheckoutPage() {
            const bonusTxRef = doc(collection(db, "transactions"));
            batch.set(bonusTxRef, {
              uid: profile.referredBy,
-             userEmail: "protocol@referral.esan",
+             userEmail: "system@referral.esan",
              userName: `Referral Bonus: ${item.title}`,
              amount: rewardAmount,
              status: "confirmed",
@@ -147,15 +147,15 @@ export default function CheckoutPage() {
       await batch.commit();
 
       toast({
-        title: "Acquisition Authorized",
-        description: "Your digital assets have been delivered to your dashboard.",
+        title: "Purchase Successful",
+        description: "Your items have been added to your dashboard.",
       });
       router.push("/dashboard");
     } catch (err: any) {
       toast({
         variant: "destructive",
-        title: "Protocol Error",
-        description: "Authorization failed. Please try again.",
+        title: "Payment Error",
+        description: "Transaction failed. Please try again.",
       });
     } finally {
       setIsProcessing(false);
@@ -165,9 +165,9 @@ export default function CheckoutPage() {
   if (!user) {
     return (
       <div className="max-w-screen-2xl mx-auto px-4 py-20 text-center">
-        <h2 className="text-3xl font-bold font-headline uppercase">Identity Verification Required</h2>
+        <h2 className="text-3xl font-bold font-headline uppercase">Login Required</h2>
         <Button className="mt-8 px-10 h-12 text-lg font-bold" asChild>
-          <Link href="/login">Authorize Identity</Link>
+          <Link href="/login">Log In to Continue</Link>
         </Button>
       </div>
     );
@@ -177,12 +177,12 @@ export default function CheckoutPage() {
     <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-6 lg:py-12 space-y-6 sm:space-y-10">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-white/5 pb-6">
         <div className="space-y-1">
-          <h1 className="font-headline text-3xl sm:text-5xl font-bold tracking-tight uppercase">Protocol Acquisition</h1>
-          <p className="text-muted-foreground uppercase tracking-widest text-[10px] sm:text-xs">Finalizing Asset Transmission</p>
+          <h1 className="font-headline text-3xl sm:text-5xl font-bold tracking-tight uppercase">Finish Order</h1>
+          <p className="text-muted-foreground uppercase tracking-widest text-[10px] sm:text-xs">Complete your purchase below</p>
         </div>
         <Link href="/" className="text-accent text-xs font-bold uppercase tracking-widest flex items-center hover:opacity-80 transition-opacity">
           <ChevronLeft className="h-4 w-4 mr-1" />
-          Marketplace Registry
+          Continue Shopping
         </Link>
       </div>
 
@@ -226,9 +226,9 @@ export default function CheckoutPage() {
           ) : (
             <div className="py-16 text-center border-2 border-dashed border-white/5 rounded-2xl opacity-50 flex flex-col items-center">
               <ShoppingCart className="h-10 w-10 mb-4 text-muted-foreground opacity-20" />
-              <p className="uppercase tracking-widest text-[10px] font-bold">Acquisition Queue Empty</p>
+              <p className="uppercase tracking-widest text-[10px] font-bold">Your cart is empty</p>
               <Button asChild variant="link" className="mt-2 text-accent text-xs uppercase tracking-widest">
-                <Link href="/">Browse Registry</Link>
+                <Link href="/">Browse Items</Link>
               </Button>
             </div>
           )}
@@ -237,16 +237,16 @@ export default function CheckoutPage() {
         <div className="lg:col-span-5 xl:col-span-4">
           <Card className="glass-card border-accent/20 sticky top-20">
             <CardHeader className="pb-4">
-              <CardTitle className="font-headline text-lg sm:text-xl uppercase tracking-widest">Transaction Intel</CardTitle>
+              <CardTitle className="font-headline text-lg sm:text-xl uppercase tracking-widest">Order Summary</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-3">
                 <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground uppercase tracking-widest">Assets Scheduled</span>
+                  <span className="text-muted-foreground uppercase tracking-widest">Total Items</span>
                   <span className="font-bold">{cartItems.length}</span>
                 </div>
                 <div className="flex justify-between items-end border-t border-white/5 pt-4 gap-2">
-                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground shrink-0 mb-1">Total Valuation</span>
+                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground shrink-0 mb-1">Total Cost</span>
                   <span className={`font-headline font-bold text-2xl sm:text-3xl truncate ${hasInsufficientFunds && cartItems.length > 0 ? "text-destructive" : "text-accent"}`}>
                     ₦{totalPrice.toLocaleString()}
                   </span>
@@ -255,7 +255,7 @@ export default function CheckoutPage() {
 
               <div className={`p-4 rounded-xl border ${hasInsufficientFunds && cartItems.length > 0 ? "bg-destructive/5 border-destructive/20" : "bg-accent/5 border-accent/20"} space-y-2`}>
                 <div className="flex justify-between items-center text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
-                  <span>Available Credits</span>
+                  <span>My Balance</span>
                   <Wallet className="h-3 w-3" />
                 </div>
                 <div className="text-xl font-bold font-headline truncate">₦{userBalance.toLocaleString()}</div>
@@ -267,13 +267,13 @@ export default function CheckoutPage() {
                     <AlertCircle className="h-5 w-5 text-destructive shrink-0" />
                     <div className="space-y-1">
                       <p className="text-xs font-bold text-destructive uppercase tracking-widest">Insufficient Funds</p>
-                      <p className="text-[10px] leading-relaxed opacity-80">You require ₦{(totalPrice - userBalance).toLocaleString()} more for authorization.</p>
+                      <p className="text-[10px] leading-relaxed opacity-80">You need ₦{(totalPrice - userBalance).toLocaleString()} more to complete this order.</p>
                     </div>
                   </div>
                   <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-bold h-10 uppercase tracking-widest text-[10px]" size="sm">
                     <Link href="/dashboard/topup">
                       <PlusCircle className="mr-2 h-3.5 w-3.5" />
-                      Add Credits
+                      Add Money
                     </Link>
                   </Button>
                 </div>
@@ -284,7 +284,7 @@ export default function CheckoutPage() {
                 disabled={isProcessing || cartItems.length === 0 || hasInsufficientFunds}
                 onClick={handleCompletePurchase}
               >
-                {isProcessing ? "TRANSMITTING..." : hasInsufficientFunds ? "INSUFFICIENT CREDITS" : "AUTHORIZE ACQUISITION"}
+                {isProcessing ? "PROCESSING..." : hasInsufficientFunds ? "LOW BALANCE" : "PAY FOR ITEMS"}
                 {!hasInsufficientFunds && !isProcessing && cartItems.length > 0 && <ShieldCheck className="ml-2 h-5 w-5" />}
               </Button>
             </CardContent>
@@ -292,7 +292,7 @@ export default function CheckoutPage() {
               <div className="w-full pt-4 flex flex-col items-center gap-2">
                 <p className="text-[9px] text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                   <ArrowRight className="h-3 w-3 text-accent" />
-                  Secure Protocol 2.8 Active
+                  Secure Checkout Active
                 </p>
               </div>
             </CardFooter>

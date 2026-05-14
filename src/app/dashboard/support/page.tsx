@@ -16,8 +16,8 @@ export default function SupportPage() {
           <ChevronLeft className="h-3 w-3 mr-1" />
           Back to Dashboard
         </Link>
-        <h1 className="font-headline text-4xl sm:text-6xl font-bold uppercase tracking-tight text-white">Support Protocol</h1>
-        <p className="text-muted-foreground text-[10px] uppercase tracking-[0.3em]">Direct encrypted line to administrative staff</p>
+        <h1 className="font-headline text-4xl sm:text-6xl font-bold uppercase tracking-tight text-white">Help & Support</h1>
+        <p className="text-muted-foreground text-[10px] uppercase tracking-[0.3em]">Contact our team for any issues</p>
       </div>
 
       <Card className="glass-card border-accent/20 tech-border relative overflow-hidden bg-black/40">
@@ -30,10 +30,10 @@ export default function SupportPage() {
             <div className="bg-accent/10 p-2 rounded-lg border border-accent/20">
               <ShieldCheck className="h-5 w-5 text-accent" />
             </div>
-            <CardTitle className="text-xl uppercase tracking-[0.2em] text-white">External Communication</CardTitle>
+            <CardTitle className="text-xl uppercase tracking-[0.2em] text-white">Direct Chat</CardTitle>
           </div>
           <CardDescription className="text-[10px] uppercase tracking-widest opacity-60">
-            For rapid resolution of technical issues or payment inquiries.
+            Fast response for payment or technical problems.
           </CardDescription>
         </CardHeader>
         
@@ -44,13 +44,13 @@ export default function SupportPage() {
                 <MessageCircle className="h-8 w-8 text-accent" />
               </div>
               <div className="space-y-2">
-                <p className="font-mono text-xs text-white/80 uppercase tracking-widest">Authorized Channel: WhatsApp</p>
+                <p className="font-mono text-xs text-white/80 uppercase tracking-widest">WhatsApp Support</p>
                 <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">+1 (734) 583-2929</p>
               </div>
             </div>
 
             <p className="text-[10px] leading-relaxed text-muted-foreground uppercase tracking-widest font-mono italic opacity-60">
-              Clicking below will redirect you to our secure mobile messaging terminal. Our staff typically responds within standard operational hours.
+              Click below to chat with us on WhatsApp. We respond as quickly as possible during business hours.
             </p>
 
             <Button 
@@ -59,7 +59,7 @@ export default function SupportPage() {
             >
               <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
                 <Zap className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                Initiate Secure Chat
+                Chat with Us
                 <ExternalLink className="ml-3 h-4 w-4 opacity-50" />
               </a>
             </Button>
@@ -69,12 +69,12 @@ export default function SupportPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="p-4 border border-white/5 bg-white/[0.02] space-y-2">
-          <p className="text-[9px] font-bold text-accent uppercase tracking-widest">Protocol 1.0</p>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-tight">Ensure you provide your registered email address when messaging staff for faster account verification.</p>
+          <p className="text-[9px] font-bold text-accent uppercase tracking-widest">Tips</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-tight">Include your email address when messaging so we can find your account faster.</p>
         </div>
         <div className="p-4 border border-white/5 bg-white/[0.02] space-y-2">
-          <p className="text-[9px] font-bold text-accent uppercase tracking-widest">Security Note</p>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-tight">Staff will never ask for your password. Only share transaction screenshots for top-up verification.</p>
+          <p className="text-[9px] font-bold text-accent uppercase tracking-widest">Security</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-tight">We will never ask for your password. Only send screenshots of your payment if needed.</p>
         </div>
       </div>
     </div>
