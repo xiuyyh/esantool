@@ -11,7 +11,7 @@ export default function SupportPage() {
   const WHATSAPP_LINK = "https://wa.me/2349167241442";
 
   return (
-    <div className="max-w-md mx-auto px-4 py-12 lg:py-20 space-y-6">
+    <div className="max-w-5xl mx-auto px-4 py-12 lg:py-20 space-y-6">
       <div className="flex items-center justify-between">
         <Link href="/dashboard" className="inline-flex items-center text-[10px] font-bold text-accent uppercase tracking-[0.2em] hover:opacity-80 transition-opacity">
           <ChevronLeft className="h-3 w-3 mr-1" />
@@ -23,7 +23,7 @@ export default function SupportPage() {
         </div>
       </div>
 
-      <Card className="glass-card border-accent/20 overflow-hidden bg-black/40">
+      <Card className="glass-card border-accent/20 overflow-hidden bg-black/40 w-full">
         <CardHeader className="text-center pb-2 pt-8">
           <CardTitle className="font-headline text-2xl font-bold uppercase tracking-tight text-white">Help Center</CardTitle>
           <p className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground">Fast response via WhatsApp</p>
@@ -47,21 +47,21 @@ export default function SupportPage() {
             </Button>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
-            <div className="text-left space-y-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-white/5">
+            <div className="text-left space-y-1 p-4 bg-white/5 rounded-xl border border-white/5">
               <p className="text-[8px] font-bold text-accent uppercase tracking-widest">Payments</p>
-              <p className="text-[9px] text-muted-foreground uppercase leading-tight">Send transfer proof.</p>
+              <p className="text-[9px] text-muted-foreground uppercase leading-tight">Send transfer proof for manual verification.</p>
             </div>
-            <div className="text-left space-y-1">
+            <div className="text-left space-y-1 p-4 bg-white/5 rounded-xl border border-white/5">
               <p className="text-[8px] font-bold text-accent uppercase tracking-widest">Access</p>
-              <p className="text-[9px] text-muted-foreground uppercase leading-tight">Issues with links.</p>
+              <p className="text-[9px] text-muted-foreground uppercase leading-tight">Report issues with broken group links.</p>
             </div>
           </div>
         </CardContent>
       </Card>
       
       <p className="text-center text-[8px] uppercase tracking-widest text-muted-foreground opacity-50 font-mono">
-        Include your email in the message.
+        Include your email address in the message for faster resolution.
       </p>
     </div>
   );
