@@ -23,7 +23,8 @@ import {
   ChevronRight,
   Zap,
   Crown,
-  Layers
+  Layers,
+  HelpCircle
 } from "lucide-react";
 
 import {
@@ -80,6 +81,11 @@ export function AppSidebar() {
             { title: "Single Groups", url: "/?tab=exclusive", icon: Crown },
             { title: "Software", url: "/?tab=software", icon: Monitor },
           ]
+        },
+        {
+          title: "Help & FAQ",
+          url: "/faq",
+          icon: HelpCircle,
         },
       ],
     },
@@ -145,6 +151,11 @@ export function AppSidebar() {
             title: "Support Messages",
             url: "/admin/support",
             icon: MessageSquare,
+          },
+          {
+            title: "FAQ Manager",
+            url: "/admin/faqs",
+            icon: HelpCircle,
           },
           {
             title: "App Settings",

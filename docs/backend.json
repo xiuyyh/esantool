@@ -144,6 +144,18 @@
         "exclusiveReferralReward": { "type": "number", "description": "Referral bonus for exclusive purchases." },
         "softwareReferralReward": { "type": "number", "description": "Referral bonus for software purchases." }
       }
+    },
+    "FAQ": {
+      "title": "FAQ",
+      "description": "Frequently Asked Question for the public page.",
+      "type": "object",
+      "properties": {
+        "question": { "type": "string" },
+        "answer": { "type": "string" },
+        "order": { "type": "number", "description": "Sort order for display." },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["question", "answer"]
     }
   },
   "auth": {
@@ -177,6 +189,10 @@
     "/settings/admin": {
       "schema": { "$ref": "#/entities/AdminSettings" },
       "description": "Global settings."
+    },
+    "/faqs/{faqId}": {
+      "schema": { "$ref": "#/entities/FAQ" },
+      "description": "Public FAQs."
     }
   }
 }
