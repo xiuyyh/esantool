@@ -19,7 +19,11 @@ import {
   LifeBuoy,
   Gift,
   ShieldAlert,
-  Monitor
+  Monitor,
+  ChevronRight,
+  Zap,
+  Crown,
+  Layers
 } from "lucide-react";
 
 import {
@@ -34,7 +38,15 @@ import {
   SidebarGroupLabel,
   SidebarGroupContent,
   SidebarRail,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { doc } from "firebase/firestore";
@@ -62,6 +74,12 @@ export function AppSidebar() {
           title: "Shop",
           url: "/",
           icon: Globe,
+          subItems: [
+            { title: "All Assets", url: "/?tab=all", icon: Layers },
+            { title: "Group Bundles", url: "/?tab=bundles", icon: Zap },
+            { title: "Exclusive Nodes", url: "/?tab=exclusive", icon: Crown },
+            { title: "Software Lab", url: "/?tab=software", icon: Monitor },
+          ]
         },
       ],
     },
@@ -160,19 +178,49 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => (
-                  <SidebarMenuItem key={item.url}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.url}
-                      tooltip={item.title}
-                      className="hover:bg-accent/10 hover:text-accent transition-colors h-10"
-                    >
-                      <Link href={item.url}>
-                        <item.icon className="h-4 w-4" />
-                        <span className="font-mono text-[11px] uppercase tracking-tight">{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  <React.Fragment key={item.title}>
+                    {item.subItems ? (
+                      <Collapsible defaultOpen className="group/collapsible">
+                        <SidebarMenuItem>
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton tooltip={item.title}>
+                              <item.icon className="h-4 w-4" />
+                              <span className="font-mono text-[11px] uppercase tracking-tight">{item.title}</span>
+                              <ChevronRight className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <SidebarMenuSub>
+                              {item.subItems.map((subItem) => (
+                                <SidebarMenuSubItem key={subItem.title}>
+                                  <SidebarMenuSubButton asChild>
+                                    <Link href={subItem.url} className="flex items-center gap-2">
+                                      {subItem.icon && <subItem.icon className="h-3 w-3 opacity-60" />}
+                                      <span className="font-mono text-[10px] uppercase tracking-tight">{subItem.title}</span>
+                                    </Link>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </SidebarMenuItem>
+                      </Collapsible>
+                    ) : (
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={pathname === item.url}
+                          tooltip={item.title}
+                          className="hover:bg-accent/10 hover:text-accent transition-colors h-10"
+                        >
+                          <Link href={item.url}>
+                            <item.icon className="h-4 w-4" />
+                            <span className="font-mono text-[11px] uppercase tracking-tight">{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    )}
+                  </React.Fragment>
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>

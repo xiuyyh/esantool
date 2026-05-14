@@ -4,6 +4,7 @@ import './globals.css';
 import { FirebaseClientProvider } from '@/firebase';
 import { AppShell } from '@/components/app-shell';
 import { SplashScreen } from '@/components/splash-screen';
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: 'ESAN TOOLS | Digital Marketplace',
@@ -30,6 +31,7 @@ export default async function RootLayout(props: {
           <AppShell>
             {children}
           </AppShell>
+          <Analytics />
         </FirebaseClientProvider>
       </body>
     </html>

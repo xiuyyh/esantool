@@ -1,7 +1,8 @@
 
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { Globe, Terminal, Cpu, Database, Network, Search, Check, Crown, Zap, Info, Monitor, HardDrive } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import { SoftwareCard } from "@/components/software-card";
@@ -14,7 +15,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export default function Home() {
+function HomeContent() {
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -34,6 +38,12 @@ export default function Home() {
   useEffect(() => {
     setYear(new Date().getFullYear());
   }, []);
+
+  useEffect(() => {
+    if (tabParam && ["all", "bundles", "exclusive", "software"].includes(tabParam)) {
+      setActiveTab(tabParam as any);
+    }
+  }, [tabParam]);
 
   const filteredCountries = useMemo(() => {
     return countries.filter(c => 
@@ -97,7 +107,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row items-start sm:items-end gap-6">
               <div className="space-y-3 w-full sm:w-auto">
                 <span className="font-mono text-[10px] uppercase text-accent/40 tracking-widest">Protocol Type</span>
-                <Tabs defaultValue="all" onValueChange={(val) => setActiveTab(val as any)}>
+                <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as any)}>
                    <TabsList className="bg-white/5 h-12 border border-white/10 p-1">
                       <TabsTrigger value="all" className="uppercase text-[9px] font-bold tracking-widest">All</TabsTrigger>
                       <TabsTrigger value="bundles" className="uppercase text-[9px] font-bold tracking-widest">Groups</TabsTrigger>
@@ -240,5 +250,18 @@ export default function Home() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col items-center justify-center py-40 space-y-6">
+        <div className="h-16 w-16 border-2 border-accent border-t-transparent rounded-none animate-spin"></div>
+        <p className="font-mono uppercase tracking-[0.5em] text-[10px] text-accent animate-pulse">Booting Shop Registry...</p>
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
   );
 }
